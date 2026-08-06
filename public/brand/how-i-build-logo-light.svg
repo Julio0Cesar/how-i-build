@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background: rounded square, off-white -->
+  <rect x="8" y="8" width="184" height="184" rx="38"
+        fill="#F7F6F2" stroke="#E3E1DA" stroke-width="1.5"/>
+
+  <!-- Monogram: h·b -->
+  <text x="100" y="132"
+        text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-weight="700"
+        font-size="92"
+        letter-spacing="-4"
+        fill="#121214">hb</text>
+
+  <!-- Accent mark: references the hyphens in "how-i-build" -->
+  <rect x="94.5" y="118" width="11" height="11"
+        transform="rotate(45 100 123.5)"
+        fill="#6C5CE7"/>
+</svg>

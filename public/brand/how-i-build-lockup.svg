@@ -1,0 +1,29 @@
+<svg width="600" height="160" viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mark -->
+  <rect x="8" y="8" width="144" height="144" rx="30"
+        fill="#121214" stroke="#2A2A2E" stroke-width="1.5"/>
+  <text x="80" y="103"
+        text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-weight="700"
+        font-size="72"
+        letter-spacing="-3"
+        fill="#F3F2EE">hb</text>
+  <rect x="75.5" y="91.5" width="9" height="9"
+        transform="rotate(45 80 96)"
+        fill="#7C6FF0"/>
+
+  <!-- Wordmark -->
+  <text x="176" y="94"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-weight="600"
+        font-size="40"
+        letter-spacing="-0.5"
+        fill="#121214">how-i-build</text>
+  <text x="176" y="120"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-weight="400"
+        font-size="16"
+        letter-spacing="0.5"
+        fill="#7A7A80">engineering process, documented</text>
+</svg>
