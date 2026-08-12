@@ -1,0 +1,65 @@
+export const meta = {
+  name: "Ledger",
+  summary:
+    "Um controle de gastos em linha de comando que guarda os dados num arquivo único e legível.",
+  role: "Autor único",
+  period: "2026",
+  updatedAt: "2026-07-19",
+  references: [
+    {
+      label: "SQLite como formato de arquivo de aplicação",
+      url: "https://www.sqlite.org/appfileformat.html",
+    },
+  ],
+};
+
+Todo controle de gastos que testei era dono dos meus dados. A exportação perdia
+informação, o schema não era documentado, e trocar de ferramenta significava
+redigitar meses de histórico.
+
+A restrição era estreita: o arquivo que a ferramenta escreve precisa ser
+`legível sem a ferramenta`. Todo o resto decorre disso.
+
+## Formato de armazenamento
+
+A primeira versão escrevia JSON. Continuava legível, que era o ponto, mas fazia
+de cada consulta uma varredura completa e de cada escrita uma reescrita do
+arquivo inteiro. Com três anos de lançamentos, isso deixou de ser problema
+teórico.
+
+<Decision>
+Um único arquivo `ledger.db`, consultado no próprio processo. Continua sendo um
+arquivo só para copiar ou fazer backup, e qualquer cliente
+[SQLite](https://www.sqlite.org/appfileformat.html) abre.
+</Decision>
+
+<Tradeoffs>
+- Arquivo binário não dá para revisar num diff de pull request
+- Escritas simultâneas de dois terminais são recusadas em vez de mescladas
+- Recuperar de uma corrupção exige `sqlite3`, não um editor de texto
+</Tradeoffs>
+
+Três anos depois, consultas respondem em milissegundos e backup continua sendo
+cópia de arquivo. A perda do diff não fez falta nenhuma vez.
+
+## Importação de extratos
+
+Exportações de banco divergem na ordem das colunas, no formato de data e no
+separador decimal. Resolver isso num script avulso significava reescrever o
+script a cada trimestre, normalmente na pior hora.
+
+<Decision>
+A importação recebe um arquivo de mapeamento, então um banco novo é mudança de
+configuração e não de código. O mapeamento fica junto dos dados, e
+`ledger import --dry-run` imprime o que mudaria antes de escrever qualquer coisa.
+</Decision>
+
+<Tradeoffs>
+- O mapeamento é mais uma coisa a escrever antes da primeira importação
+- Formatos que exigem parsing de verdade continuam caindo num script
+</Tradeoffs>
+
+Dois bancos emitiam o mesmo formato ambíguo de data com significados opostos, e
+nenhum declarava qual. O importador agora recusa colunas ambíguas em vez de
+adivinhar, e pergunta uma vez por mapeamento. O `--dry-run` pegou todo
+mapeamento errado desde então.

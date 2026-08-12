@@ -1,0 +1,63 @@
+export const meta = {
+  name: "Ledger",
+  summary:
+    "A command-line expense tracker that keeps its data in a single file you can read.",
+  role: "Sole author",
+  period: "2026",
+  updatedAt: "2026-07-19",
+  references: [
+    {
+      label: "SQLite as an application file format",
+      url: "https://www.sqlite.org/appfileformat.html",
+    },
+  ],
+};
+
+Every expense tracker I tried owned my data. Exports were lossy, the schema was
+undocumented, and moving between tools meant retyping months of history.
+
+The constraint was narrow: the file the tool writes has to be `readable without
+the tool`. Everything below follows from that.
+
+## Storage format
+
+The first version wrote JSON. It stayed readable, which was the point, but it
+made every query a full scan and every write a rewrite of the whole file. At
+three years of entries that stopped being a theoretical problem.
+
+<Decision>
+A single `ledger.db` file, queried in process. It is still one file to back up
+or copy, and any [SQLite](https://www.sqlite.org/appfileformat.html) client can
+open it.
+</Decision>
+
+<Tradeoffs>
+- A binary file cannot be diffed in a pull request
+- Concurrent writes from two shells are rejected rather than merged
+- Recovering from corruption needs `sqlite3`, not a text editor
+</Tradeoffs>
+
+Three years in, queries answer in milliseconds and a backup is still a file
+copy. The diffing loss has not come up once.
+
+## Importing statements
+
+Bank exports differ in column order, date format and decimal separator.
+Handling that in a one-off script meant rewriting the script every quarter,
+usually at the worst moment.
+
+<Decision>
+Import takes a mapping file, so a new bank is a config change rather than code.
+The mapping lives next to the data, and `ledger import --dry-run` prints what
+would change before anything is written.
+</Decision>
+
+<Tradeoffs>
+- A mapping file is one more thing to write before the first import
+- Formats that need real parsing logic still fall back to a script
+</Tradeoffs>
+
+Two banks emitted the same ambiguous date format with opposite meanings, and
+neither declared which. The importer now refuses ambiguous columns instead of
+guessing, and asks once per mapping. `--dry-run` has caught every bad mapping
+since.

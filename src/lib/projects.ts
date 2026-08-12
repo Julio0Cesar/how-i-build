@@ -6,14 +6,9 @@ import type { Locale } from "@/i18n/config";
  * the `site` branch owns.
  */
 
-/** The most recent section update, or null for a project with no dates yet. */
+/** The case's own date, or null for one that has not been written yet. */
 export function latestUpdate(project: Project, locale: Locale): string | null {
-  const dates = Object.values(project.locales[locale].updated).filter(
-    (date): date is string => Boolean(date),
-  );
-  if (dates.length === 0) return null;
-  // ISO dates sort correctly as strings.
-  return dates.reduce((newest, date) => (date > newest ? date : newest));
+  return project.cases[locale].meta.updatedAt ?? null;
 }
 
 /**

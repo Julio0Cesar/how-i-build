@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export type TocItem = { id: string; label: string };
+import type { TocItem } from "@/lib/toc";
 
 export function CaseToc({
   items,
