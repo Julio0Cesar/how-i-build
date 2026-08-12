@@ -4,6 +4,7 @@ import {
   IBM_Plex_Sans,
   IBM_Plex_Serif,
 } from "next/font/google";
+import { site } from "@/config/site";
 import "./globals.css";
 
 const sans = IBM_Plex_Sans({
@@ -25,8 +26,8 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "how-i-build",
-  description: "Engineering notes",
+  title: site.name,
+  description: site.tagline,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
