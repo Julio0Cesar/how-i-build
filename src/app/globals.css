@@ -87,6 +87,18 @@
   }
 
   /**
+   * Smooth only for readers who have not asked otherwise. Pairs with
+   * `data-scroll-behavior="smooth"` on <html>: without that attribute Next 16
+   * leaves this in place during route changes too, so every navigation would
+   * crawl to the top instead of jumping.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /**
    * Interface controls do not change the cursor — Tailwind 4 already stopped
    * doing it for buttons, and a link that acts as a control should match.
    * Links inside prose opt back in, where the pointer is the signal that a run
