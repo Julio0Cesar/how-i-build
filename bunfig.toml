@@ -1,0 +1,6 @@
+# Bun as the project's runtime and package manager.
+# https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Prefer the default registry; lockfile managed by Bun.
+exact = false
