@@ -16,30 +16,47 @@ export function CaseToc({
   const [active, setActive] = useState(items[0]?.id ?? "");
 
   useEffect(() => {
-    const nodes = items
-      .map((item) => document.getElementById(item.id))
-      .filter((node): node is HTMLElement => Boolean(node));
-
-    if (nodes.length === 0) return;
+    const ids = items.map((item) => item.id);
+    if (ids.length === 0) return;
 
     /**
-     * The margins ignore the top fifth and bottom half of the viewport, so the
-     * active entry follows what is being read rather than whatever has just
-     * touched the edge of the screen.
+     * Scroll position rather than IntersectionObserver. The observer callback
+     * only receives sections whose intersection changed, so "most visible" was
+     * being decided from a partial set; and `intersectionRatio` is relative to
+     * each element's own height, so a long section and a short one were never
+     * comparable. The last section also never reached the detection band —
+     * the page ran out of scroll first, which is why it never activated.
      */
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const id = visible[0]?.target.id;
-        if (id) setActive(id);
-      },
-      { rootMargin: "-20% 0px -55% 0px", threshold: [0.1, 0.35, 0.6] },
-    );
+    function update() {
+      const doc = document.documentElement;
+      const atBottom =
+        window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
+      if (atBottom) {
+        setActive(ids[ids.length - 1]!);
+        return;
+      }
 
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+      const line = window.innerHeight * 0.3;
+      let current = ids[0]!;
+      for (const id of ids) {
+        const element = document.getElementById(id);
+        if (element && element.getBoundingClientRect().top <= line) {
+          current = id;
+        }
+      }
+      setActive(current);
+    }
+
+    // Deferred so the first read is not a setState inside the effect body.
+    const frame = requestAnimationFrame(update);
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, [items]);
 
   return (
