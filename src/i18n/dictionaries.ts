@@ -20,8 +20,10 @@ const en = {
     pt: "PT",
   },
   theme: {
-    toDark: "Dark",
-    toLight: "Light",
+    group: "Theme",
+    light: "Light",
+    dark: "Dark",
+    system: "System",
   },
   social: {
     github: "GitHub",
@@ -45,8 +47,10 @@ const pt: Dictionary = {
     pt: "PT",
   },
   theme: {
-    toDark: "Escuro",
-    toLight: "Claro",
+    group: "Tema",
+    light: "Claro",
+    dark: "Escuro",
+    system: "Sistema",
   },
   social: {
     github: "GitHub",

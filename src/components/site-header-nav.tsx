@@ -7,7 +7,7 @@ import { localeHref, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { IconButton } from "./ui/icon-button";
 import { LocaleSwitch } from "./locale-switch";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeSelect } from "./theme-select";
 
 /**
  * Only routes that exist. #14 appends the changelog when there is one to link
@@ -56,7 +56,7 @@ export function SiteHeaderNav({
       <nav className="hidden items-center gap-5 md:flex" aria-label={dict.nav.menu}>
         {links}
         <LocaleSwitch locale={locale} labels={dict.locale} />
-        <ThemeToggle labels={dict.theme} />
+        <ThemeSelect labels={dict.theme} />
       </nav>
 
       <IconButton
@@ -85,7 +85,7 @@ export function SiteHeaderNav({
             {links}
             <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-4">
               <LocaleSwitch locale={locale} labels={dict.locale} />
-              <ThemeToggle labels={dict.theme} />
+              <ThemeSelect labels={dict.theme} />
             </div>
           </nav>
         </div>
