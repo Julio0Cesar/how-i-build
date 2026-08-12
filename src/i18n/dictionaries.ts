@@ -46,6 +46,20 @@ const en = {
   project: {
     pending: "Write-up pending",
   },
+  case: {
+    toc: "On this page",
+    problem: "Problem",
+    decisions: "Decisions",
+    challenges: "Challenges",
+    outcome: "Outcome",
+    references: "References",
+    updated: "Updated",
+    context: "Context",
+    decision: "Decision",
+    tradeoffs: "Trade-offs",
+    live: "Live",
+    repository: "Repository",
+  },
 };
 
 export type Dictionary = typeof en;
@@ -88,6 +102,20 @@ const pt: Dictionary = {
   },
   project: {
     pending: "Registro pendente",
+  },
+  case: {
+    toc: "Nesta página",
+    problem: "Problema",
+    decisions: "Decisões",
+    challenges: "Desafios",
+    outcome: "Resultado",
+    references: "Referências",
+    updated: "Atualizado",
+    context: "Contexto",
+    decision: "Decisão",
+    tradeoffs: "Trade-offs",
+    live: "No ar",
+    repository: "Repositório",
   },
 };
 
