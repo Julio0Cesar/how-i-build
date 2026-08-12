@@ -86,6 +86,16 @@
     font-family: var(--font-sans);
   }
 
+  /**
+   * Interface controls do not change the cursor — Tailwind 4 already stopped
+   * doing it for buttons, and a link that acts as a control should match.
+   * Links inside prose opt back in, where the pointer is the signal that a run
+   * of text leads somewhere.
+   */
+  a {
+    cursor: default;
+  }
+
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-accent-foreground);
