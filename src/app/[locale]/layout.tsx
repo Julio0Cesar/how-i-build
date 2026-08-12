@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 import { notFound } from "next/navigation";
 import { site } from "@/config/site";
+import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { isLocale, locales } from "@/i18n/config";
 import "../globals.css";
 
@@ -28,8 +29,10 @@ const mono = IBM_Plex_Mono({
 });
 
 /**
- * Runs before first paint, so the page never renders in the wrong theme. Reading
- * this on the server instead would opt every route into dynamic rendering.
+ * Runs before first paint, so the page never renders in the wrong theme.
+ * Reading this on the server instead would opt every route into dynamic
+ * rendering, and next/script defers inline content past the first paint, which
+ * is the one thing this cannot do.
  */
 const applyTheme = `try{var t=localStorage.getItem("theme");if(t==="dark"||(t===null&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
 
@@ -59,7 +62,12 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: applyTheme }} />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <SiteHeader />
+        {/* Offsets the fixed header. */}
+        <main className="flex-1 pt-14 sm:pt-16">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

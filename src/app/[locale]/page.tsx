@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 
 export async function generateMetadata({
@@ -22,10 +21,5 @@ export async function generateMetadata({
 }
 
 export default function Home() {
-  // Temporary mount so the toggle can be exercised. #7 moves it into the header.
-  return (
-    <main className="p-8">
-      <ThemeToggle labels={{ toDark: "Dark", toLight: "Light" }} />
-    </main>
-  );
+  return null;
 }
