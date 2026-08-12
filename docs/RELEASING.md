@@ -44,6 +44,14 @@ Two consequences worth knowing:
 
 This means the version in the site footer is the **template** version, not a count of content updates. Writing three case studies on `site` does not move it. That is intentional — the number tracks the thing the template promises to keep stable — but the UI has to label it so nobody reads it as "the site changed three times".
 
+## Repository settings this depends on
+
+Two things live in the repository settings rather than in a file, so a fresh clone of this template needs them set before the first release works.
+
+**Actions must be allowed to open pull requests.** Settings → Actions → General → Workflow permissions: pick *Read and write permissions* and tick *Allow GitHub Actions to create and approve pull requests*. Without it the workflow fails with `GitHub Actions is not permitted to create or approve pull requests`, which reads like a bug in the workflow and is not one.
+
+**Tags carry no component prefix.** `include-component-in-tag` is `false` in the config. Manifest mode defaults it to `true`, which is right for a monorepo where several packages share one tag namespace, and wrong here — it would produce `how-i-build-v0.2.0` instead of `v0.2.0`, and the footer (#13) reads `tag_name` straight from the API.
+
 ## Files
 
 | File | Role |
