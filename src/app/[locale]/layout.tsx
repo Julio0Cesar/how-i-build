@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 import { notFound } from "next/navigation";
 import { site } from "@/config/site";
+import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { isLocale, locales } from "@/i18n/config";
 import "../globals.css";
 
@@ -59,7 +60,12 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: applyTheme }} />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <SiteHeader />
+        {/* Offsets the fixed header. */}
+        <main className="flex-1 pt-14 sm:pt-16">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }
