@@ -4,8 +4,10 @@ import {
   IBM_Plex_Sans,
   IBM_Plex_Serif,
 } from "next/font/google";
+import { notFound } from "next/navigation";
 import { site } from "@/config/site";
-import "./globals.css";
+import { isLocale, locales } from "@/i18n/config";
+import "../globals.css";
 
 const sans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -28,12 +30,23 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: site.name,
   description: site.tagline,
+  metadataBase: new URL(site.liveUrl),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export default async function RootLayout({
+  children,
+  params,
+}: LayoutProps<"/[locale]">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
