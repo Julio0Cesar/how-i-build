@@ -27,6 +27,12 @@ const mono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
 });
 
+/**
+ * Runs before first paint, so the page never renders in the wrong theme. Reading
+ * this on the server instead would opt every route into dynamic rendering.
+ */
+const applyTheme = `try{var t=localStorage.getItem("theme");if(t==="dark"||(t===null&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
+
 export const metadata: Metadata = {
   title: site.name,
   description: site.tagline,
@@ -48,7 +54,11 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: applyTheme }} />
+      </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
