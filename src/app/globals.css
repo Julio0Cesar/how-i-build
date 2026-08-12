@@ -57,6 +57,20 @@
   --accent-soft: oklch(0.27 0.035 45);
 }
 
+@layer components {
+  /**
+   * The selected theme option. It depends on an attribute the inline script
+   * writes on <html>, outside React, so CSS is what can express it — and it
+   * keeps colour out of the primitives' layout-only `className`.
+   */
+  [data-theme-choice="light"] [data-choice="light"],
+  [data-theme-choice="dark"] [data-choice="dark"],
+  [data-theme-choice="system"] [data-choice="system"] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}
+
 @layer base {
   /* Tailwind 4 defaults borders to currentColor, which would tint every rule
      with the text color. */
