@@ -68,6 +68,8 @@
   [data-theme-choice="system"] [data-choice="system"] {
     border-color: var(--color-accent);
     color: var(--color-accent);
+    /* Draw the full accent outline over the neighbour's overlapping edge. */
+    z-index: 1;
   }
 }
 

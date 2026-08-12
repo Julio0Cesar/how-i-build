@@ -61,7 +61,14 @@ export function ThemeSelect({ labels }: { labels: Dictionary["theme"] }) {
           data-choice={value}
           aria-pressed={choice === null ? undefined : choice === value}
           onClick={() => window.__theme?.set(value)}
-          className="size-8 border-l-0 first:border-l"
+          size="sm"
+          /**
+           * Each button keeps all four borders and overlaps its neighbour by a
+           * pixel, so the shared edge is one line. Dropping the left border
+           * instead would leave the highlighted button drawing only three
+           * sides, with the neighbour's grey edge filling the gap.
+           */
+          className="relative -ml-px first:ml-0 hover:z-10"
         >
           <Icon className="size-3.5" aria-hidden="true" />
         </IconButton>
