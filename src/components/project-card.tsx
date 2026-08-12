@@ -47,20 +47,22 @@ export function ProjectCard({
     </>
   );
 
-  const layout = "grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 py-7 sm:gap-5 md:py-8";
+  const layout =
+    "group grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 py-7 transition-transform hover:translate-x-2 sm:gap-5 md:py-8";
 
   /**
-   * A stub has no sections written, so linking would lead to an empty case
-   * page. It is listed, not promised.
+   * A stub has no sections written, so it is not a link — that would lead to an
+   * empty case page. It still reacts to hover, so the list behaves as one thing
+   * rather than one live row and one dead one.
    */
   if (project.stub) {
-    return <div className={`group ${layout}`}>{body}</div>;
+    return <div className={layout}>{body}</div>;
   }
 
   return (
     <Link
       href={localeHref(locale, `/projects/${project.slug}`)}
-      className={`group ${layout} transition-transform hover:translate-x-2`}
+      className={layout}
     >
       {body}
     </Link>
