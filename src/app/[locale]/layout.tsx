@@ -33,8 +33,14 @@ const mono = IBM_Plex_Mono({
  * Reading this on the server instead would opt every route into dynamic
  * rendering, and next/script defers inline content past the first paint, which
  * is the one thing this cannot do.
+ *
+ * It owns the whole rule, not just the first paint: the class (what is painted)
+ * and `data-theme-choice` (what the reader picked) are two facts, because
+ * "system" resolved to dark is indistinguishable from "dark" by class alone.
+ * `window.__theme.set` is how the control changes it, so the resolution logic
+ * exists once instead of being mirrored in TypeScript.
  */
-const applyTheme = `try{var t=localStorage.getItem("theme");if(t==="dark"||(t===null&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
+const applyTheme = `(function(){var K="theme",r=document.documentElement,m=matchMedia("(prefers-color-scheme: dark)");function read(){try{return localStorage.getItem(K)||"system"}catch(e){return "system"}}function apply(c){r.dataset.themeChoice=c;r.classList.toggle("dark",c==="dark"||(c==="system"&&m.matches))}window.__theme={set:function(c){try{localStorage.setItem(K,c)}catch(e){}apply(c);dispatchEvent(new Event("themechoice"))}};m.addEventListener("change",function(){if(read()==="system")apply("system")});apply(read())})()`;
 
 export const metadata: Metadata = {
   title: site.name,
