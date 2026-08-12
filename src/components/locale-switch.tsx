@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { localeHref, locales, stripLocale, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -29,7 +28,14 @@ export function LocaleSwitch({
       {locales.map((code) => {
         const active = code === locale;
         return (
-          <Link
+          /**
+           * A plain anchor, not <Link>: switching locale changes a root
+           * parameter, so a client navigation re-renders the root layout — and
+           * React refuses to run the theme <script> during a client render,
+           * warning about it in development. A document navigation also lets
+           * the server read the cookie written just below on the next request.
+           */
+          <a
             key={code}
             href={localeHref(code, path)}
             hrefLang={code}
@@ -46,7 +52,7 @@ export function LocaleSwitch({
             }
           >
             {labels[code]}
-          </Link>
+          </a>
         );
       })}
     </div>

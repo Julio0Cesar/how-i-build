@@ -29,8 +29,10 @@ const mono = IBM_Plex_Mono({
 });
 
 /**
- * Runs before first paint, so the page never renders in the wrong theme. Reading
- * this on the server instead would opt every route into dynamic rendering.
+ * Runs before first paint, so the page never renders in the wrong theme.
+ * Reading this on the server instead would opt every route into dynamic
+ * rendering, and next/script defers inline content past the first paint, which
+ * is the one thing this cannot do.
  */
 const applyTheme = `try{var t=localStorage.getItem("theme");if(t==="dark"||(t===null&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
 
