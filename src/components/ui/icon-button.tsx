@@ -11,6 +11,11 @@ type IconButtonProps = Omit<
    */
   label: string;
   children: ReactNode;
+  /**
+   * `data-*` passes through. React's prop types allow these only on intrinsic
+   * elements, and a primitive needs them for state a stylesheet decides.
+   */
+  [key: `data-${string}`]: string | undefined;
 };
 
 export function IconButton({
