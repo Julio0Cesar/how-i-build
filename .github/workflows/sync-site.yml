@@ -1,0 +1,49 @@
+name: Sync site
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-site
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # The two-branch model is optional. A fork that never creates `site`
+      # should not see a failing workflow on every release.
+      - name: Look for a site branch
+        id: probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/branches/site" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No site branch in this repository — nothing to sync."
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.probe.outputs.exists == 'true'
+        with:
+          ref: site
+          fetch-depth: 0
+
+      # A real merge, not a squash: squashing would leave git believing `site`
+      # never received these commits, and the next sync would replay them as
+      # conflicts against content that is already there.
+      - name: Merge main into site
+        if: steps.probe.outputs.exists == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git merge --no-ff origin/main -m "chore: merge main into site"
+          git push origin site

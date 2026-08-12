@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# how-i-build
 
-## Getting Started
+A template for an engineering notes site: short write-ups on what you build and the decisions behind them, in two languages, with the version and changelog read from your own GitHub releases.
 
-First, run the development server:
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Runtime and package manager | Bun |
+| UI | React 19, Tailwind CSS 4, IBM Plex |
+| i18n | `/[locale]` routing, default locale unprefixed |
+| Releases | release-please, GitHub Releases as the only changelog |
+| Hosting | Vercel |
+
+## Commands
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev
+bun run build
+bun run start
+bun run lint
+bun run typecheck
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Bun is the package manager and task runner. Node runs the build — forcing the Bun runtime for `next build` crashes on teardown, so the scripts deliberately do not.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## URLs
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The default locale carries no prefix:
 
-## Learn More
+```
+/                 English
+/pt               Portuguese
+/en               redirects to /
+```
 
-To learn more about Next.js, take a look at the following resources:
+Each page therefore has exactly one address per language, which is what lets both be indexed and shared.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Making it yours
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Everything that names you lives in `src/config/site.ts`: repository, deployed URL, social links, locales. No other file in the template refers to an owner, a repo or a handle.
 
-## Deploy on Vercel
+Chrome strings are in `src/i18n/dictionaries.ts`. English defines the key set, so a locale missing a key fails the type check rather than rendering a blank.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Branches
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `main` — the template. No personal content.
+- `site` — your content, and the production branch on Vercel.
+
+Merges go **`main → site`**, never the other way. A template bug found while writing content is committed on `main` and comes down through the sync.
+
+`main` owns shape: `src/app/`, `src/components/`, `src/lib/`, `src/i18n/`, `src/config/types.ts`.
+`site` owns data: `src/content/`, the values in `src/config/site.ts`, `public/brand/`.
+
+The `Sync site` workflow merges `main` into `site` whenever a release is published. It does nothing if there is no `site` branch, so the second branch is optional.
+
+## Releasing
+
+Versions are cut by release-please from Conventional Commits. See [`docs/RELEASING.md`](docs/RELEASING.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
