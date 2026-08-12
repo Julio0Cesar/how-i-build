@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { localeHref, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { IconButton } from "./ui/icon-button";
 import { LocaleSwitch } from "./locale-switch";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -44,7 +45,7 @@ export function SiteHeaderNav({
       key={route.key}
       href={localeHref(locale, route.path)}
       onClick={() => setOpen(false)}
-      className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+      className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
     >
       {dict.nav[route.key]}
     </Link>
@@ -58,12 +59,11 @@ export function SiteHeaderNav({
         <ThemeToggle labels={dict.theme} />
       </nav>
 
-      <button
-        type="button"
-        className="inline-flex size-10 items-center justify-center border border-rule transition-colors hover:border-accent hover:text-accent md:hidden"
+      <IconButton
+        label={open ? dict.nav.close : dict.nav.open}
+        className="md:hidden"
         aria-expanded={open}
         aria-controls={panelId}
-        aria-label={open ? dict.nav.close : dict.nav.open}
         onClick={() => setOpen((value) => !value)}
       >
         {open ? (
@@ -71,7 +71,7 @@ export function SiteHeaderNav({
         ) : (
           <Menu className="size-4" aria-hidden="true" />
         )}
-      </button>
+      </IconButton>
 
       {open ? (
         <div

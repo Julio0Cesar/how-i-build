@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "./ui/button";
+
 /**
  * The class on <html> is the source of truth, and the inline script in the
  * layout has already set it before first paint. There is no React state here
@@ -26,13 +28,9 @@ export function ThemeToggle({
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="border border-rule px-2 py-1 text-sm transition-colors hover:border-accent hover:text-accent"
-    >
+    <Button onClick={toggle}>
       <span className="dark:hidden">{labels.toDark}</span>
       <span className="hidden dark:inline">{labels.toLight}</span>
-    </button>
+    </Button>
   );
 }
