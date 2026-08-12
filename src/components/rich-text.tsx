@@ -8,8 +8,9 @@ import {
   type Locale,
 } from "@/i18n/config";
 
+/** Prose links keep the pointer; the base layer removes it from every other anchor. */
 const linkClass =
-  "border-b border-rule transition-colors hover:border-accent hover:text-accent";
+  "cursor-pointer border-b border-rule transition-colors hover:border-accent hover:text-accent";
 
 const codeClass = "bg-muted px-1 py-0.5 font-mono text-[0.9em]";
 

@@ -30,6 +30,22 @@ const en = {
     linkedin: "LinkedIn",
     email: "Email",
   },
+  home: {
+    profile: "Profile",
+    projects: "Projects",
+  },
+  status: {
+    "in-dev": "In development",
+    prod: "Live",
+    archived: "Archived",
+  },
+  visibility: {
+    public: "Public",
+    private: "Private",
+  },
+  project: {
+    pending: "Write-up pending",
+  },
 };
 
 export type Dictionary = typeof en;
@@ -56,6 +72,22 @@ const pt: Dictionary = {
     github: "GitHub",
     linkedin: "LinkedIn",
     email: "E-mail",
+  },
+  home: {
+    profile: "Perfil",
+    projects: "Projetos",
+  },
+  status: {
+    "in-dev": "Em desenvolvimento",
+    prod: "No ar",
+    archived: "Arquivado",
+  },
+  visibility: {
+    public: "Público",
+    private: "Privado",
+  },
+  project: {
+    pending: "Registro pendente",
   },
 };
 
