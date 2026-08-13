@@ -18,6 +18,21 @@ export const site = {
     github: "https://github.com/Julio0Cesar",
     linkedin: "https://www.linkedin.com/in/byjuliocesa/",
   },
+  icons: {
+    stack: {
+      "Next.js": "/brand/nextjs.svg",
+      TypeScript: "/brand/typescript.svg",
+      "Tailwind CSS": "/brand/tailwind.svg",
+      Bun: "/brand/bun.svg",
+    },
+    /** Flat black, so they invert instead of being lost on the dark theme. */
+    monochrome: ["Next.js", "github"],
+    social: {
+      github: "/brand/github.svg",
+      linkedin: "/brand/linkedin.svg",
+      email: "/brand/gmail.svg",
+    },
+  },
   locales: ["en", "pt"],
   defaultLocale: "en",
 } as const satisfies SiteConfig;
