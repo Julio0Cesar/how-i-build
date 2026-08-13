@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { CaseToc } from "@/components/case-toc";
 import { StackList } from "@/components/stack-list";
+import { socialIcons } from "@/config/icons";
 import { projects } from "@/content/projects";
 import type { Project } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
@@ -92,9 +94,16 @@ export default async function ProjectPage({
                   href={project.liveUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={external}
+                  className={`inline-flex items-center gap-2 ${external}`}
                 >
+                  {/* Marks that a public address exists. It claims nothing about
+                      availability, because nothing here checks it — see #13. */}
+                  <span
+                    aria-hidden="true"
+                    className="size-1.5 rounded-full bg-positive"
+                  />
                   {dict.case.live}
+                  <ExternalLink className="size-3" aria-hidden="true" />
                 </a>
               ) : null}
               {project.repoUrl ? (
@@ -102,9 +111,19 @@ export default async function ProjectPage({
                   href={project.repoUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={external}
+                  className={`inline-flex items-center gap-2 ${external}`}
                 >
+                  {socialIcons.github ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- a local SVG needs no optimisation pipeline
+                    <img
+                      src={socialIcons.github}
+                      alt=""
+                      aria-hidden="true"
+                      className="size-4 object-contain dark:invert"
+                    />
+                  ) : null}
                   {dict.case.repository}
+                  <ExternalLink className="size-3" aria-hidden="true" />
                 </a>
               ) : null}
             </div>

@@ -25,6 +25,8 @@ export interface Project {
   status: ProjectStatus;
   visibility: ProjectVisibility;
   stack: string[];
+  /** Path to a mark under `public/`. Without it the card falls back to initials. */
+  markUrl?: string;
   liveUrl?: string;
   repoUrl?: string;
   /** Listed, with no write-up behind it — the body of its case is empty. */

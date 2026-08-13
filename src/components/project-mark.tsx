@@ -1,9 +1,21 @@
 /**
- * Initials rather than a logo. A per-project mark would mean an asset per
- * project — which is content, and would leave the template with an empty
- * square. This works for any project anyone adds, with nothing to draw.
+ * A mark when the project provides one, initials otherwise. Initials need no
+ * asset, so the template and any project added later have something to show
+ * without anyone drawing anything.
  */
-export function ProjectMark({ name }: { name: string }) {
+export function ProjectMark({ name, src }: { name: string; src?: string }) {
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- a local SVG needs no optimisation pipeline
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        className="size-10 shrink-0 object-contain"
+      />
+    );
+  }
+
   const words = name.trim().split(/\s+/).filter(Boolean);
   const initials = (
     words.length > 1
