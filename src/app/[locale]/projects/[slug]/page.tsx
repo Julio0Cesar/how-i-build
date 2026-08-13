@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseToc } from "@/components/case-toc";
+import { StackList } from "@/components/stack-list";
 import { projects } from "@/content/projects";
 import type { Project } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
@@ -81,9 +82,7 @@ export default async function ProjectPage({
               {dict.visibility[project.visibility]}
             </span>
             <span>{meta.role}</span>
-            {project.stack.length > 0 ? (
-              <span>{project.stack.join(" · ")}</span>
-            ) : null}
+            <StackList stack={project.stack} />
           </div>
           {/* A private project links nowhere: there is nothing public to reach. */}
           {project.visibility === "public" ? (
