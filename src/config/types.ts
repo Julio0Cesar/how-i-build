@@ -27,7 +27,12 @@ export interface SiteConfig {
   icons?: {
     /** Technology name to path. A name with no entry stays text. */
     stack?: Record<string, string>;
-    /** Marks drawn in one flat colour; brightness cannot rescue them on a dark background, so they invert instead. */
+    /**
+     * Marks drawn in one flat colour, listed by stack name or social key.
+     * Brightness cannot rescue them on a dark background, so they invert
+     * instead — and an SVG loaded through `<img>` is an isolated document, so
+     * `currentColor` inside it would not inherit the page's colour.
+     */
     monochrome?: string[];
     social?: Partial<Record<"email" | "github" | "linkedin", string>>;
   };
