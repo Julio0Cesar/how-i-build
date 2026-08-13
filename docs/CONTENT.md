@@ -141,7 +141,7 @@ not ask for.
 ```ts
 icons: {
   stack: { "Next.js": "/brand/nextjs.svg", Bun: "/brand/bun.svg" },
-  monochrome: ["Next.js"],          // inverts in dark mode
+  monochrome: ["Next.js", "github"], // flat-black marks; inverted in dark mode
   social: { github: "/brand/github.svg" },
 },
 ```

@@ -1,4 +1,4 @@
-import { socialIcons } from "@/config/icons";
+import { monochromeIcons, socialIcons } from "@/config/icons";
 import { site } from "@/config/site";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -47,7 +47,9 @@ export function SocialLinks({ dict }: { dict: Dictionary }) {
                   src={socialIcons[item.key]}
                   alt=""
                   aria-hidden="true"
-                  className="size-5 object-contain opacity-70 transition-opacity group-hover:opacity-100"
+                  className={`size-5 object-contain opacity-70 transition-opacity group-hover:opacity-100 ${
+                    monochromeIcons.has(item.key) ? "dark:invert" : ""
+                  }`}
                 />
               ) : (
                 item.label
