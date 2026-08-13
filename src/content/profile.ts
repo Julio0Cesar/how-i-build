@@ -2,16 +2,12 @@ import IntroEn from "./profile.en.mdx";
 import IntroPt from "./profile.pt.mdx";
 import type { Profile } from "./types";
 
-/**
- * Placeholder on purpose. Identity is the one thing a fork must not inherit by
- * accident, so this reads as unfinished until it is replaced.
- */
 export const profile: Profile = {
-  name: "Your name",
-  location: { en: "Your city", pt: "Sua cidade" },
+  name: "Júlio César",
+  location: { en: "Brazil", pt: "Brasil" },
   role: {
-    en: "What you do, in one line",
-    pt: "O que você faz, em uma linha",
+    en: "Software engineer — end-to-end products and architecture decisions",
+    pt: "Engenheiro de software — produtos ponta a ponta e decisões de arquitetura",
   },
   intro: { en: IntroEn, pt: IntroPt },
 };
