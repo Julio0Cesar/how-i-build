@@ -12,6 +12,7 @@ import { ThemeSelect } from "./theme-select";
 const routes = [
   { key: "home" as const, path: "/" },
   { key: "changelog" as const, path: "/changelog" },
+  { key: "privacy" as const, path: "/privacy" },
 ];
 
 export function SiteHeaderNav({

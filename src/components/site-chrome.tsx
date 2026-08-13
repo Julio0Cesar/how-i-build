@@ -79,15 +79,7 @@ export async function SiteFooter() {
             </>
           ) : null}
         </p>
-        <div className="flex flex-col items-center gap-3 md:items-end">
-          <SocialLinks dict={dict} />
-          <Link
-            href={localeHref(locale, "/privacy")}
-            className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
-          >
-            {dict.privacy.title}
-          </Link>
-        </div>
+        <SocialLinks dict={dict} />
       </div>
     </footer>
   );

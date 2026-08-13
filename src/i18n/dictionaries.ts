@@ -11,6 +11,7 @@ const en = {
   nav: {
     home: "Index",
     changelog: "Changelog",
+    privacy: "Privacy",
     menu: "Site",
     open: "Open menu",
     close: "Close menu",
@@ -84,6 +85,7 @@ const pt: Dictionary = {
   nav: {
     home: "Início",
     changelog: "Changelog",
+    privacy: "Privacidade",
     menu: "Site",
     open: "Abrir menu",
     close: "Fechar menu",
