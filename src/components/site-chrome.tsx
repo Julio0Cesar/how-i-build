@@ -8,6 +8,12 @@ import {
   type Locale,
 } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import {
+  getLatestRelease,
+  releaseMonth,
+  repoUrl,
+} from "@/lib/integrations";
+import packageJson from "../../package.json";
 import { SiteHeaderNav } from "./site-header-nav";
 import { SocialLinks } from "./social-links";
 
@@ -43,13 +49,35 @@ export async function SiteHeader() {
 export async function SiteFooter() {
   const locale = await currentLocale();
   const dict = getDictionary(locale);
+  const release = await getLatestRelease();
+  /** package.json is bumped by the same release, so it is a truthful fallback. */
+  const version = release?.version ?? packageJson.version;
+  const month = releaseMonth(release?.publishedAt ?? null, locale);
 
   return (
     <footer className="mt-16 border-t border-rule md:mt-24">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4 py-8 text-center sm:px-6 md:flex-row md:items-baseline md:justify-between md:py-10 md:text-left">
-        {/* Version and last-updated land here in #13. */}
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
           {site.name}
+          <span className="mx-2 text-rule" aria-hidden="true">
+            ·
+          </span>
+          <a
+            href={release?.url ?? `${repoUrl()}/releases`}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="transition-colors hover:text-accent"
+          >
+            {dict.footer.template} v{version}
+          </a>
+          {month ? (
+            <>
+              <span className="mx-2 text-rule" aria-hidden="true">
+                ·
+              </span>
+              {dict.footer.updated} {month}
+            </>
+          ) : null}
         </p>
         <SocialLinks dict={dict} />
       </div>

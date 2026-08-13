@@ -34,6 +34,11 @@ const en = {
     profile: "Profile",
     projects: "Projects",
   },
+  footer: {
+    /** Labelled as the template's version, not a count of content updates. */
+    template: "Template",
+    updated: "Updated",
+  },
   status: {
     "in-dev": "In development",
     prod: "Live",
@@ -90,6 +95,10 @@ const pt: Dictionary = {
   home: {
     profile: "Perfil",
     projects: "Projetos",
+  },
+  footer: {
+    template: "Template",
+    updated: "Atualizado em",
   },
   status: {
     "in-dev": "Em desenvolvimento",
