@@ -1,35 +1,36 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import GithubSlugger from "github-slugger";
+import { slug } from "github-slugger";
 import type { Locale } from "@/i18n/config";
 
 export type TocItem = { id: string; label: string };
 
+/** Fenced code can contain anything, including something that looks like a heading. */
+function withoutFences(source: string): string {
+  return source.replace(/^```[\s\S]*?^```/gm, "");
+}
+
 /**
- * Entries are the `##` headings of the case, read from the file at build time.
- * The ids come from the same slugger `rehype-slug` uses, so they match what
- * ends up in the HTML without a custom plugin — which Turbopack could not run
- * anyway, since it only accepts plugins named by string.
+ * Entries are read from the file at build time, in document order, in either
+ * form: a `##` heading, or an `<Entry title="…">` when the entry carries a date.
+ *
+ * Ids come from `slug()` — the same function `<Entry>` uses, and the same
+ * algorithm behind `rehype-slug` — so the table of contents and the headings
+ * agree without a custom plugin, which Turbopack could not run anyway.
  */
-export function caseToc(slug: string, locale: Locale): TocItem[] {
+export function caseToc(slugName: string, locale: Locale): TocItem[] {
   const file = path.join(
     process.cwd(),
     "src/content/projects",
-    `${slug}.${locale}.mdx`,
+    `${slugName}.${locale}.mdx`,
   );
-  const source = readFileSync(file, "utf8");
-  const slugger = new GithubSlugger();
-  const items: TocItem[] = [];
-  let inFence = false;
+  const source = withoutFences(readFileSync(file, "utf8"));
+  const pattern = /^##\s+(.+)$|<Entry[^>]*\btitle="([^"]+)"/gm;
 
-  for (const line of source.split("\n")) {
-    if (line.trimStart().startsWith("```")) {
-      inFence = !inFence;
-      continue;
-    }
-    if (inFence || !line.startsWith("## ")) continue;
-    const label = line.slice(3).trim();
-    items.push({ id: slugger.slug(label), label });
+  const items: TocItem[] = [];
+  for (const match of source.matchAll(pattern)) {
+    const label = (match[1] ?? match[2])?.trim();
+    if (label) items.push({ id: slug(label), label });
   }
 
   return items;
