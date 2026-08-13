@@ -10,6 +10,7 @@ import type { Locale } from "./config";
 const en = {
   nav: {
     home: "Index",
+    changelog: "Changelog",
     menu: "Site",
     open: "Open menu",
     close: "Close menu",
@@ -38,6 +39,13 @@ const en = {
     /** Labelled as the template's version, not a count of content updates. */
     template: "Template",
     updated: "Updated",
+  },
+  changelog: {
+    title: "Changelog",
+    /** The entries are English in every locale; saying so beats looking unfinished. */
+    note: "Release notes are generated from commit messages, so they are in English.",
+    empty: "No releases yet. The first one appears here once a feature or fix reaches the main branch.",
+    release: "Release notes",
   },
   status: {
     "in-dev": "In development",
@@ -72,6 +80,7 @@ export type Dictionary = typeof en;
 const pt: Dictionary = {
   nav: {
     home: "Início",
+    changelog: "Changelog",
     menu: "Site",
     open: "Abrir menu",
     close: "Fechar menu",
@@ -99,6 +108,12 @@ const pt: Dictionary = {
   footer: {
     template: "Template",
     updated: "Atualizado em",
+  },
+  changelog: {
+    title: "Changelog",
+    note: "As notas de release são geradas a partir das mensagens de commit, por isso estão em inglês.",
+    empty: "Nenhuma release ainda. A primeira aparece aqui quando uma feature ou correção chegar na branch principal.",
+    release: "Notas da release",
   },
   status: {
     "in-dev": "Em desenvolvimento",
