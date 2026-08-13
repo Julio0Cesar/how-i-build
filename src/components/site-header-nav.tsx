@@ -9,11 +9,10 @@ import { IconButton } from "./ui/icon-button";
 import { LocaleSwitch } from "./locale-switch";
 import { ThemeSelect } from "./theme-select";
 
-/**
- * Only routes that exist. #14 appends the changelog when there is one to link
- * to — a header that 404s is worse than a header with one entry.
- */
-const routes = [{ key: "home" as const, path: "/" }];
+const routes = [
+  { key: "home" as const, path: "/" },
+  { key: "changelog" as const, path: "/changelog" },
+];
 
 export function SiteHeaderNav({
   locale,
