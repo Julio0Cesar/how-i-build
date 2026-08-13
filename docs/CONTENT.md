@@ -132,6 +132,22 @@ Missing translations:
   src/content/projects/ledger.es.mdx
 ```
 
+## Icons
+
+Stack and social labels render as text unless `src/config/site.ts` maps them to
+files. The template ships no map, so a fork inherits no third-party marks it did
+not ask for.
+
+```ts
+icons: {
+  stack: { "Next.js": "/brand/nextjs.svg", Bun: "/brand/bun.svg" },
+  monochrome: ["Next.js"],          // inverts in dark mode
+  social: { github: "/brand/github.svg" },
+},
+```
+
+A name with no entry stays text, so the map can be partial.
+
 ## The site icon
 
 `public/icon.svg` is the browser tab mark. The template ships a neutral

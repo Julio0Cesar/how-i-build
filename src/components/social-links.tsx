@@ -1,3 +1,4 @@
+import { socialIcons } from "@/config/icons";
 import { site } from "@/config/site";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -9,10 +10,18 @@ import type { Dictionary } from "@/i18n/dictionaries";
  */
 export function SocialLinks({ dict }: { dict: Dictionary }) {
   const items = [
-    { key: "github", label: dict.social.github, href: site.socials.github },
-    { key: "linkedin", label: dict.social.linkedin, href: site.socials.linkedin },
     {
-      key: "email",
+      key: "github" as const,
+      label: dict.social.github,
+      href: site.socials.github,
+    },
+    {
+      key: "linkedin" as const,
+      label: dict.social.linkedin,
+      href: site.socials.linkedin,
+    },
+    {
+      key: "email" as const,
       label: dict.social.email,
       href: `mailto:${site.socials.email}`,
     },
@@ -28,9 +37,21 @@ export function SocialLinks({ dict }: { dict: Dictionary }) {
               href={item.href}
               target={external ? "_blank" : undefined}
               rel={external ? "noreferrer noopener" : undefined}
-              className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
+              aria-label={socialIcons[item.key] ? item.label : undefined}
+              title={socialIcons[item.key] ? item.label : undefined}
+              className="group flex items-center font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
             >
-              {item.label}
+              {socialIcons[item.key] ? (
+                // eslint-disable-next-line @next/next/no-img-element -- a local SVG needs no optimisation pipeline
+                <img
+                  src={socialIcons[item.key]}
+                  alt=""
+                  aria-hidden="true"
+                  className="size-5 object-contain opacity-70 transition-opacity group-hover:opacity-100"
+                />
+              ) : (
+                item.label
+              )}
             </a>
           </li>
         );

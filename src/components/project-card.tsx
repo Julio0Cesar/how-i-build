@@ -3,6 +3,7 @@ import type { Project } from "@/content/types";
 import { localeHref, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { ProjectMark } from "./project-mark";
+import { StackList } from "./stack-list";
 
 export function ProjectCard({
   project,
@@ -37,11 +38,9 @@ export function ProjectCard({
           <span className="border border-rule px-2 py-0.5 text-muted-foreground">
             {dict.visibility[project.visibility]}
           </span>
-          {project.stack.length > 0 ? (
-            <span className="text-muted-foreground">
-              {project.stack.join(" · ")}
-            </span>
-          ) : null}
+          <span className="text-muted-foreground">
+            <StackList stack={project.stack} />
+          </span>
         </div>
       </div>
     </>
