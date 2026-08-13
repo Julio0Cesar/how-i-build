@@ -11,6 +11,7 @@ const en = {
   nav: {
     home: "Index",
     changelog: "Changelog",
+    privacy: "Privacy",
     menu: "Site",
     open: "Open menu",
     close: "Close menu",
@@ -39,6 +40,9 @@ const en = {
     /** Labelled as the template's version, not a count of content updates. */
     template: "Template",
     updated: "Updated",
+  },
+  privacy: {
+    title: "Privacy",
   },
   changelog: {
     title: "Changelog",
@@ -81,6 +85,7 @@ const pt: Dictionary = {
   nav: {
     home: "Início",
     changelog: "Changelog",
+    privacy: "Privacidade",
     menu: "Site",
     open: "Abrir menu",
     close: "Fechar menu",
@@ -108,6 +113,9 @@ const pt: Dictionary = {
   footer: {
     template: "Template",
     updated: "Atualizado em",
+  },
+  privacy: {
+    title: "Privacidade",
   },
   changelog: {
     title: "Changelog",
