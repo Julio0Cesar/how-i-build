@@ -8,6 +8,7 @@ export const projects: Project[] = [
     status: "prod",
     visibility: "public",
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Bun"],
+    markUrl: "/icon.svg",
     liveUrl: "https://how-i-build-delta.vercel.app",
     repoUrl: "https://github.com/Julio0Cesar/how-i-build",
     cases: {
