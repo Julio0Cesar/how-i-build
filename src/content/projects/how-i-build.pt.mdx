@@ -1,0 +1,159 @@
+export const meta = {
+  name: "how-i-build",
+  summary:
+    "Este site, e o template embaixo dele — refeito à mão, com cada decisão registrada.",
+  role: "Autor único",
+  period: "2026",
+  updatedAt: "2026-08-13",
+  references: [
+    {
+      label: "Repositório",
+      url: "https://github.com/Julio0Cesar/how-i-build",
+    },
+    {
+      label: "Todas as releases, com o que mudou",
+      url: "https://github.com/Julio0Cesar/how-i-build/releases",
+    },
+  ],
+};
+
+Existia uma versão anterior deste site, e ela funcionava. Foi construída com IA
+escrevendo o código — base estranha para um site cujo assunto é como eu
+construo. Então foi refeito do zero, e as decisões abaixo são as que custaram
+alguma coisa.
+
+O repositório carrega duas coisas ao mesmo tempo: um template que qualquer
+pessoa pode usar, e o meu conteúdo em cima dele. Boa parte do que vem a seguir
+nasce dessa tensão.
+
+<Entry title="Um repositório, duas branches" date="2026-08-12" />
+
+Um template e um site pessoal querem coisas opostas. O template não pode
+carregar identidade nenhuma; o site é só identidade. Dois repositórios
+separariam isso de forma limpa, e dividiriam as issues, o histórico e o próprio
+case entre os dois.
+
+<Decision>
+Um repositório. A `main` é o template, a `site` é o conteúdo, e os merges vão
+sempre `main → site`. Um workflow faz esse merge a cada push, então a branch de
+conteúdo não fica para trás.
+</Decision>
+
+<Tradeoffs>
+- Toda mudança de template chega em produção por dois merges, não um
+- Arquivos que as duas branches tocam — a config, o índice de conteúdo — conflitam, e resolvem sempre a favor da `site`
+- Quem clonar o template herda uma segunda branch que talvez nunca queira, então o workflow encerra em silêncio quando ela não existe
+</Tradeoffs>
+
+<Entry title="O idioma padrão não tem prefixo" date="2026-08-12" />
+
+Três opções, e cada uma abre mão de algo. Prefixar os dois idiomas significa que
+a home nunca pode ser `/`. Tirar o idioma da URL por completo significa um
+endereço servindo dois idiomas — só um vai para o índice, um link compartilhado
+abre no idioma que o navegador de quem recebeu preferir, e as páginas deixam de
+ser estáticas.
+
+<Decision>
+Inglês responde em `/projects`, português em `/pt/projects`. `/en/*` redireciona
+para o caminho sem prefixo, então cada página tem exatamente um endereço. Saiu
+na [v0.4.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.4.0).
+</Decision>
+
+<Tradeoffs>
+- O proxy fica mais complexo que um redirect simples: rewrite, redirect canônico, e preferência lida só na raiz
+- Montar um link passa a exigir um helper em vez de concatenar string
+- A preferência do leitor vale só em `/`, então um link profundo compartilhado abre no idioma em que foi compartilhado — deliberado, e surpreende
+</Tradeoffs>
+
+<Entry title="O tema é aplicado antes da página pintar" date="2026-08-12" />
+
+Ler a preferência de um cookie no servidor parece certo e falha duas vezes. A
+primeira visita não tem cookie, então quem prefere tema escuro leva um flash
+branco — exatamente a visita para a qual o mecanismo existe. E ler cookie tira
+toda rota da renderização estática.
+
+<Decision>
+Um script síncrono no `<head>`, antes de qualquer coisa renderizar. Sem cookie,
+sem servidor. O controle também não tem estado React: a classe na `<html>` já
+está correta antes da hidratação, então estado só começaria errado e se
+corrigiria depois. Saiu na
+[v0.5.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.5.0) e virou
+três opções na
+[v0.8.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.8.0).
+</Decision>
+
+<Tradeoffs>
+- Um script inline no documento, e `suppressHydrationWarning` na `<html>`
+- O `next/script` não serve: ele adia conteúdo inline para depois da primeira pintura, que é a única coisa que isto não pode pagar
+- O `aria-pressed` ainda chega na hidratação, porque o servidor realmente não sabe a escolha
+
+</Tradeoffs>
+
+<Entry title="O modelo de conteúdo estava errado, e foi reescrito" date="2026-08-13" />
+
+O primeiro modelo era TypeScript tipado: cada parágrafo um array de objetos com
+`text` e `href`. Garantia que os dois idiomas existiam, e fazia uma frase com um
+trecho de código custar três objetos e nove sinais de pontuação.
+
+Pior: separava o case em quatro caixas — todos os problemas aqui, todas as
+decisões ali — então uma história precisava ser contada em quatro lugares,
+repetindo o contexto em cada um.
+
+<Decision>
+MDX, agrupado por assunto. Cada `##` ou `<Entry>` é um tema, e o sumário lista
+esses temas em vez de cinco rótulos iguais em todo projeto. Saiu na
+[v0.13.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.13.0).
+</Decision>
+
+<Tradeoffs>
+- Seis dependências novas, e plugin de MDX precisa ser nomeado por string porque o Turbopack roda em Rust
+- O sistema de tipos não enxerga mais dentro da prosa, então link quebrado se acha lendo, não compilando
+- Os dois idiomas continuam garantidos, por imports estáticos mais um script no `typecheck` — três mecanismos onde o modelo antigo precisava de um
+</Tradeoffs>
+
+<Entry title="Sem banner de cookies" date="2026-08-13" />
+
+O site guarda duas coisas: um cookie com o idioma escolhido e uma entrada de
+`localStorage` com o tema escolhido. As duas são escritas só quando o leitor
+clica no controle que as define.
+
+Existe um teste que resolve se o consentimento é real: o que acontece se o
+leitor recusar? Ele escolhe português, e o site não pode lembrar. Recusar quebra
+a funcionalidade que ele acabou de pedir.
+
+<Decision>
+Sem banner. Uma [página de privacidade](/privacy) no lugar: o que é guardado,
+por quê, e como apagar. Saiu na
+[v0.16.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.16.0).
+</Decision>
+
+<Tradeoffs>
+- Colocar analytics depois significa colocar o banner e reescrever aquela página
+- Quem espera um banner pode ler a ausência como esquecimento em vez de decisão
+
+</Tradeoffs>
+
+<Entry title="Um workflow que nunca rodou" date="2026-08-13" />
+
+O workflow que merga a `main` na `site` foi escrito para disparar em
+`release: published`. Ele nunca rodou uma vez. Não falhou — nunca começou, sem
+execução vermelha e sem notificação. A branch de conteúdo simplesmente ficou
+para trás.
+
+O GitHub não inicia workflows a partir de eventos criados pelo `GITHUB_TOKEN`, e
+o release-please publica as releases com esse token.
+
+A parte desconfortável é que essa mesma propriedade já tinha sido usada de
+propósito, uma issue antes, para impedir o workflow de release de entrar em loop
+com o próprio commit. O mecanismo era conhecido e foi aplicado ao contrário.
+
+<Decision>
+Disparar em `push` na `main`, que é ação humana. Corrigido na
+[v0.17.1](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.17.1).
+</Decision>
+
+<Tradeoffs>
+- O sync passa a rodar a cada merge e não a cada release, mais vezes que o desenhado, e mantém as branches mais próximas
+- O commit do próprio release-please continua não disparando, então um bump de versão espera o merge seguinte
+
+</Tradeoffs>
