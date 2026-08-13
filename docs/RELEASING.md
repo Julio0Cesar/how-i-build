@@ -42,6 +42,8 @@ Two consequences worth knowing:
 
 `site` never publishes its own releases. It inherits tags when `main` is merged into it.
 
+The `Sync site` workflow does that merge, and it runs on **every push to `main`**, not on release. That is not a preference: GitHub does not start workflows from events created by `GITHUB_TOKEN`, and release-please publishes with it, so a `release: published` trigger never fires.
+
 This means the version in the site footer is the **template** version, not a count of content updates. Writing three case studies on `site` does not move it. That is intentional — the number tracks the thing the template promises to keep stable — but the UI has to label it so nobody reads it as "the site changed three times".
 
 ## Repository settings this depends on

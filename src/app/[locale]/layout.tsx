@@ -46,6 +46,14 @@ export const metadata: Metadata = {
   title: site.name,
   description: site.tagline,
   metadataBase: new URL(site.liveUrl),
+  /**
+   * Wiring lives here, the file lives in `public/` — which the `site` branch
+   * owns, so replacing the mark never touches a file `main` maintains.
+   */
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export function generateStaticParams() {

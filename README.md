@@ -82,7 +82,7 @@ Merges go **`main → site`**, never the other way. A template bug found while w
 `main` owns shape: `src/app/`, `src/components/`, `src/lib/`, `src/i18n/`, `src/config/types.ts`.
 `site` owns data: `src/content/`, the values in `src/config/site.ts`, `public/brand/`.
 
-The `Sync site` workflow merges `main` into `site` whenever a release is published. It does nothing if there is no `site` branch, so the second branch is optional.
+The `Sync site` workflow merges `main` into `site` on every push to `main`. It does nothing if there is no `site` branch, so the second branch is optional.
 
 ## Documentation
 

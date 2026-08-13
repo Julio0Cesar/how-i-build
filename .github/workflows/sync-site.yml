@@ -1,8 +1,12 @@
 name: Sync site
 
+# Not `release: published`. release-please publishes with GITHUB_TOKEN, and
+# GitHub does not start workflows from events that token creates — the same
+# property that keeps the release workflow from looping on its own commit. The
+# sync silently never ran because of it.
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
