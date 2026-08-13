@@ -6,7 +6,49 @@ export type Release = {
   version: string | null;
   publishedAt: string | null;
   url: string;
+  body: string | null;
 };
+
+type ApiRelease = {
+  tag_name?: string;
+  published_at?: string | null;
+  html_url?: string;
+  body?: string | null;
+};
+
+function toRelease(data: ApiRelease): Release | null {
+  if (!data.tag_name) return null;
+  return {
+    tag: data.tag_name,
+    version: releaseVersion(data.tag_name),
+    publishedAt: data.published_at ?? null,
+    url: data.html_url ?? `${repoUrl()}/releases`,
+    body: data.body ?? null,
+  };
+}
+
+const headers = { Accept: "application/vnd.github+json" };
+
+/**
+ * One page of releases, newest first. Thirty is the API default and far more
+ * than a changelog page needs to show — a deliberate ceiling rather than one
+ * that turns up on its own in two years.
+ */
+export async function getReleases(limit = 30): Promise<Release[]> {
+  const { owner, repo } = site.github;
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/releases?per_page=${limit}`,
+      { headers },
+    );
+    if (!response.ok) return [];
+    const data = (await response.json()) as ApiRelease[];
+    return data.map(toRelease).filter((release): release is Release => Boolean(release));
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Fetched once during `next build` — the default `fetch` cache is exactly that,
@@ -23,23 +65,10 @@ export async function getLatestRelease(): Promise<Release | null> {
   try {
     const response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/releases/latest`,
-      { headers: { Accept: "application/vnd.github+json" } },
+      { headers },
     );
     if (!response.ok) return null;
-
-    const data = (await response.json()) as {
-      tag_name?: string;
-      published_at?: string | null;
-      html_url?: string;
-    };
-    if (!data.tag_name) return null;
-
-    return {
-      tag: data.tag_name,
-      version: releaseVersion(data.tag_name),
-      publishedAt: data.published_at ?? null,
-      url: data.html_url ?? `${repoUrl()}/releases`,
-    };
+    return toRelease((await response.json()) as ApiRelease);
   } catch {
     return null;
   }
@@ -54,6 +83,16 @@ export function releaseVersion(tag: string | null | undefined): string | null {
   if (!tag) return null;
   const match = /^v?(\d+\.\d+\.\d+.*)$/.exec(tag.trim());
   return match?.[1] ?? tag.trim();
+}
+
+export function releaseDate(
+  published: string | null,
+  locale: Locale,
+): string | null {
+  if (!published) return null;
+  const date = new Date(published);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date);
 }
 
 export function releaseMonth(
