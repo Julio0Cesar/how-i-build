@@ -132,6 +132,12 @@ Missing translations:
   src/content/projects/ledger.es.mdx
 ```
 
+## The site icon
+
+`public/icon.svg` is the browser tab mark. The template ships a neutral
+placeholder; replace the file and nothing else changes — the wiring lives in the
+root layout and points at that path.
+
 ## Standalone pages
 
 `profile` and `privacy` are body-only — no `meta`, no entries. They are wired
