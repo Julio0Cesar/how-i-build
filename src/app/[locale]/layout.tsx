@@ -64,6 +64,7 @@ export default async function RootLayout({
       lang={locale}
       className={`${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: applyTheme }} />
