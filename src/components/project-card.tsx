@@ -18,7 +18,7 @@ export function ProjectCard({
 
   const body = (
     <>
-      <ProjectMark name={meta.name} />
+      <ProjectMark name={meta.name} src={project.markUrl} />
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
           <h2 className="font-serif text-lg tracking-tight transition-colors group-hover:text-accent sm:text-xl">
