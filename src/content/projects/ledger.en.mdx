@@ -19,7 +19,7 @@ undocumented, and moving between tools meant retyping months of history.
 The constraint was narrow: the file the tool writes has to be `readable without
 the tool`. Everything below follows from that.
 
-## Storage format
+<Entry title="Storage format" date="2026-06-21" />
 
 The first version wrote JSON. It stayed readable, which was the point, but it
 made every query a full scan and every write a rewrite of the whole file. At
@@ -40,7 +40,7 @@ open it.
 Three years in, queries answer in milliseconds and a backup is still a file
 copy. The diffing loss has not come up once.
 
-## Importing statements
+<Entry title="Importing statements" date="2026-07-02" />
 
 Bank exports differ in column order, date format and decimal separator.
 Handling that in a one-off script meant rewriting the script every quarter,
