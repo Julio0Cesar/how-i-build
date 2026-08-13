@@ -40,6 +40,9 @@ const en = {
     template: "Template",
     updated: "Updated",
   },
+  privacy: {
+    title: "Privacy",
+  },
   changelog: {
     title: "Changelog",
     /** The entries are English in every locale; saying so beats looking unfinished. */
@@ -108,6 +111,9 @@ const pt: Dictionary = {
   footer: {
     template: "Template",
     updated: "Atualizado em",
+  },
+  privacy: {
+    title: "Privacidade",
   },
   changelog: {
     title: "Changelog",
