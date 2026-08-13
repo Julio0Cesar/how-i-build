@@ -1,60 +1,23 @@
+import type { ComponentType } from "react";
 import type { Locale } from "@/i18n/config";
-
-/**
- * A run of text, optionally a link or inline code.
- *
- * `href` is written locale-agnostic — `/projects/foo`, never `/pt/projects/foo`.
- * The renderer adds the current locale, so content never has to know which
- * languages exist.
- */
-export type TextSegment = {
-  text: string;
-  href?: string;
-  code?: boolean;
-};
-
-/** A block says what it is, so the renderer picks the element. */
-export type RichBlock =
-  | { kind: "paragraph"; segments: TextSegment[] }
-  | { kind: "list"; items: TextSegment[][] };
-
-export interface Decision {
-  title: string;
-  /** ISO date `YYYY-MM-DD`, shown on the row. */
-  updatedAt: string;
-  context: RichBlock[];
-  decision: RichBlock[];
-  /** Always rendered as a list — the shape of the field is its meaning. */
-  tradeoffs: TextSegment[][];
-}
-
-export interface Challenge {
-  title: string;
-  body: RichBlock[];
-  updatedAt?: string;
-}
 
 export type ProjectStatus = "in-dev" | "prod" | "archived";
 export type ProjectVisibility = "public" | "private";
 
-export interface LocalizedProject {
+/** Exported by each MDX file as `meta`, so TypeScript checks it. */
+export interface CaseMeta {
   name: string;
   summary: string;
   role: string;
   period: string;
-  /** Section-level last updates (`YYYY-MM-DD`). */
-  updated: {
-    problem?: string;
-    decisions?: string;
-    challenges?: string;
-    outcome?: string;
-    references?: string;
-  };
-  problem: RichBlock[];
-  decisions: Decision[];
-  challenges: Challenge[];
-  outcome: RichBlock[];
+  /** ISO date `YYYY-MM-DD` — drives ordering on the home page. */
+  updatedAt?: string;
   references?: { label: string; url: string }[];
+}
+
+export interface Case {
+  meta: CaseMeta;
+  Body: ComponentType;
 }
 
 export interface Project {
@@ -64,26 +27,18 @@ export interface Project {
   stack: string[];
   liveUrl?: string;
   repoUrl?: string;
-  /** Listed, but with no write-up behind it yet. */
+  /** Listed, with no write-up behind it — the body of its case is empty. */
   stub?: boolean;
-  locales: Record<Locale, LocalizedProject>;
+  /**
+   * A record rather than a lookup: a missing locale is a type error, and the
+   * static import behind each entry means a missing file is a build error.
+   */
+  cases: Record<Locale, Case>;
 }
 
 export interface Profile {
   name: string;
   location: Record<Locale, string>;
   role: Record<Locale, string>;
-  intro: Record<Locale, RichBlock[]>;
-}
-
-export function plain(text: string): TextSegment[] {
-  return [{ text }];
-}
-
-export function paragraph(segments: TextSegment[]): RichBlock {
-  return { kind: "paragraph", segments };
-}
-
-export function list(items: TextSegment[][]): RichBlock {
-  return { kind: "list", items };
+  intro: Record<Locale, ComponentType>;
 }

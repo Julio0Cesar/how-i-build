@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectCard } from "@/components/project-card";
-import { RichBlocks } from "@/components/rich-text";
 import { profile } from "@/content/profile";
 import { projects } from "@/content/projects";
 import { isLocale, locales, localeHref } from "@/i18n/config";
@@ -35,6 +34,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   if (!isLocale(locale)) notFound();
 
   const dict = getDictionary(locale);
+  const Intro = profile.intro[locale];
   const ordered = byRecency(projects, locale);
 
   return (
@@ -45,7 +45,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <h1 className="max-w-3xl font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
             {profile.role[locale]}
           </h1>
-          <RichBlocks blocks={profile.intro[locale]} className="mt-8" />
+          <div className="mt-8">
+            <Intro />
+          </div>
         </div>
       </section>
 
