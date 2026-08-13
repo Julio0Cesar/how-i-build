@@ -25,6 +25,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
 }
 
 :root {
@@ -40,6 +41,7 @@
   --accent: oklch(0.53 0.13 45);
   --accent-foreground: oklch(0.99 0 0);
   --accent-soft: oklch(0.94 0.025 55);
+  --positive: oklch(0.62 0.15 150);
 }
 
 .dark {
@@ -55,6 +57,7 @@
   --accent: oklch(0.74 0.11 48);
   --accent-foreground: oklch(0.17 0.004 250);
   --accent-soft: oklch(0.27 0.035 45);
+  --positive: oklch(0.72 0.16 150);
 }
 
 @layer components {

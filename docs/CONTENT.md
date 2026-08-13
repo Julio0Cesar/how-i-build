@@ -101,6 +101,8 @@ export const projects: Project[] = [
     status: "prod",           // in-dev · prod · archived
     visibility: "public",     // private hides the repository link
     stack: ["TypeScript"],
+    markUrl: "/brand/mine.svg",  // optional; initials otherwise
+    liveUrl: "https://mine.example.com",
     repoUrl: "https://github.com/you/mine",
     cases: {
       en: { meta: mineEn, Body: MineEn },
@@ -146,7 +148,15 @@ icons: {
 },
 ```
 
-A name with no entry stays text, so the map can be partial.
+A name with no entry stays text, so the map can be partial. An icon shows the
+technology's name in a tooltip on hover.
+
+`markUrl` on a project replaces the card's initials with an image. A project
+without one keeps its initials, so nothing has to be drawn for a project to be
+listed.
+
+A `liveUrl` adds a green dot beside the link. It marks that a public address
+exists — nothing checks whether it responds, for the reasons in #13.
 
 ## The site icon
 
