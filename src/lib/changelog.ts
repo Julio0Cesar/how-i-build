@@ -39,6 +39,11 @@ export function parseReleaseBody(body: string | null): ChangeSection[] {
       text = text.slice(0, match.index).trim();
     }
 
+    // release-please emits the commit scope in bold: `**readme:** …`. Nothing
+    // here renders markdown, so the asterisks would reach the page as
+    // characters. Only repositories that use scopes ever hit this.
+    text = text.replace(/\*\*(.+?)\*\*/g, "$1");
+
     if (!text) continue;
     if (!current) {
       current = { title: "", items: [] };

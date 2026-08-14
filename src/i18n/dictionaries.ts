@@ -76,6 +76,7 @@ const en = {
     note: "Release notes are generated from commit messages, so they are in English.",
     empty: "No releases yet. The first one appears here once a feature or fix reaches the main branch.",
     release: "Release notes",
+    latest: "Latest release",
   },
   status: {
     "in-dev": "In development",
@@ -174,6 +175,7 @@ const pt: Dictionary = {
     note: "As notas de release são geradas a partir das mensagens de commit, por isso estão em inglês.",
     empty: "Nenhuma release ainda. A primeira aparece aqui quando uma feature ou correção chegar na branch principal.",
     release: "Notas da release",
+    latest: "Última release",
   },
   status: {
     "in-dev": "Em desenvolvimento",
