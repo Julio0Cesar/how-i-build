@@ -73,7 +73,7 @@ export default async function PostPage({
         of sight entirely.
       */}
       {meta.coverUrl ? (
-        <div className="sticky top-14 h-[42vh] w-full overflow-hidden sm:top-16 sm:h-[52vh]">
+        <div className="sticky top-14 h-[34vh] w-full overflow-hidden sm:top-16 sm:h-[42vh]">
           {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
           <img
             src={meta.coverUrl}
@@ -85,7 +85,7 @@ export default async function PostPage({
 
       <div
         className={`relative mx-auto max-w-5xl bg-background px-4 sm:px-6 lg:grid lg:grid-cols-[minmax(0,42rem)_14rem] lg:justify-center lg:gap-12 ${
-          meta.coverUrl ? "-mt-[11vh] pb-16 pt-10 sm:pt-12" : "pb-16 pt-12 md:pt-20"
+          meta.coverUrl ? "-mt-[9vh] pb-16 pt-10 sm:pt-12" : "pb-16 pt-12 md:pt-20"
         }`}
       >
         <div>

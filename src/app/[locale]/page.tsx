@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { ProjectCard } from "@/components/project-card";
@@ -78,26 +79,35 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           <p className={`${sectionLabel} md:pt-2`}>{dict.blog.latest}</p>
           <div>
             <div className="relative">
-              <ul className="grid gap-5 sm:grid-cols-2">
+              <ul className="space-y-5">
                 {latest.map((post) => (
                   <li key={post.slug}>
                     <PostCard post={post} locale={locale} />
                   </li>
                 ))}
               </ul>
+              {/* The fade only exists when something is behind it. */}
               {hasMore ? (
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent"
                 />
               ) : null}
             </div>
-            <Link
-              href={localeHref(locale, "/blog")}
-              className={`mt-6 inline-block border border-rule px-3 py-2 transition-colors hover:border-accent hover:text-accent ${sectionLabel}`}
-            >
-              {dict.blog.all}
-            </Link>
+
+            {/* Pulled up into the fade so it reads as the list continuing. */}
+            <div className={hasMore ? "-mt-6 flex justify-center" : "mt-8 flex justify-center"}>
+              <Link
+                href={localeHref(locale, "/blog")}
+                className={`group inline-flex items-center gap-2 border border-rule bg-background px-4 py-2 transition-colors hover:border-accent hover:text-accent ${sectionLabel}`}
+              >
+                {dict.blog.all}
+                <ChevronDown
+                  className="size-3.5 transition-transform group-hover:translate-y-0.5"
+                  aria-hidden="true"
+                />
+              </Link>
+            </div>
           </div>
         </section>
       ) : null}

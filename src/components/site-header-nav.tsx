@@ -90,7 +90,13 @@ export function SiteHeaderNav({
           >
             {links}
             <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-4">
-              <SiteSearch index={searchIndex} labels={dict.search} />
+              {/* Closing the panel first: the search overlay covers it, and
+                  leaving it open behind means dismissing two things. */}
+              <SiteSearch
+                index={searchIndex}
+                labels={dict.search}
+                onOpen={() => setOpen(false)}
+              />
               <LocaleSwitch locale={locale} labels={dict.locale} />
               <ThemeSelect labels={dict.theme} />
             </div>
