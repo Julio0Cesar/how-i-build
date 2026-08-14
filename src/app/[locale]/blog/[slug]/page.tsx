@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/reading-progress";
 import { RecentPosts } from "@/components/recent-posts";
+import { TagChips } from "@/components/tag-chips";
 import { posts } from "@/content/posts";
 import type { Post } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
@@ -100,6 +101,12 @@ export default async function PostPage({
         <article className="pt-6">
           <Body />
         </article>
+
+        {meta.tags?.length ? (
+          <div className="mt-10">
+            <TagChips tags={meta.tags} locale={locale} />
+          </div>
+        ) : null}
 
         {previous || next ? (
           <nav aria-label={dict.blog.title} className="mt-16 border-t border-rule">

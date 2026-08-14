@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostCalendar } from "@/components/post-calendar";
+import { TagChips } from "@/components/tag-chips";
 import { PostCard } from "@/components/post-card";
 import { posts } from "@/content/posts";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { postDays } from "@/lib/calendar";
+import { allTags } from "@/lib/tags";
 import { byDate } from "@/lib/posts";
 
 const path = "/blog";
@@ -44,6 +46,7 @@ export default async function BlogIndex({
   const dict = getDictionary(locale);
   const ordered = byDate(posts, locale);
   const days = postDays(posts, locale);
+  const tags = allTags(locale);
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -69,6 +72,16 @@ export default async function BlogIndex({
           </ul>
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <PostCalendar days={days} locale={locale} label={dict.blog.calendar} />
+            {tags.length > 0 ? (
+              <section aria-label={dict.blog.tags} className="mt-10">
+                <p className="font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+                  {dict.blog.tags}
+                </p>
+                <div className="mt-4">
+                  <TagChips tags={tags.map((tag) => tag.label)} locale={locale} />
+                </div>
+              </section>
+            ) : null}
           </aside>
         </div>
       )}
