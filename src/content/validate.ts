@@ -58,11 +58,22 @@ export function postMeta(raw: unknown, source: string): PostMeta {
     );
   }
 
+  const tags = value.tags;
+  if (tags !== undefined) {
+    if (
+      !Array.isArray(tags) ||
+      tags.some((tag) => typeof tag !== "string" || tag.trim() === "")
+    ) {
+      throw new Error(`${source}: meta.tags must be an array of non-empty strings`);
+    }
+  }
+
   return {
     title: text(value, "title", source),
     summary: text(value, "summary", source),
     publishedAt: text(value, "publishedAt", source),
     coverUrl,
     coverAlt,
+    tags: tags as string[] | undefined,
   };
 }

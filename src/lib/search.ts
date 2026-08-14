@@ -23,7 +23,8 @@ export function searchIndex(locale: Locale): SearchEntry[] {
     return {
       kind: "post",
       title: meta.title,
-      summary: meta.summary,
+      // Tags join the summary so searching a tag name finds the post.
+      summary: [meta.summary, ...(meta.tags ?? [])].join(" · "),
       date: meta.publishedAt,
       href: localeHref(locale, `/blog/${post.slug}`),
     };

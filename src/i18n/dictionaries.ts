@@ -61,6 +61,8 @@ const en = {
     empty: "Nothing published yet.",
     recent: "Recent posts",
     calendar: "Archive",
+    tag: "Tag",
+    tags: "Tags",
     all: "All posts",
   },
   changelog: {
@@ -153,6 +155,8 @@ const pt: Dictionary = {
     empty: "Nada publicado ainda.",
     recent: "Posts recentes",
     calendar: "Arquivo",
+    tag: "Tag",
+    tags: "Tags",
     all: "Todos os posts",
   },
   changelog: {
