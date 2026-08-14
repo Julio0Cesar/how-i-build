@@ -1,0 +1,24 @@
+name: Bug
+description: Something behaves differently from what it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, and what you saw instead of what you expected.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The page, the file, or the command.
+  - type: textarea
+    id: verify
+    attributes:
+      label: Output
+      description: >
+        The relevant part of `bun run typecheck`, `lint` or `build`, if it came
+        from one of those. Paste text, not a screenshot.
+      render: shell
