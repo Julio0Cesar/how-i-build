@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { site } from "@/config/site";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { parseReleaseBody } from "@/lib/changelog";
-import { projects } from "@/content/projects";
-import {
-  getReleases,
-  parseRepo,
-  releaseDate,
-  siteRepo,
-  type RepoSource,
-} from "@/lib/integrations";
+import { changelogSources } from "@/lib/changelog-sources";
+import { getReleases, releaseDate } from "@/lib/integrations";
 
 const path = "/changelog";
 const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
@@ -41,6 +35,11 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * An index rather than every release stacked together: you pick a project and
+ * read that project's history. Only the newest release of each is fetched here,
+ * which is all a row shows.
+ */
 export default async function ChangelogPage({
   params,
 }: PageProps<"/[locale]/changelog">) {
@@ -49,28 +48,14 @@ export default async function ChangelogPage({
 
   const dict = getDictionary(locale);
 
-  /**
-   * This site first, then every public project that names a repository. A
-   * private one answers 404 and drops out silently rather than failing a build.
-   */
-  const sources: { name: string; source: RepoSource }[] = [
-    { name: site.name, source: siteRepo },
-    ...projects.flatMap((project) => {
-      if (project.visibility !== "public" || !project.repoUrl) return [];
-      const source = parseRepo(project.repoUrl);
-      if (!source) return [];
-      return [{ name: project.cases[locale].meta.name, source }];
-    }),
-  ];
-
-  const groups = (
+  const rows = (
     await Promise.all(
-      sources.map(async (entry) => ({
+      changelogSources(locale).map(async (entry) => ({
         ...entry,
-        releases: await getReleases(30, entry.source),
+        latest: (await getReleases(1, entry.source))[0] ?? null,
       })),
     )
-  ).filter((group) => group.releases.length > 0);
+  ).filter((row) => row.latest !== null);
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -86,89 +71,38 @@ export default async function ChangelogPage({
         </div>
       </header>
 
-      {groups.length === 0 ? (
+      {rows.length === 0 ? (
         <p className="max-w-[68ch] border-t border-rule py-12 leading-relaxed text-muted-foreground">
           {dict.changelog.empty}
         </p>
       ) : (
-        groups.map((group) => (
-          <section key={`${group.source.owner}/${group.source.repo}`}>
-            <h2 className={`border-t border-rule pt-10 ${label}`}>{group.name}</h2>
-            <ol>
-              {group.releases.map((release) => {
-                const sections = parseReleaseBody(release.body);
-                const date = releaseDate(release.publishedAt, locale);
-
-                return (
-                  <li
-                    key={release.tag}
-                    className="grid gap-5 border-t border-rule py-8 first:border-t-0 md:grid-cols-[8rem_1fr] md:gap-10"
-                  >
-                    <div className="md:pt-1">
-                      <h3 className="font-mono text-sm tracking-tight">
-                        <a
-                          href={release.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="cursor-pointer transition-colors hover:text-accent"
-                        >
-                          {release.tag}
-                        </a>
-                      </h3>
-                      {date ? (
-                        <time
-                          dateTime={release.publishedAt ?? undefined}
-                          className={`mt-2 block ${label}`}
-                        >
-                          {date}
-                        </time>
-                      ) : null}
-                    </div>
-
-                    <div className="min-w-0">
-                      {sections.length === 0 ? (
-                        <a
-                          href={release.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="cursor-pointer border-b border-rule text-sm transition-colors hover:border-accent hover:text-accent"
-                        >
-                          {dict.changelog.release}
-                        </a>
-                      ) : (
-                        sections.map((section) => (
-                          <div key={section.title} className="mt-6 first:mt-0">
-                            {section.title ? (
-                              <p className={label}>{section.title}</p>
-                            ) : null}
-                            <ul className="mt-2 max-w-[68ch] list-disc space-y-2 pl-5 leading-relaxed">
-                              {section.items.map((item, index) => (
-                                <li key={index}>
-                                  {item.text}
-                                  {item.refs.map((ref) => (
-                                    <a
-                                      key={ref.url}
-                                      href={ref.url}
-                                      target="_blank"
-                                      rel="noreferrer noopener"
-                                      className="ml-2 cursor-pointer font-mono text-xs text-muted-foreground transition-colors hover:text-accent"
-                                    >
-                                      {ref.label.replace(/^([0-9a-f]{7})[0-9a-f]+$/, "$1")}
-                                    </a>
-                                  ))}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-        ))
+        <ul>
+          {rows.map((row) => (
+            <li key={row.key}>
+              <Link
+                href={localeHref(locale, `${path}/${row.key}`)}
+                className="group grid gap-2 border-t border-rule py-8 transition-colors hover:text-accent md:grid-cols-[8rem_1fr] md:gap-10"
+              >
+                <p className={`${label} md:pt-1`}>{row.latest?.tag}</p>
+                <div>
+                  <h2 className="font-serif text-lg tracking-tight sm:text-xl">
+                    {row.name}
+                    <ArrowRight
+                      className="ml-2 inline size-4 transition-transform group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </h2>
+                  <p className={`mt-2 ${label}`}>
+                    {dict.changelog.latest}
+                    {releaseDate(row.latest?.publishedAt ?? null, locale)
+                      ? ` — ${releaseDate(row.latest?.publishedAt ?? null, locale)}`
+                      : ""}
+                  </p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

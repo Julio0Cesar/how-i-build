@@ -43,6 +43,15 @@ export function parseRepo(input: string): RepoSource | null {
 
 export const siteRepo: RepoSource = site.github;
 
+/**
+ * Route segment for a repository's changelog. Lives here rather than beside the
+ * sources so `<Release>` can build a link without importing the project index,
+ * which imports the MDX files that use the component.
+ */
+export function repoKey(source: RepoSource): string {
+  return source.repo.toLowerCase();
+}
+
 /** One release by tag. Null when it does not exist, is private, or the limit is spent. */
 export async function getRelease(
   source: RepoSource,
