@@ -45,6 +45,14 @@ const en = {
   privacy: {
     title: "Privacy",
   },
+  search: {
+    open: "Search",
+    placeholder: "Search posts and projects",
+    empty: "Nothing matches.",
+    posts: "Posts",
+    projects: "Projects",
+    close: "Close search",
+  },
   blog: {
     title: "Writing",
     latest: "Latest",
@@ -126,6 +134,14 @@ const pt: Dictionary = {
   },
   privacy: {
     title: "Privacidade",
+  },
+  search: {
+    open: "Buscar",
+    placeholder: "Buscar posts e projetos",
+    empty: "Nada encontrado.",
+    posts: "Posts",
+    projects: "Projetos",
+    close: "Fechar busca",
   },
   blog: {
     title: "Escritos",
