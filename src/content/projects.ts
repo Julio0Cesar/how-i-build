@@ -30,6 +30,7 @@ export const projects: Project[] = [
     status: "prod",
     visibility: "public",
     stack: ["Rust", "Tauri", "React", "TypeScript"],
+    markUrl: "/brand/lyricslens.svg",
     repoUrl: "https://github.com/Julio0Cesar/lyricslens",
     cases: {
       en: {
