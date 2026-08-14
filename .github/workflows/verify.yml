@@ -1,0 +1,38 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [main, site]
+
+permissions:
+  contents: read
+
+# A superseded run on the same branch has nothing left to say.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      # `typecheck` runs `next typegen` first, because tsconfig includes
+      # `.next/types/**` and the route globals do not exist on a clean clone.
+      # It also runs `check-content.ts`, which is why that has no step of its own.
+      - run: bun run typecheck
+
+      - run: bun run lint
+
+      # Node runs the build. Bun is the package manager and the task runner and
+      # nothing else: as the runtime it segfaults on teardown after the build has
+      # already succeeded, which reads as a build failure and is not one.
+      - run: bun run build
