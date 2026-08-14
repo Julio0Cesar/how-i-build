@@ -71,11 +71,19 @@ export default async function PostPage({
         </figure>
       ) : null}
 
-      {/* Pulled up over the image, so the article starts on top of it. */}
+      {/*
+        Two overlapping rectangles, not a bar across the image: the block is
+        inset from the left and pulled up into the image, so the photo stays
+        visible above and beside it.
+
+        The pull is a percentage, which resolves against width — and with a
+        fixed 2:1 ratio that makes it a constant share of the image's height at
+        every screen size.
+      */}
       <header
         className={
           meta.coverUrl
-            ? "relative -mt-16 bg-background px-6 pt-8 sm:-mt-20 sm:px-10 sm:pt-10"
+            ? "relative -mt-[9%] ml-6 bg-background pl-6 pr-0 pt-8 sm:ml-14 sm:pl-10 sm:pt-10"
             : "pt-12 md:pt-20"
         }
       >
@@ -87,7 +95,7 @@ export default async function PostPage({
         </h1>
       </header>
 
-      <article className={meta.coverUrl ? "px-0 pt-6 sm:px-10" : "pt-6"}>
+      <article className={meta.coverUrl ? "ml-6 pl-6 pt-6 sm:ml-14 sm:pl-10" : "pt-6"}>
         <Body />
       </article>
 
