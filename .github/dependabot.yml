@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Actions only. The npm ecosystem would edit package.json without touching
+  # bun.lock, and CI installs with --frozen-lockfile, so every such pull request
+  # would arrive already failing. Dependencies are bumped by hand until that
+  # pairing is known to work.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
