@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReadingProgress } from "@/components/reading-progress";
 import { posts } from "@/content/posts";
 import type { Post } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
@@ -60,6 +61,7 @@ export default async function PostPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6">
+      <ReadingProgress />
       {meta.coverUrl ? (
         <figure className="mt-8">
           {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
