@@ -211,6 +211,6 @@ projects/ledger.en.mdx: meta.summary must be a non-empty string
 
 ## Standalone pages
 
-`profile` and `privacy` are body-only — no `meta`, no entries. They are wired
+`profile`, `about` and `privacy` are body-only — no `meta`, no entries. They are wired
 the same way, through a `Record<Locale, ComponentType>`, and the same
 completeness rules apply.
