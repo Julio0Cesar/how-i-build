@@ -58,7 +58,7 @@ export default async function TagPage({
         </h1>
       </header>
 
-      <ul className="grid gap-5 border-t border-rule pt-10 sm:grid-cols-2">
+      <ul className="space-y-5 border-t border-rule pt-10">
         {listed.map((post) => (
           <li key={post.slug}>
             <PostCard post={post} locale={locale} />

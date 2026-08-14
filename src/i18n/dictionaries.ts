@@ -55,7 +55,7 @@ const en = {
   },
   blog: {
     title: "Writing",
-    latest: "Latest",
+    latest: "Blog",
     previous: "Previous post",
     next: "Next post",
     empty: "Nothing published yet.",
@@ -149,7 +149,7 @@ const pt: Dictionary = {
   },
   blog: {
     title: "Escritos",
-    latest: "Recentes",
+    latest: "Blog",
     previous: "Post anterior",
     next: "Próximo post",
     empty: "Nada publicado ainda.",
