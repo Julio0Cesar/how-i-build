@@ -15,6 +15,7 @@ const routes = [
   { key: "home" as const, path: "/" },
   { key: "blog" as const, path: "/blog" },
   { key: "changelog" as const, path: "/changelog" },
+  { key: "about" as const, path: "/about" },
   { key: "privacy" as const, path: "/privacy" },
 ];
 
