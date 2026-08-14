@@ -50,6 +50,12 @@ const en = {
   privacy: {
     title: "Privacy",
   },
+  /** The default locale answers for every unmatched URL — see global-not-found. */
+  notFound: {
+    title: "This page does not exist",
+    body: "The address is wrong, or what used to be here has moved. The index lists everything that is published.",
+    home: "Back to the index",
+  },
   search: {
     open: "Search",
     placeholder: "Search posts and projects",
@@ -149,6 +155,11 @@ const pt: Dictionary = {
   },
   privacy: {
     title: "Privacidade",
+  },
+  notFound: {
+    title: "Esta página não existe",
+    body: "O endereço está errado, ou o que estava aqui mudou de lugar. O índice lista tudo o que está publicado.",
+    home: "Voltar ao índice",
   },
   search: {
     open: "Buscar",
