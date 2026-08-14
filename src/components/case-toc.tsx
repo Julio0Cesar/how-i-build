@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { TocItem } from "@/lib/toc";
@@ -14,6 +15,7 @@ export function CaseToc({
   className?: string;
 }) {
   const [active, setActive] = useState(items[0]?.id ?? "");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const ids = items.map((item) => item.id);
@@ -59,12 +61,39 @@ export function CaseToc({
     };
   }, [items]);
 
+  const current = items.find((item) => item.id === active)?.label ?? label;
+
   return (
     <nav aria-label={label} className={className}>
-      <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+      {/*
+        On a phone the list used to sit above the article and scroll away, so
+        once you were reading it could not be reached. A bar under the header
+        keeps it in place and names the section you are in.
+      */}
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className="flex w-full items-center justify-between gap-3 border-b border-rule bg-background/95 py-3 backdrop-blur-sm lg:hidden"
+      >
+        <span className="truncate text-sm">
+          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            {label}
+          </span>
+          <span className="ml-2 text-accent">{current}</span>
+        </span>
+        <ChevronDown
+          className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+
+      <p className="hidden font-mono text-xs uppercase tracking-widest text-muted-foreground lg:block">
         {label}
       </p>
-      <ul className="mt-4 space-y-2 border-l border-rule">
+      <ul
+        className={`mt-4 space-y-2 border-l border-rule lg:mt-4 lg:block ${open ? "block" : "hidden"}`}
+      >
         {items.map((item) => {
           const isActive = active === item.id;
           return (
@@ -72,6 +101,7 @@ export function CaseToc({
               <a
                 href={`#${item.id}`}
                 aria-current={isActive ? "true" : undefined}
+                onClick={() => setOpen(false)}
                 className={`-ml-px block border-l py-0.5 pl-4 text-sm transition-colors ${
                   isActive
                     ? "border-accent text-accent"

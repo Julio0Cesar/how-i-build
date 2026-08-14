@@ -22,9 +22,12 @@ function matches(entry: SearchEntry, query: string) {
 export function SiteSearch({
   index,
   labels,
+  onOpen,
 }: {
   index: SearchEntry[];
   labels: Dictionary["search"];
+  /** Lets the mobile menu close itself when the search takes over the screen. */
+  onOpen?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -36,12 +39,13 @@ export function SiteSearch({
       // The convention every editor and half the web already trained people on.
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
+        onOpen?.();
         setOpen((value) => !value);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [onOpen]);
 
   useEffect(() => {
     if (open) input.current?.focus();
@@ -59,7 +63,14 @@ export function SiteSearch({
 
   return (
     <>
-      <IconButton label={labels.open} size="sm" onClick={() => setOpen(true)}>
+      <IconButton
+        label={labels.open}
+        size="sm"
+        onClick={() => {
+          onOpen?.();
+          setOpen(true);
+        }}
+      >
         <Search className="size-4" aria-hidden="true" />
       </IconButton>
 

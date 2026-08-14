@@ -63,7 +63,7 @@ export default async function BlogIndex({
         </p>
       ) : (
         <div className="grid gap-10 border-t border-rule pt-10 lg:grid-cols-[minmax(0,1fr)_14rem]">
-          <ul className="grid gap-5 sm:grid-cols-2">
+          <ul className="space-y-5">
             {ordered.map((post) => (
               <li key={post.slug}>
                 <PostCard post={post} locale={locale} />

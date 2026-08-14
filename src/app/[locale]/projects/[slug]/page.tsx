@@ -139,7 +139,7 @@ export default async function ProjectPage({
             <CaseToc
               items={items}
               label={dict.case.toc}
-              className="mb-10 lg:sticky lg:top-24 lg:mb-0"
+              className="sticky top-14 z-30 mb-6 sm:top-16 lg:top-24 lg:mb-0"
             />
           </div>
         ) : null}
