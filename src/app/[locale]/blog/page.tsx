@@ -1,0 +1,87 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { posts } from "@/content/posts";
+import { isLocale, locales, localeHref } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
+import { byDate } from "@/lib/posts";
+
+const path = "/blog";
+const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/blog">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+
+  return {
+    title: getDictionary(locale).blog.title,
+    alternates: {
+      canonical: localeHref(locale, path),
+      languages: {
+        ...Object.fromEntries(
+          locales.map((entry) => [entry, localeHref(entry, path)]),
+        ),
+        "x-default": path,
+      },
+    },
+  };
+}
+
+export default async function BlogIndex({
+  params,
+}: PageProps<"/[locale]/blog">) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
+  const dict = getDictionary(locale);
+  const ordered = byDate(posts, locale);
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 sm:px-6">
+      <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
+        <p className={`${label} md:pt-3`}>{dict.blog.title}</p>
+        <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
+          {dict.blog.title}
+        </h1>
+      </header>
+
+      {ordered.length === 0 ? (
+        <p className="max-w-[68ch] border-t border-rule py-12 leading-relaxed text-muted-foreground">
+          {dict.blog.empty}
+        </p>
+      ) : (
+        <ul>
+          {ordered.map((post) => {
+            const { meta } = post.locales[locale];
+            return (
+              <li key={post.slug} className="border-t border-rule">
+                <Link
+                  href={localeHref(locale, `/blog/${post.slug}`)}
+                  className="group grid gap-2 py-8 transition-transform hover:translate-x-2 md:grid-cols-[8rem_1fr] md:gap-10"
+                >
+                  <time dateTime={meta.publishedAt} className={`${label} md:pt-1`}>
+                    {meta.publishedAt}
+                  </time>
+                  <div>
+                    <h2 className="font-serif text-lg tracking-tight transition-colors group-hover:text-accent sm:text-xl">
+                      {meta.title}
+                    </h2>
+                    <p className="mt-2 max-w-[68ch] leading-relaxed text-muted-foreground">
+                      {meta.summary}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
