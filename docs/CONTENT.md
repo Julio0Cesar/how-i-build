@@ -183,11 +183,16 @@ export const meta = {
   publishedAt: "2026-08-14",
   coverUrl: "/blog/<slug>.jpg",   // optional
   coverAlt: "What the image shows", // required when coverUrl is set
+  tags: ["Rust", "Wayland"],        // optional
 };
 ```
 
 `publishedAt` orders the index and drives previous and next. A post without a
 cover renders without one, so writing never waits on making an image.
+
+Tags are localized: a post can be `Writing` in English and `Escrita` in
+Portuguese, and each generates its own tag page listing that language's posts.
+A tag that exists in one language only generates the route where it exists.
 
 Both languages are required, as for cases.
 

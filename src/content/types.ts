@@ -46,6 +46,8 @@ export interface PostMeta {
   /** Optional. When set, `coverAlt` is required — enforced when the post loads. */
   coverUrl?: string;
   coverAlt?: string;
+  /** Localized: a post can carry different words in each language. */
+  tags?: string[];
 }
 
 export interface PostContent {
