@@ -24,9 +24,12 @@ export const site = {
       TypeScript: "/brand/typescript.svg",
       "Tailwind CSS": "/brand/tailwind.svg",
       Bun: "/brand/bun.svg",
+      Rust: "/brand/rust.svg",
+      Tauri: "/brand/tauri.svg",
+      React: "/brand/react.svg",
     },
     /** Flat black, so they invert instead of being lost on the dark theme. */
-    monochrome: ["Next.js", "github"],
+    monochrome: ["Next.js", "Rust", "github"],
     social: {
       github: "/brand/github.svg",
       linkedin: "/brand/linkedin.svg",
