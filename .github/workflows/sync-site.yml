@@ -48,6 +48,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Reads the `merge=ours` attributes in `.gitattributes`. Without the
+          # driver git knows the name and has nothing to run for it.
+          git config merge.ours.driver true
           git fetch origin main
           git merge --no-ff origin/main -m "chore: merge main into site"
           git push origin site
