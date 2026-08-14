@@ -59,6 +59,8 @@ const en = {
     previous: "Previous post",
     next: "Next post",
     empty: "Nothing published yet.",
+    recent: "Recent posts",
+    calendar: "Archive",
     all: "All posts",
   },
   changelog: {
@@ -149,6 +151,8 @@ const pt: Dictionary = {
     previous: "Post anterior",
     next: "Próximo post",
     empty: "Nada publicado ainda.",
+    recent: "Posts recentes",
+    calendar: "Arquivo",
     all: "Todos os posts",
   },
   changelog: {

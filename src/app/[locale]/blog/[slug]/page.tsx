@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/reading-progress";
+import { RecentPosts } from "@/components/recent-posts";
 import { posts } from "@/content/posts";
 import type { Post } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { neighbours } from "@/lib/posts";
+import { byDate, neighbours } from "@/lib/posts";
 
 const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
 
@@ -58,6 +59,7 @@ export default async function PostPage({
   const { meta, Body } = post.locales[locale];
   const dict = getDictionary(locale);
   const { previous, next } = neighbours(posts, locale, post.slug);
+  const recent = byDate(posts, locale).filter((entry) => entry.slug !== post.slug);
 
   return (
     <div>
@@ -81,10 +83,11 @@ export default async function PostPage({
       ) : null}
 
       <div
-        className={`relative mx-auto max-w-3xl bg-background px-4 sm:px-6 ${
+        className={`relative mx-auto max-w-5xl bg-background px-4 sm:px-6 lg:grid lg:grid-cols-[minmax(0,42rem)_14rem] lg:justify-center lg:gap-12 ${
           meta.coverUrl ? "-mt-[11vh] pb-16 pt-10 sm:pt-12" : "pb-16 pt-12 md:pt-20"
         }`}
       >
+        <div>
         <header>
           <time dateTime={meta.publishedAt} className={label}>
             {meta.publishedAt}
@@ -118,6 +121,14 @@ export default async function PostPage({
               ) : null,
             )}
           </nav>
+        ) : null}
+        </div>
+
+        {/* No box when there is nothing to put in it. */}
+        {recent.length > 0 ? (
+          <aside className="mt-16 border-t border-rule pt-8 lg:sticky lg:top-24 lg:mt-0 lg:self-start lg:border-t-0 lg:pt-2">
+            <RecentPosts posts={recent} locale={locale} label={dict.blog.recent} />
+          </aside>
         ) : null}
       </div>
     </div>

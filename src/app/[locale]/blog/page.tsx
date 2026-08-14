@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PostCalendar } from "@/components/post-calendar";
 import { PostCard } from "@/components/post-card";
 import { posts } from "@/content/posts";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { postDays } from "@/lib/calendar";
 import { byDate } from "@/lib/posts";
 
 const path = "/blog";
@@ -41,6 +43,7 @@ export default async function BlogIndex({
 
   const dict = getDictionary(locale);
   const ordered = byDate(posts, locale);
+  const days = postDays(posts, locale);
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -56,13 +59,18 @@ export default async function BlogIndex({
           {dict.blog.empty}
         </p>
       ) : (
-        <ul className="grid gap-5 border-t border-rule pt-10 sm:grid-cols-2">
-          {ordered.map((post) => (
-            <li key={post.slug}>
-              <PostCard post={post} locale={locale} />
-            </li>
-          ))}
-        </ul>
+        <div className="grid gap-10 border-t border-rule pt-10 lg:grid-cols-[minmax(0,1fr)_14rem]">
+          <ul className="grid gap-5 sm:grid-cols-2">
+            {ordered.map((post) => (
+              <li key={post.slug}>
+                <PostCard post={post} locale={locale} />
+              </li>
+            ))}
+          </ul>
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <PostCalendar days={days} locale={locale} label={dict.blog.calendar} />
+          </aside>
+        </div>
       )}
     </div>
   );
