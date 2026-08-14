@@ -1,6 +1,7 @@
 import HowIBuildEn, { meta as howIBuildEn } from "./projects/how-i-build.en.mdx";
 import HowIBuildPt, { meta as howIBuildPt } from "./projects/how-i-build.pt.mdx";
 import type { Project } from "./types";
+import { caseMeta } from "./validate";
 
 export const projects: Project[] = [
   {
@@ -12,8 +13,14 @@ export const projects: Project[] = [
     liveUrl: "https://how-i-build-delta.vercel.app",
     repoUrl: "https://github.com/Julio0Cesar/how-i-build",
     cases: {
-      en: { meta: howIBuildEn, Body: HowIBuildEn },
-      pt: { meta: howIBuildPt, Body: HowIBuildPt },
+      en: {
+        meta: caseMeta(howIBuildEn, "projects/how-i-build.en.mdx"),
+        Body: HowIBuildEn,
+      },
+      pt: {
+        meta: caseMeta(howIBuildPt, "projects/how-i-build.pt.mdx"),
+        Body: HowIBuildPt,
+      },
     },
   },
 ];

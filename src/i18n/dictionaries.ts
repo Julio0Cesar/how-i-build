@@ -11,6 +11,7 @@ const en = {
   nav: {
     home: "Index",
     changelog: "Changelog",
+    blog: "Blog",
     privacy: "Privacy",
     menu: "Site",
     open: "Open menu",
@@ -43,6 +44,14 @@ const en = {
   },
   privacy: {
     title: "Privacy",
+  },
+  blog: {
+    title: "Writing",
+    latest: "Latest",
+    previous: "Previous post",
+    next: "Next post",
+    empty: "Nothing published yet.",
+    all: "All posts",
   },
   changelog: {
     title: "Changelog",
@@ -85,6 +94,7 @@ const pt: Dictionary = {
   nav: {
     home: "Início",
     changelog: "Changelog",
+    blog: "Blog",
     privacy: "Privacidade",
     menu: "Site",
     open: "Abrir menu",
@@ -116,6 +126,14 @@ const pt: Dictionary = {
   },
   privacy: {
     title: "Privacidade",
+  },
+  blog: {
+    title: "Escritos",
+    latest: "Recentes",
+    previous: "Post anterior",
+    next: "Próximo post",
+    empty: "Nada publicado ainda.",
+    all: "Todos os posts",
   },
   changelog: {
     title: "Changelog",
