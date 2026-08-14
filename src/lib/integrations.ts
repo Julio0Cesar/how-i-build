@@ -29,13 +29,47 @@ function toRelease(data: ApiRelease): Release | null {
 
 const headers = { Accept: "application/vnd.github+json" };
 
+export type RepoSource = { owner: string; repo: string };
+
+/** `https://github.com/owner/name` or `owner/name`. Null when it is neither. */
+export function parseRepo(input: string): RepoSource | null {
+  const cleaned = input
+    .trim()
+    .replace(/^https?:\/\/github\.com\//, "")
+    .replace(/\.git$/, "");
+  const [owner, repo] = cleaned.split("/");
+  return owner && repo ? { owner, repo } : null;
+}
+
+export const siteRepo: RepoSource = site.github;
+
+/** One release by tag. Null when it does not exist, is private, or the limit is spent. */
+export async function getRelease(
+  source: RepoSource,
+  tag: string,
+): Promise<Release | null> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${source.owner}/${source.repo}/releases/tags/${tag}`,
+      { headers },
+    );
+    if (!response.ok) return null;
+    return toRelease((await response.json()) as ApiRelease);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * One page of releases, newest first. Thirty is the API default and far more
  * than a changelog page needs to show — a deliberate ceiling rather than one
  * that turns up on its own in two years.
  */
-export async function getReleases(limit = 30): Promise<Release[]> {
-  const { owner, repo } = site.github;
+export async function getReleases(
+  limit = 30,
+  source: RepoSource = site.github,
+): Promise<Release[]> {
+  const { owner, repo } = source;
 
   try {
     const response = await fetch(

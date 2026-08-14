@@ -3,6 +3,7 @@ import { Anchor } from "@/components/mdx/anchor";
 import { Decision, Tradeoffs } from "@/components/mdx/callout";
 import { Entry } from "@/components/mdx/entry";
 import { prose } from "@/components/mdx/prose";
+import { Release } from "@/components/mdx/release";
 
 /**
  * Required by `@next/mdx` and kept as wiring only. The components themselves
@@ -14,6 +15,7 @@ const components: MDXComponents = {
   Entry,
   Decision,
   Tradeoffs,
+  Release,
 };
 
 export function useMDXComponents(): MDXComponents {

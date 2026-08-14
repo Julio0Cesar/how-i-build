@@ -95,8 +95,14 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               ) : null}
             </div>
 
-            {/* Pulled up into the fade so it reads as the list continuing. */}
-            <div className={hasMore ? "-mt-6 flex justify-center" : "mt-8 flex justify-center"}>
+            {/*
+              Pulled up into the fade so it reads as the list continuing.
+              Positioned, because the fade is: an absolute element paints over a
+              static one whatever the DOM order, which would bury the button.
+            */}
+            <div
+              className={`relative flex justify-center ${hasMore ? "-mt-6" : "mt-8"}`}
+            >
               <Link
                 href={localeHref(locale, "/blog")}
                 className={`group inline-flex items-center gap-2 border border-rule bg-background px-4 py-2 transition-colors hover:border-accent hover:text-accent ${sectionLabel}`}
