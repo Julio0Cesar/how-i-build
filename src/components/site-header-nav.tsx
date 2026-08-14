@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { localeHref, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import type { SearchEntry } from "@/lib/search";
 import { IconButton } from "./ui/icon-button";
+import { SiteSearch } from "./site-search";
 import { LocaleSwitch } from "./locale-switch";
 import { ThemeSelect } from "./theme-select";
 
@@ -19,9 +21,11 @@ const routes = [
 export function SiteHeaderNav({
   locale,
   dict,
+  searchIndex,
 }: {
   locale: Locale;
   dict: Dictionary;
+  searchIndex: SearchEntry[];
 }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -56,6 +60,7 @@ export function SiteHeaderNav({
     <>
       <nav className="hidden items-center gap-5 md:flex" aria-label={dict.nav.menu}>
         {links}
+        <SiteSearch index={searchIndex} labels={dict.search} />
         <LocaleSwitch locale={locale} labels={dict.locale} />
         <ThemeSelect labels={dict.theme} />
       </nav>
@@ -85,6 +90,7 @@ export function SiteHeaderNav({
           >
             {links}
             <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-4">
+              <SiteSearch index={searchIndex} labels={dict.search} />
               <LocaleSwitch locale={locale} labels={dict.locale} />
               <ThemeSelect labels={dict.theme} />
             </div>
