@@ -1,0 +1,24 @@
+name: Feature
+description: Something the template should do and does not
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is missing, and what that makes harder today.
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: Shape
+      description: >
+        Files, routes, or configuration you expect it to touch. A rough sketch is
+        enough — this is not a design document.
+  - type: checkboxes
+    id: branch
+    attributes:
+      label: Ownership
+      options:
+        - label: This belongs to `main` (shape) rather than `site` (data)
