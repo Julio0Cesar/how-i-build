@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { PostCard } from "@/components/post-card";
 import { ProjectCard } from "@/components/project-card";
 import { profile } from "@/content/profile";
+import { posts } from "@/content/posts";
 import { projects } from "@/content/projects";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { byRecency } from "@/lib/projects";
+import { byDate } from "@/lib/posts";
 
 const sectionLabel =
   "font-mono text-xs uppercase tracking-widest text-muted-foreground";
@@ -36,6 +40,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const dict = getDictionary(locale);
   const Intro = profile.intro[locale];
   const ordered = byRecency(projects, locale);
+  const ordered_posts = byDate(posts, locale);
+  const latest = ordered_posts.slice(0, 3);
+  /** The fade means "there is more". With nothing behind it, it would be a lie. */
+  const hasMore = ordered_posts.length > latest.length;
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -64,6 +72,35 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           ))}
         </ul>
       </section>
+
+      {latest.length > 0 ? (
+        <section className="grid gap-6 border-t border-rule pt-10 md:grid-cols-[8rem_1fr] md:gap-10 md:pt-12">
+          <p className={`${sectionLabel} md:pt-2`}>{dict.blog.latest}</p>
+          <div>
+            <div className="relative">
+              <ul className="grid gap-5 sm:grid-cols-2">
+                {latest.map((post) => (
+                  <li key={post.slug}>
+                    <PostCard post={post} locale={locale} />
+                  </li>
+                ))}
+              </ul>
+              {hasMore ? (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent"
+                />
+              ) : null}
+            </div>
+            <Link
+              href={localeHref(locale, "/blog")}
+              className={`mt-6 inline-block border border-rule px-3 py-2 transition-colors hover:border-accent hover:text-accent ${sectionLabel}`}
+            >
+              {dict.blog.all}
+            </Link>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
