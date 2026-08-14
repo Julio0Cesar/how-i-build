@@ -3,6 +3,7 @@ import LedgerPt, { meta as ledgerPt } from "./projects/ledger.pt.mdx";
 import AtlasEn, { meta as atlasEn } from "./projects/atlas.en.mdx";
 import AtlasPt, { meta as atlasPt } from "./projects/atlas.pt.mdx";
 import type { Project } from "./types";
+import { caseMeta } from "./validate";
 
 /**
  * Static imports, not a lookup by path. A missing file fails the build here,
@@ -18,8 +19,8 @@ export const projects: Project[] = [
     stack: ["TypeScript", "SQLite", "Bun"],
     repoUrl: "https://github.com/your-username/ledger",
     cases: {
-      en: { meta: ledgerEn, Body: LedgerEn },
-      pt: { meta: ledgerPt, Body: LedgerPt },
+      en: { meta: caseMeta(ledgerEn, "projects/ledger.en.mdx"), Body: LedgerEn },
+      pt: { meta: caseMeta(ledgerPt, "projects/ledger.pt.mdx"), Body: LedgerPt },
     },
   },
   {
@@ -29,8 +30,8 @@ export const projects: Project[] = [
     stack: ["Rust", "PostgreSQL"],
     stub: true,
     cases: {
-      en: { meta: atlasEn, Body: AtlasEn },
-      pt: { meta: atlasPt, Body: AtlasPt },
+      en: { meta: caseMeta(atlasEn, "projects/atlas.en.mdx"), Body: AtlasEn },
+      pt: { meta: caseMeta(atlasPt, "projects/atlas.pt.mdx"), Body: AtlasPt },
     },
   },
 ];

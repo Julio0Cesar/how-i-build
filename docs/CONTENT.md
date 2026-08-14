@@ -164,6 +164,46 @@ exists — nothing checks whether it responds, for the reasons in #13.
 placeholder; replace the file and nothing else changes — the wiring lives in the
 root layout and points at that path.
 
+## Posts
+
+Shorter and more frequent than a case study. Same file layout, one folder over:
+
+```
+src/content/
+├── posts.ts
+└── posts/
+    ├── <slug>.en.mdx
+    └── <slug>.pt.mdx
+```
+
+```mdx
+export const meta = {
+  title: "…",
+  summary: "One line, shown in the index.",
+  publishedAt: "2026-08-14",
+  coverUrl: "/blog/<slug>.jpg",   // optional
+  coverAlt: "What the image shows", // required when coverUrl is set
+};
+```
+
+`publishedAt` orders the index and drives previous and next. A post without a
+cover renders without one, so writing never waits on making an image.
+
+Both languages are required, as for cases.
+
+## Metadata is checked when it loads, not when it is written
+
+`tsc` does not read `.mdx`, so a `meta` block is never type-checked where you
+write it. Removing a required field used to compile cleanly and render
+`undefined` on the page.
+
+The content index validates each block as it loads — during the build — and
+fails with the file that is wrong:
+
+```
+projects/ledger.en.mdx: meta.summary must be a non-empty string
+```
+
 ## Standalone pages
 
 `profile` and `privacy` are body-only — no `meta`, no entries. They are wired

@@ -38,6 +38,26 @@ export interface Project {
   cases: Record<Locale, Case>;
 }
 
+export interface PostMeta {
+  title: string;
+  summary: string;
+  /** ISO date `YYYY-MM-DD`. Orders the index and drives previous/next. */
+  publishedAt: string;
+  /** Optional. When set, `coverAlt` is required — enforced when the post loads. */
+  coverUrl?: string;
+  coverAlt?: string;
+}
+
+export interface PostContent {
+  meta: PostMeta;
+  Body: ComponentType;
+}
+
+export interface Post {
+  slug: string;
+  locales: Record<Locale, PostContent>;
+}
+
 export interface Profile {
   name: string;
   location: Record<Locale, string>;
