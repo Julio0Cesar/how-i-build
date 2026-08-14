@@ -1,0 +1,12 @@
+# Prose and assets belong to the `site` branch. A sync merge keeps the version
+# already there rather than stopping on a conflict `main` can never win.
+#
+# Index files are deliberately absent: `projects.ts`, `posts.ts`, `profile.ts`
+# and `site.ts` carry shape as well as data, so resolving them here would drop a
+# structural change from `main` in silence and break the build on `site`. Those
+# still conflict, and a person still reads them.
+src/content/*.mdx       merge=ours
+src/content/posts/**    merge=ours
+src/content/projects/** merge=ours
+public/brand/**         merge=ours
+docs/projects/**        merge=ours
