@@ -60,68 +60,66 @@ export default async function PostPage({
   const { previous, next } = neighbours(posts, locale, post.slug);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6">
+    <div>
       <ReadingProgress />
+
+      {/*
+        Pinned while the article scrolls over it. The content below is opaque
+        and comes later in the DOM, so it occludes the image without a negative
+        z-index — which would put it behind the page's own background and out
+        of sight entirely.
+      */}
       {meta.coverUrl ? (
-        <figure className="mt-8">
+        <div className="sticky top-14 h-[55vh] w-full overflow-hidden sm:top-16 sm:h-[65vh]">
           {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
           <img
             src={meta.coverUrl}
             alt={meta.coverAlt ?? ""}
-            className="aspect-[2/1] w-full object-cover"
+            className="size-full object-cover"
           />
-        </figure>
+        </div>
       ) : null}
 
-      {/*
-        Two overlapping rectangles, not a bar across the image: the block is
-        inset from the left and pulled up into the image, so the photo stays
-        visible above and beside it.
-
-        The pull is a percentage, which resolves against width — and with a
-        fixed 2:1 ratio that makes it a constant share of the image's height at
-        every screen size.
-      */}
-      <header
-        className={
-          meta.coverUrl
-            ? "relative -mt-[9%] ml-6 bg-background pl-6 pr-0 pt-8 sm:ml-14 sm:pl-10 sm:pt-10"
-            : "pt-12 md:pt-20"
-        }
+      <div
+        className={`relative mx-auto max-w-3xl bg-background px-4 sm:px-6 ${
+          meta.coverUrl ? "-mt-[14vh] pb-16 pt-10 sm:pt-12" : "pb-16 pt-12 md:pt-20"
+        }`}
       >
-        <time dateTime={meta.publishedAt} className={label}>
-          {meta.publishedAt}
-        </time>
-        <h1 className="mt-3 font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
-          {meta.title}
-        </h1>
-      </header>
+        <header>
+          <time dateTime={meta.publishedAt} className={label}>
+            {meta.publishedAt}
+          </time>
+          <h1 className="mt-3 font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
+            {meta.title}
+          </h1>
+        </header>
 
-      <article className={meta.coverUrl ? "ml-6 pl-6 pt-6 sm:ml-14 sm:pl-10" : "pt-6"}>
-        <Body />
-      </article>
+        <article className="pt-6">
+          <Body />
+        </article>
 
-      {previous || next ? (
-        <nav aria-label={dict.blog.title} className="mt-16 border-t border-rule">
-          {[
-            { post: next, caption: dict.blog.next },
-            { post: previous, caption: dict.blog.previous },
-          ].map(({ post: sibling, caption }) =>
-            sibling ? (
-              <Link
-                key={sibling.slug}
-                href={localeHref(locale, `/blog/${sibling.slug}`)}
-                className="group block border-b border-rule py-5 transition-transform hover:translate-x-2"
-              >
-                <span className={`block ${label}`}>{caption}</span>
-                <span className="mt-1 block font-serif text-lg tracking-tight transition-colors group-hover:text-accent">
-                  {sibling.locales[locale].meta.title}
-                </span>
-              </Link>
-            ) : null,
-          )}
-        </nav>
-      ) : null}
+        {previous || next ? (
+          <nav aria-label={dict.blog.title} className="mt-16 border-t border-rule">
+            {[
+              { post: next, caption: dict.blog.next },
+              { post: previous, caption: dict.blog.previous },
+            ].map(({ post: sibling, caption }) =>
+              sibling ? (
+                <Link
+                  key={sibling.slug}
+                  href={localeHref(locale, `/blog/${sibling.slug}`)}
+                  className="group block border-b border-rule py-5 transition-transform hover:translate-x-2"
+                >
+                  <span className={`block ${label}`}>{caption}</span>
+                  <span className="mt-1 block font-serif text-lg tracking-tight transition-colors group-hover:text-accent">
+                    {sibling.locales[locale].meta.title}
+                  </span>
+                </Link>
+              ) : null,
+            )}
+          </nav>
+        ) : null}
+      </div>
     </div>
   );
 }
