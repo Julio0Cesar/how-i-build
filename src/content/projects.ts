@@ -1,5 +1,7 @@
 import HowIBuildEn, { meta as howIBuildEn } from "./projects/how-i-build.en.mdx";
 import HowIBuildPt, { meta as howIBuildPt } from "./projects/how-i-build.pt.mdx";
+import LyricsLensEn, { meta as lyricsLensEn } from "./projects/lyricslens.en.mdx";
+import LyricsLensPt, { meta as lyricsLensPt } from "./projects/lyricslens.pt.mdx";
 import type { Project } from "./types";
 import { caseMeta } from "./validate";
 
@@ -20,6 +22,23 @@ export const projects: Project[] = [
       pt: {
         meta: caseMeta(howIBuildPt, "projects/how-i-build.pt.mdx"),
         Body: HowIBuildPt,
+      },
+    },
+  },
+  {
+    slug: "lyricslens",
+    status: "prod",
+    visibility: "public",
+    stack: ["Rust", "Tauri", "React", "TypeScript"],
+    repoUrl: "https://github.com/Julio0Cesar/lyricslens",
+    cases: {
+      en: {
+        meta: caseMeta(lyricsLensEn, "projects/lyricslens.en.mdx"),
+        Body: LyricsLensEn,
+      },
+      pt: {
+        meta: caseMeta(lyricsLensPt, "projects/lyricslens.pt.mdx"),
+        Body: LyricsLensPt,
       },
     },
   },
