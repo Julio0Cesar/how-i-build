@@ -8,6 +8,7 @@ import {
   type Locale,
 } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { searchIndex } from "@/lib/search";
 import {
   getLatestRelease,
   releaseMonth,
@@ -40,7 +41,7 @@ export async function SiteHeader() {
           <span className="h-3 w-1 shrink-0 bg-accent" aria-hidden="true" />
           <span className="truncate">{site.name}</span>
         </Link>
-        <SiteHeaderNav locale={locale} dict={dict} />
+        <SiteHeaderNav locale={locale} dict={dict} searchIndex={searchIndex(locale)} />
       </div>
     </header>
   );
