@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PostCard } from "@/components/post-card";
 import { posts } from "@/content/posts";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -56,30 +56,12 @@ export default async function BlogIndex({
           {dict.blog.empty}
         </p>
       ) : (
-        <ul>
-          {ordered.map((post) => {
-            const { meta } = post.locales[locale];
-            return (
-              <li key={post.slug} className="border-t border-rule">
-                <Link
-                  href={localeHref(locale, `/blog/${post.slug}`)}
-                  className="group grid gap-2 py-8 transition-transform hover:translate-x-2 md:grid-cols-[8rem_1fr] md:gap-10"
-                >
-                  <time dateTime={meta.publishedAt} className={`${label} md:pt-1`}>
-                    {meta.publishedAt}
-                  </time>
-                  <div>
-                    <h2 className="font-serif text-lg tracking-tight transition-colors group-hover:text-accent sm:text-xl">
-                      {meta.title}
-                    </h2>
-                    <p className="mt-2 max-w-[68ch] leading-relaxed text-muted-foreground">
-                      {meta.summary}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
+        <ul className="grid gap-5 border-t border-rule pt-10 sm:grid-cols-2">
+          {ordered.map((post) => (
+            <li key={post.slug}>
+              <PostCard post={post} locale={locale} />
+            </li>
+          ))}
         </ul>
       )}
     </div>
