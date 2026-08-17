@@ -1,10 +1,10 @@
 export const meta = {
   name: "how-i-build",
   summary:
-    "Este site, e o template embaixo dele — refeito à mão, com cada decisão registrada.",
+    "Este site é o primeiro projeto documentado pelo próprio How I Build: um template e um registro das decisões tomadas para construí-lo",
   role: "Autor único",
   period: "2026",
-  updatedAt: "2026-08-13",
+  updatedAt: "2026-08-17",
   references: [
     {
       label: "Repositório",
@@ -17,143 +17,115 @@ export const meta = {
   ],
 };
 
-Existia uma versão anterior deste site, e ela funcionava. Foi construída com IA
-escrevendo o código — base estranha para um site cujo assunto é como eu
-construo. Então foi refeito do zero, e as decisões abaixo são as que custaram
-alguma coisa.
+Alguns dos projetos em que eu trabalho são de clientes.
+Outros envolvem código que não faz sentido publicar porque ele é parte do próprio produto.
+Em quase todos, o que eu fiz fica fechado, e para quem olha de fora sobra só uma landing page ou uma linha no currículo.
+O que eu quero preservar aqui é o que não aparece nessas coisas:
+por que tomei cada decisão, quais problemas encontrei e o que considerei antes de escolher um caminho.
 
-O repositório carrega duas coisas ao mesmo tempo: um template que qualquer
-pessoa pode usar, e o meu conteúdo em cima dele. Boa parte do que vem a seguir
-nasce dessa tensão.
+Foi por isso que criei o How I Build. O primeiro projeto que decidi documentar foi o próprio site,
+porque eu queria testar a ideia em algo que pudesse mostrar por completo, incluindo o código.
+O repositório reúne o template que dá estrutura ao site e o conteúdo que eu escrevo sobre os projetos.
+Mantive as duas partes separadas para que o template não precise saber nada sobre mim ou sobre o conteúdo publicado.
+As decisões abaixo começam, em grande parte, dessa separação.
 
 <Entry title="Um repositório, duas branches" date="2026-08-12" />
 
-Um template e um site pessoal querem coisas opostas. O template não pode
-carregar identidade nenhuma; o site é só identidade. Dois repositórios
-separariam isso de forma limpa, e dividiriam as issues, o histórico e o próprio
-case entre os dois.
+O template e o conteúdo do site precisam evoluir juntos, mas não deveriam ficar misturados.
+Eu queria poder usar o mesmo repositório para desenvolver o template sem colocar meu conteúdo dentro dele,
+e ao mesmo tempo manter o site que publico aqui atualizado com essas mudanças.
 
 <Decision>
-Um repositório. A `main` é o template, a `site` é o conteúdo, e os merges vão
-sempre `main → site`. Um workflow faz esse merge a cada push, então a branch de
-conteúdo não fica para trás.
+Fiquei com um repositório e duas branches.
+A main contém o template e a site contém o conteúdo.
+Um workflow faz o merge de main → site a cada push,
+mantendo o site atualizado sem precisar repetir as mudanças manualmente.
 </Decision>
 
 <Tradeoffs>
-- Toda mudança de template chega em produção por dois merges, não um
-- Arquivos que as duas branches tocam — a config, o índice de conteúdo — conflitam, e resolvem sempre a favor da `site`
-- Quem clonar o template herda uma segunda branch que talvez nunca queira, então o workflow encerra em silêncio quando ela não existe
+- Toda mudança no template passa por dois merges antes de chegar em produção.
+- Arquivos que as duas branches precisam alterar, como a configuração e o índice de conteúdo, podem gerar conflitos. Nesses casos, a site sempre vence.
+- Quem clona o template também recebe uma segunda branch que talvez não precise. Por isso, o workflow simplesmente não faz nada quando essa branch não existe.
 </Tradeoffs>
 
 <Entry title="O idioma padrão não tem prefixo" date="2026-08-12" />
 
-Três opções, e cada uma abre mão de algo. Prefixar os dois idiomas significa que
-a home nunca pode ser `/`. Tirar o idioma da URL por completo significa um
-endereço servindo dois idiomas — só um vai para o índice, um link compartilhado
-abre no idioma que o navegador de quem recebeu preferir, e as páginas deixam de
-ser estáticas.
+Eu queria que o inglês fosse o idioma padrão do site, mas sem colocar /en em todas as URLs.
+Ao mesmo tempo, o português precisava continuar disponível em um caminho próprio.
+Isso deixava duas alternativas: prefixar os dois idiomas, ou não diferenciar os idiomas na URL.
+A primeira tirava a possibilidade de usar / para o inglês; a segunda criava problemas de indexação, compartilhamento e geração de páginas estáticas.
 
 <Decision>
-Inglês responde em `/projects`, português em `/pt/projects`. `/en/*` redireciona
-para o caminho sem prefixo, então cada página tem exatamente um endereço. Saiu
-na [v0.4.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.4.0).
+Inglês responde em `/projects`, português em `/pt/projects`. `/en/*` redireciona para o caminho sem prefixo,
+então cada página tem exatamente um endereço. Saiu na [v0.4.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.4.0).
 </Decision>
 
 <Tradeoffs>
-- O proxy fica mais complexo que um redirect simples: rewrite, redirect canônico, e preferência lida só na raiz
+- O proxy fica mais complexo que um redirect simples: rewrite, redirect canônico e preferência lida só na raiz
 - Montar um link passa a exigir um helper em vez de concatenar string
-- A preferência do leitor vale só em `/`, então um link profundo compartilhado abre no idioma em que foi compartilhado — deliberado, e surpreende
+- A preferência do leitor vale só em `/`. Um link profundo compartilhado abre no idioma em que foi compartilhado; isso é deliberado, mas pode surpreender
 </Tradeoffs>
 
 <Entry title="O tema é aplicado antes da página pintar" date="2026-08-12" />
 
-Ler a preferência de um cookie no servidor parece certo e falha duas vezes. A
-primeira visita não tem cookie, então quem prefere tema escuro leva um flash
-branco — exatamente a visita para a qual o mecanismo existe. E ler cookie tira
-toda rota da renderização estática.
+O tema precisava estar correto antes da primeira pintura da página.
+Ler o cookie no servidor parecia uma solução natural, mas criava dois problemas:
+a primeira visita não tem cookie, então quem prefere o tema escuro poderia ver um flash branco,
+e a leitura do cookie também tirava as rotas da renderização estática.
 
 <Decision>
-Um script síncrono no `<head>`, antes de qualquer coisa renderizar. Sem cookie,
-sem servidor. O controle também não tem estado React: a classe na `<html>` já
-está correta antes da hidratação, então estado só começaria errado e se
-corrigiria depois. Saiu na
-[v0.5.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.5.0) e virou
-três opções na
-[v0.8.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.8.0).
+Um script síncrono no `<head>`, antes de qualquer coisa renderizar. Sem cookie no servidor e sem estado React. A classe na `<html>` já está correta antes da hidratação, então o controle não precisa começar com um estado e corrigi-lo depois. Saiu na [v0.5.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.5.0) e virou três opções na [v0.8.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.8.0).
 </Decision>
 
 <Tradeoffs>
-- Um script inline no documento, e `suppressHydrationWarning` na `<html>`
-- O `next/script` não serve: ele adia conteúdo inline para depois da primeira pintura, que é a única coisa que isto não pode pagar
-- O `aria-pressed` ainda chega na hidratação, porque o servidor realmente não sabe a escolha
-
-</Tradeoffs>
-
-<Entry title="O modelo de conteúdo estava errado, e foi reescrito" date="2026-08-13" />
-
-O primeiro modelo era TypeScript tipado: cada parágrafo um array de objetos com
-`text` e `href`. Garantia que os dois idiomas existiam, e fazia uma frase com um
-trecho de código custar três objetos e nove sinais de pontuação.
-
-Pior: separava o case em quatro caixas — todos os problemas aqui, todas as
-decisões ali — então uma história precisava ser contada em quatro lugares,
-repetindo o contexto em cada um.
-
-<Decision>
-MDX, agrupado por assunto. Cada `##` ou `<Entry>` é um tema, e o sumário lista
-esses temas em vez de cinco rótulos iguais em todo projeto. Saiu na
-[v0.13.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.13.0).
-</Decision>
-
-<Tradeoffs>
-- Seis dependências novas, e plugin de MDX precisa ser nomeado por string porque o Turbopack roda em Rust
-- O sistema de tipos não enxerga mais dentro da prosa, então link quebrado se acha lendo, não compilando
-- Os dois idiomas continuam garantidos, por imports estáticos mais um script no `typecheck` — três mecanismos onde o modelo antigo precisava de um
+- Um script inline no documento, além de `suppressHydrationWarning` na `<html>`
+- O `next/script` não serve: ele adia conteúdo inline para depois da primeira pintura, que é justamente o que esta solução precisa evitar
+- O `aria-pressed` só fica correto durante a hidratação, porque o servidor realmente não sabe a preferência do leitor
 </Tradeoffs>
 
 <Entry title="Sem banner de cookies" date="2026-08-13" />
 
-O site guarda duas coisas: um cookie com o idioma escolhido e uma entrada de
-`localStorage` com o tema escolhido. As duas são escritas só quando o leitor
-clica no controle que as define.
+O site guarda duas coisas: um cookie com o idioma escolhido e uma entrada de localStorage com o tema escolhido. As duas só são escritas quando o leitor usa o controle que as define.
 
-Existe um teste que resolve se o consentimento é real: o que acontece se o
-leitor recusar? Ele escolhe português, e o site não pode lembrar. Recusar quebra
-a funcionalidade que ele acabou de pedir.
+Isso me levou a uma pergunta simples: o que exatamente o leitor estaria recusando? Se ele escolhe português, por exemplo, eu preciso guardar essa escolha para lembrar dela depois. Se ele recusar esse armazenamento, a funcionalidade que acabou de pedir deixa de funcionar.
 
 <Decision>
-Sem banner. Uma [página de privacidade](/privacy) no lugar: o que é guardado,
-por quê, e como apagar. Saiu na
-[v0.16.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.16.0).
+Sem banner. Uma [página de privacidade](/privacy) no lugar: o que é guardado, por quê e como apagar. Saiu na [v0.16.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.16.0).
 </Decision>
 
 <Tradeoffs>
-- Colocar analytics depois significa colocar o banner e reescrever aquela página
-- Quem espera um banner pode ler a ausência como esquecimento em vez de decisão
-
+- Colocar analytics depois significa adicionar o banner e reescrever aquela página
+- Quem espera um banner pode interpretar a ausência como esquecimento, e não como uma decisão
 </Tradeoffs>
 
 <Entry title="Um workflow que nunca rodou" date="2026-08-13" />
 
-O workflow que merga a `main` na `site` foi escrito para disparar em
-`release: published`. Ele nunca rodou uma vez. Não falhou — nunca começou, sem
-execução vermelha e sem notificação. A branch de conteúdo simplesmente ficou
-para trás.
+O workflow que faz o merge da main na site foi escrito para disparar em release: published. Ele nunca rodou uma vez. Não falhou — nunca começou. Não houve execução vermelha nem notificação; a branch de conteúdo simplesmente ficou para trás.
 
-O GitHub não inicia workflows a partir de eventos criados pelo `GITHUB_TOKEN`, e
-o release-please publica as releases com esse token.
+O GitHub não inicia workflows a partir de eventos criados pelo GITHUB_TOKEN, e o release-please publica as releases usando esse token.
 
-A parte desconfortável é que essa mesma propriedade já tinha sido usada de
-propósito, uma issue antes, para impedir o workflow de release de entrar em loop
-com o próprio commit. O mecanismo era conhecido e foi aplicado ao contrário.
+A parte desconfortável é que eu já tinha usado essa mesma propriedade de propósito, uma issue antes, para impedir que o workflow de release entrasse em loop com o próprio commit. O mecanismo era conhecido; eu só o apliquei ao contrário.
 
 <Decision>
-Disparar em `push` na `main`, que é ação humana. Corrigido na
-[v0.17.1](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.17.1).
+Disparar em `push` na `main`, que é uma ação humana. Corrigido na [v0.17.1](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.17.1).
 </Decision>
 
 <Tradeoffs>
-- O sync passa a rodar a cada merge e não a cada release, mais vezes que o desenhado, e mantém as branches mais próximas
-- O commit do próprio release-please continua não disparando, então um bump de versão espera o merge seguinte
+- O sync passa a rodar a cada merge, e não a cada release. Isso acontece mais vezes do que o desenho original, mas mantém as branches mais próximas.
+- O commit do próprio release-please continua não disparando o workflow, então um bump de versão espera o próximo merge.
 
+</Tradeoffs>
+
+<Entry title="O blog mora dentro do mesmo site" date="2026-08-14" />
+
+Nem tudo que eu quero escrever é um case. Tem opinião, tem coisa nova que eu testei e quis registrar, e tem nota curta que não sustenta um registro de decisões inteiro. Eu queria um lugar meu para isso, e a saída óbvia era abrir um blog separado em alguma plataforma pronta, deixando este site só com os projetos.
+
+<Decision>
+O blog ficou aqui, no mesmo repositório e no mesmo modelo de conteúdo dos cases: imports estáticos, um arquivo por idioma e o mesmo build conferindo os dois. Começou na [v0.20.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.20.0) e se acomodou na [v0.26.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.26.0), com índice, capas, tags, arquivo por mês e busca.
+</Decision>
+
+<Tradeoffs>
+- Um post só entra no site quando existe em português e em inglês. O build recusa um texto que só tem um idioma, o que protege os cases e cria atrito justamente na nota curta.
+- As tags são escritas por idioma, então `/blog/tags/processo` e `/blog/tags/process` são páginas diferentes. Trocar de idioma numa tag que não tem equivalente cai no 404.
+- Sete releases seguidas foram para o blog antes de ele ter conteúdo meu de verdade. O que sustenta essa decisão daqui em diante é escrever, e essa parte não depende de código.
 </Tradeoffs>

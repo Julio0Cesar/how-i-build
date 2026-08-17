@@ -1,10 +1,10 @@
 export const meta = {
   name: "how-i-build",
   summary:
-    "This site, and the template underneath it — rebuilt by hand, with every decision on the record.",
+    "This site is the first project documented with How I Build itself: a template, and a record of the decisions taken to build it",
   role: "Sole author",
   period: "2026",
-  updatedAt: "2026-08-13",
+  updatedAt: "2026-08-17",
   references: [
     {
       label: "Repository",
@@ -17,139 +17,121 @@ export const meta = {
   ],
 };
 
-An earlier version of this site existed and worked. It was built with AI writing
-the code, which is an odd foundation for a site whose subject is how I build.
-So it was rebuilt from nothing — the decisions below are the ones that cost
-something to make.
+Some of the projects I work on belong to clients. Others involve code that
+makes no sense to publish because it is part of the product itself. In almost
+all of them what I did stays closed, and from the outside all that is left is a
+landing page or a line on a CV. What I want to keep here is what none of that
+shows: why I made each decision, which problems I ran into, and what I weighed
+before choosing a path.
 
-The repository holds two things at once: a template anyone can use, and my
-content on top of it. Most of what follows comes from that tension.
+That is why I built How I Build. The first project I decided to document was
+the site itself, because I wanted to test the idea on something I could show in
+full, including the code. The repository holds the template that gives the site
+its structure together with the content I write about the projects. I kept the
+two parts separate so the template never needs to know anything about me or
+about the content published on it. Most of the decisions below start from that
+separation.
 
 <Entry title="One repository, two branches" date="2026-08-12" />
 
-A template and a personal site want opposite things. The template must carry no
-identity; the site is nothing but identity. Two repositories would keep them
-apart cleanly, and split the issues, the history and the case study across both.
+The template and the site content have to evolve together, but they should not
+be mixed. I wanted to use the same repository to develop the template without
+putting my content inside it, and at the same time keep the site I publish here
+up to date with those changes.
 
 <Decision>
-One repository. `main` is the template, `site` is the content, and merges only
-ever go `main → site`. A workflow does that merge on every push, so the content
-branch never drifts.
+I kept one repository and two branches. `main` holds the template and `site`
+holds the content. A workflow merges `main` → `site` on every push, keeping the
+site current without repeating the changes by hand.
 </Decision>
 
 <Tradeoffs>
-- Every template change reaches production through two merges instead of one
-- Files that both branches touch — the config, the content index — conflict, and always resolve toward `site`
-- Anyone cloning the template inherits a second branch they may never want, so the workflow exits quietly when there is none
+- Every template change goes through two merges before it reaches production.
+- Files both branches need to change, such as the config and the content index, can conflict. In those cases `site` always wins.
+- Anyone cloning the template also gets a second branch they may not need. That is why the workflow simply does nothing when that branch is missing.
 </Tradeoffs>
 
 <Entry title="The default language has no prefix" date="2026-08-12" />
 
-Three options, and each gives something up. Prefixing both languages means the
-home page can never be `/`. Dropping the locale from the URL entirely means one
-address serves two languages — only one of them can be indexed, a shared link
-opens in whatever the reader's browser prefers, and pages stop being static.
+I wanted English to be the default language of the site, but without putting
+`/en` in every URL. At the same time, Portuguese had to stay available on a
+path of its own. That left two alternatives: prefix both languages, or make no
+distinction between them in the URL. The first ruled out using `/` for English;
+the second created problems with indexing, sharing and static page generation.
 
 <Decision>
 English answers at `/projects`, Portuguese at `/pt/projects`. `/en/*` redirects
-to the bare path, so each page has exactly one address. Released in
-[v0.4.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.4.0).
+to the path without the prefix, so each page has exactly one address. Released
+in [v0.4.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.4.0).
 </Decision>
 
 <Tradeoffs>
-- The proxy is more complex than a plain redirect: rewrite, canonical redirect, and preference read only at the root
-- Building a link needs a helper rather than string concatenation
-- Reader preference applies only at `/`, so a shared deep link opens in the language it was shared in — deliberate, and it surprises people
+- The proxy is more complex than a plain redirect: rewrite, canonical redirect and preference read only at the root
+- Building a link needs a helper instead of concatenating a string
+- Reader preference applies only at `/`. A shared deep link opens in the language it was shared in; that is deliberate, but it can surprise people
 </Tradeoffs>
 
 <Entry title="The theme is applied before the page paints" date="2026-08-12" />
 
-Reading the preference from a cookie on the server looks right and fails twice.
-The first visit has no cookie, so a reader who prefers dark gets a flash of
-white — the exact visit the mechanism exists for. And reading a cookie opts
-every route out of static rendering.
+The theme had to be correct before the page first painted. Reading the cookie
+on the server looked like the natural solution, but it created two problems:
+the first visit has no cookie, so a reader who prefers the dark theme could see
+a white flash, and reading the cookie also took the routes out of static
+rendering.
 
 <Decision>
-A synchronous script in `<head>`, before anything renders. No cookie, no server
-involvement. The control holds no React state either: the class on `<html>` is
-already correct before hydration, so state could only start wrong and correct
-itself. Released in
-[v0.5.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.5.0), and
-extended to three options in
-[v0.8.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.8.0).
+A synchronous script in `<head>`, before anything renders. No cookie on the server and no React state. The class on `<html>` is already correct before hydration, so the control does not need to start with a state and fix it afterwards. Released in [v0.5.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.5.0) and extended to three options in [v0.8.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.8.0).
 </Decision>
 
 <Tradeoffs>
-- An inline script in the document, and `suppressHydrationWarning` on `<html>`
-- `next/script` cannot do this: it defers inline content past the first paint, which is the one thing this cannot afford
-- `aria-pressed` still arrives at hydration, because the server genuinely does not know the choice
-
-</Tradeoffs>
-
-<Entry title="The content model was wrong, and got rewritten" date="2026-08-13" />
-
-The first model was typed TypeScript: every paragraph an array of objects with
-`text` and `href`. It guaranteed both languages existed and made a sentence with
-one code span cost three objects and nine punctuation marks.
-
-Worse, it split a case into four boxes — every problem here, every decision
-there — so one story had to be told across four places, repeating its context
-each time.
-
-<Decision>
-MDX, grouped by topic. Each `##` or `<Entry>` is a subject, and the table of
-contents lists those instead of five labels identical on every project. Released
-in [v0.13.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.13.0).
-</Decision>
-
-<Tradeoffs>
-- Six new dependencies, and MDX plugins must be named by string because Turbopack runs them in Rust
-- The type system no longer sees inside the prose, so a broken link is found by reading, not by compiling
-- Both languages are still guaranteed, by static imports plus a script in `typecheck` — three mechanisms where the old model needed one
+- An inline script in the document, plus `suppressHydrationWarning` on `<html>`
+- `next/script` does not serve here: it defers inline content until after the first paint, which is exactly what this solution needs to avoid
+- `aria-pressed` only becomes correct during hydration, because the server genuinely does not know the reader's preference
 </Tradeoffs>
 
 <Entry title="No cookie banner" date="2026-08-13" />
 
-The site stores two things: a cookie holding the chosen language, and a
-`localStorage` entry holding the chosen theme. Both are written only when a
-reader clicks the control that sets them.
+The site stores two things: a cookie with the chosen language and a localStorage entry with the chosen theme. Both are written only when the reader uses the control that sets them.
 
-There is a test that settles whether consent is meaningful: what happens if the
-reader declines? They pick Portuguese, and the site cannot remember. Refusing
-breaks the feature they just asked for.
+That led me to a simple question: what exactly would the reader be refusing? If they choose Portuguese, for example, I need to store that choice to remember it later. If they refuse that storage, the feature they just asked for stops working.
 
 <Decision>
-No banner. A [privacy page](/privacy) instead: what is stored, why, and how to
-clear it. Released in
-[v0.16.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.16.0).
+No banner. A [privacy page](/privacy) instead: what is stored, why and how to clear it. Released in [v0.16.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.16.0).
 </Decision>
 
 <Tradeoffs>
 - Adding analytics later means adding the banner and rewriting that page
-- A visitor expecting a banner may read its absence as an oversight rather than a decision
-
+- Someone expecting a banner may read its absence as an oversight rather than a decision
 </Tradeoffs>
 
 <Entry title="A workflow that never ran" date="2026-08-13" />
 
-The workflow that merges `main` into `site` was written to trigger on
-`release: published`. It never ran once. Not failed — never started, with no red
-run and no notification. The content branch simply drifted behind.
+The workflow that merges main into site was written to trigger on release: published. It never ran once. It did not fail — it never started. There was no red run and no notification; the content branch simply fell behind.
 
-GitHub does not start workflows from events created by `GITHUB_TOKEN`, and
-release-please publishes releases with that token.
+GitHub does not start workflows from events created by GITHUB_TOKEN, and release-please publishes releases using that token.
 
-The uncomfortable part is that the same property had already been used
-deliberately, one issue earlier, to stop the release workflow from looping on
-its own commit. The mechanism was understood and then applied backwards.
+The uncomfortable part is that I had already used this same property on purpose, one issue earlier, to stop the release workflow from looping on its own commit. The mechanism was familiar; I just applied it backwards.
 
 <Decision>
-Trigger on `push` to `main`, which is a human action. Fixed in
-[v0.17.1](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.17.1).
+Trigger on `push` to `main`, which is a human action. Fixed in [v0.17.1](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.17.1).
 </Decision>
 
 <Tradeoffs>
-- The sync now runs on every merge rather than every release, which is more often than designed and keeps the branches closer
-- release-please's own commit still does not trigger it, so a version bump waits for the next merge
+- The sync now runs on every merge, not on every release. That happens more often than originally designed, but it keeps the branches closer.
+- release-please's own commit still does not trigger the workflow, so a version bump waits for the next merge.
 
+</Tradeoffs>
+
+<Entry title="The blog lives inside the same site" date="2026-08-14" />
+
+Not everything I want to write is a case study. There are opinions, there is something new I tried and wanted to record, and there are short notes that cannot carry a whole write-up of decisions. I wanted a place of my own for that, and the obvious way out was to open a separate blog on some ready-made platform, leaving this site to the projects alone.
+
+<Decision>
+The blog stayed here, in the same repository and on the same content model as the case studies: static imports, one file per language, and the same build checking both. It started in [v0.20.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.20.0) and settled in [v0.26.0](https://github.com/Julio0Cesar/how-i-build/releases/tag/v0.26.0), with an index, covers, tags, a monthly archive and search.
+</Decision>
+
+<Tradeoffs>
+- A post only reaches the site once it exists in Portuguese and in English. The build refuses a text that has a single language, which protects the case studies and creates friction exactly on the short note.
+- Tags are written per language, so `/blog/tags/processo` and `/blog/tags/process` are different pages. Switching language on a tag with no counterpart lands on the 404.
+- Seven releases in a row went to the blog before it held any writing of mine. What holds this decision up from here is writing, and that part does not depend on code.
 </Tradeoffs>
