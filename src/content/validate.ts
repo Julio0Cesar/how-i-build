@@ -1,4 +1,4 @@
-import type { CaseMeta, PostMeta } from "./types";
+import type { CaseMeta, Post, PostMeta } from "./types";
 
 /**
  * `tsc` does not read `.mdx`, so a metadata block is never type-checked where
@@ -76,4 +76,26 @@ export function postMeta(raw: unknown, source: string): PostMeta {
     coverAlt,
     tags: tags as string[] | undefined,
   };
+}
+
+/**
+ * A tag is written in each locale and keyed by the slug of its own label, so
+ * nothing connects `Process` to `Processo` except the position it sits in.
+ * `counterpartTag` reads that position to answer the language switch, and this
+ * is what keeps the convention honest: drop a tag from one locale and the
+ * build says so, instead of the switch quietly pairing the wrong two.
+ */
+export function tagAlignment(posts: Post[]): void {
+  for (const post of posts) {
+    const counted = Object.entries(post.locales).map(
+      ([locale, content]) => [locale, content.meta.tags?.length ?? 0] as const,
+    );
+
+    if (new Set(counted.map(([, length]) => length)).size > 1) {
+      const detail = counted.map(([locale, length]) => `${locale}: ${length}`).join(", ");
+      throw new Error(
+        `posts/${post.slug}: meta.tags must hold the same number of entries in every locale, because a tag pairs with its translation by position (${detail})`,
+      );
+    }
+  }
 }
