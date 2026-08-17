@@ -132,6 +132,6 @@ The blog stayed here, in the same repository and on the same content model as th
 
 <Tradeoffs>
 - A post only reaches the site once it exists in Portuguese and in English. The build refuses a text that has a single language, which protects the case studies and creates friction exactly on the short note.
-- Tags are written per language, so `/blog/tags/processo` and `/blog/tags/process` are different pages. Switching language on a tag with no counterpart lands on the 404.
+- Tags are written per language, so `/blog/tags/processo` and `/blog/tags/process` are different pages. Switching language only finds the counterpart because it sits at the same index in both files, and the build is what keeps that true.
 - Seven releases in a row went to the blog before it held any writing of mine. What holds this decision up from here is writing, and that part does not depend on code.
 </Tradeoffs>
