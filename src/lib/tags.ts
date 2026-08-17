@@ -32,6 +32,30 @@ export function allTags(locale: Locale): Tag[] {
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
 
+/**
+ * The same tag in another locale, or `null` when nothing carries it there.
+ *
+ * A tag's key is the slug of its own label, so `processo` and `process` share
+ * nothing to match on. The pairing comes from the post: a tag sits at the same
+ * index in every locale it is written in, which `tagAlignment` enforces when
+ * the content index is evaluated.
+ */
+export function counterpartTag(
+  tagSlug: string,
+  from: Locale,
+  to: Locale,
+): string | null {
+  for (const post of posts) {
+    const index = tagsOf(post, from).findIndex((label) => slug(label) === tagSlug);
+    if (index === -1) continue;
+
+    const label = tagsOf(post, to)[index];
+    if (label) return slug(label);
+  }
+
+  return null;
+}
+
 export function postsWithTag(tagSlug: string, locale: Locale): Post[] {
   return byDate(posts, locale).filter((post) =>
     tagsOf(post, locale).some((label) => slug(label) === tagSlug),

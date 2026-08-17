@@ -1,7 +1,7 @@
 import HelloEn, { meta as helloEn } from "./posts/hello-world.en.mdx";
 import HelloPt, { meta as helloPt } from "./posts/hello-world.pt.mdx";
 import type { Post } from "./types";
-import { postMeta } from "./validate";
+import { postMeta, tagAlignment } from "./validate";
 
 /**
  * Static imports, like the case studies: a missing file fails the build here,
@@ -24,3 +24,5 @@ export const posts: Post[] = [
     },
   },
 ];
+
+tagAlignment(posts);

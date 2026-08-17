@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PostCard } from "@/components/post-card";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { allTags, postsWithTag } from "@/lib/tags";
+import { allTags, counterpartTag, postsWithTag } from "@/lib/tags";
 
 const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
 
@@ -44,7 +44,22 @@ export default async function TagPage({
   if (!isLocale(locale)) notFound();
 
   const found = allTags(locale).find((entry) => entry.slug === tag);
-  if (!found) notFound();
+  if (!found) {
+    /**
+     * A tag slug is language-specific, so the language switch rebuilds a path
+     * that exists only in the locale it came from. Rather than a dead end,
+     * answer with the same tag in this locale. A slug no locale knows still
+     * reaches `notFound`.
+     */
+    for (const other of locales) {
+      if (other === locale) continue;
+
+      const counterpart = counterpartTag(tag, other, locale);
+      if (counterpart) redirect(localeHref(locale, `/blog/tags/${counterpart}`));
+    }
+
+    notFound();
+  }
 
   const dict = getDictionary(locale);
   const listed = postsWithTag(tag, locale);
