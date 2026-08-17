@@ -107,7 +107,7 @@ const en = {
     context: "Context",
     decision: "Decision",
     tradeoffs: "Trade-offs",
-    live: "Live",
+    live: "Visit site",
     repository: "Repository",
   },
 };
@@ -211,7 +211,7 @@ const pt: Dictionary = {
     context: "Contexto",
     decision: "Decisão",
     tradeoffs: "Trade-offs",
-    live: "No ar",
+    live: "Ver site",
     repository: "Repositório",
   },
 };
