@@ -1,113 +1,62 @@
 export const meta = {
   name: "LyricsLens",
   summary:
-    "A synced lyrics overlay for Linux that floats above any window, reading what is playing from MPRIS.",
+    "A synced lyrics overlay for Linux that stays on top of any window, reading what is playing from MPRIS.",
   role: "Sole author",
   period: "2026",
-  updatedAt: "2026-08-06",
+  updatedAt: "2026-08-18",
   references: [
     { label: "Repository", url: "https://github.com/Julio0Cesar/lyricslens" },
-    {
-      label: "Architecture notes",
-      url: "https://github.com/Julio0Cesar/lyricslens/blob/main/docs/ARCHITECTURE.md",
-    },
   ],
 };
 
-Lyrics that follow the song, in a window that sits above whatever is on screen,
-on a desktop where the window manager is allowed to say no.
+Lyrics that follow the song, in a window that stays on top of whatever is on the
+screen — on a desktop where the window manager is the one that decides whether
+that is allowed.
 
-Twelve releases in five days, which is what happens when the hard parts are
-discovered by measurement instead of guessed at.
+Linux first, for a simple reason: here the hard part is the window, not the data.
+Finding out what is playing is just reading a property. Being able to stay on top
+of a fullscreen application is what really decides whether the idea works.
 
-<Entry title="Rust owns the clock" date="2026-08-02" />
+<Entry title="The protocol picks the toolkit" date="2026-08-18" />
 
-Every lyrics overlay that burns CPU makes the same mistake: a `setInterval` in
-the frontend asking the backend where the song is, several times a second.
-Nothing about that is wrong until you notice the fan.
+On Wayland, a client cannot simply choose where to put its window, or tell it to
+sit above another one. That is part of the protocol, and the compositor is the
+one making that call. So for an overlay that needs to stay visible over a
+fullscreen window, there is one specific path: `wlr-layer-shell`, a protocol that
+lets a surface be treated as a layer of the screen, instead of an ordinary
+window.
+
+And then the toolkit choice gets a lot more specific: which toolkits can actually
+use this protocol from Rust today?
+
+Two of them ended up out for reasons that were not a matter of preference. Slint
+is pure Rust and has a pleasant API, but it uses `winit` to draw, and `winit`
+does not implement layer-shell. There is a third-party solution, but the crate
+itself says it is not ready for production yet.
+
+Qt with Kirigami did not fit either. There is no official Rust API for that path:
+the supported option uses `cxx-qt` together with CMake, while the interface is
+written in QML. That would put a second language and a second build system into
+the project.
 
 <Decision>
-The backend emits an event only when something changes, plus one light
-synchronisation tick per second. The frontend interpolates between ticks with
-`requestAnimationFrame`. Karaoke at 60fps with CPU near zero.
+gtk4-rs, with `gtk4-layer-shell` from the first commit, instead of leaving it as
+an option for later. That way the project stays in a single language, without
+`node_modules`, and with a binary that sits in the range of a few megabytes.
 </Decision>
 
 <Tradeoffs>
-- The frontend holds a copy of the timeline and can drift between ticks
-- Any state that matters has to travel as an event, which is more plumbing than a poll
-- Debugging means reading two clocks instead of one
-</Tradeoffs>
-
-<Entry title="On Wayland, a window cannot place itself" date="2026-08-03" />
-
-Tauri offers `alwaysOnTop`, and it does nothing here. That is not a bug: on
-Wayland the client is not allowed to position itself or raise itself above
-others. The compositor decides, by protocol design.
-
-The spike measured what actually happens on Hyprland:
-
-- `alwaysOnTop: true` — a no-op; the window opened tiled, ignoring the size it asked for
-- `hyprctl setfloating` plus `pin` — works, and exact geometry is accepted
-- `transparent` and `decorations: false` — both work
-- Surviving another window going fullscreen — not as a window; yes as a layer
-
-<Decision>
-Two strategies. By default a floating window with compositor rules, which covers
-normal use. Optionally a `wlr-layer-shell` surface, which survives fullscreen —
-it stops being a window at all, disappearing from `hyprctl clients` and
-appearing in `hyprctl layers` at the overlay level.
-</Decision>
-
-Three details the implementation has to get right, each found the hard way:
-`init_layer_shell` must run before the window is realised, because the surface
-type is fixed at that point in the protocol — which is why the window is born
-invisible and why the option needs a restart. Exclusive zone `-1`, or the
-compositor shrinks every other window to make room, as it would for a taskbar.
-`KeyboardMode::None`, or the layer steals the keyboard from whatever is focused.
-
-The layer mode is off by default because a layer cannot be dragged. Position
-comes from preferences instead of the mouse — a trade, not an improvement.
-
-<Entry title="Anchoring the clock to an edge" date="2026-08-04" />
-
-The lyric line changed up to a second late. A second is the difference between
-karaoke and subtitles.
-
-<Decision>
-Anchor the clock to the edge of the position report rather than to its value.
-Measured: the error fell from ±1000ms to ±71ms, at no cost worth naming.
-</Decision>
-
-<Tradeoffs>
-- It relies on the player reporting position at a steady cadence, which not all of them do
-- The remaining ±71ms is the floor of what MPRIS reports, not something the code can improve
-</Tradeoffs>
-
-<Entry title="Two windows instead of one" date="2026-08-04" />
-
-The settings screen and the overlay are the same application, and one of them is
-meant to sit on screen for hours.
-
-<Decision>
-Separate windows. The overlay never loads the CSS or JavaScript of the settings
-interface, which is what keeps its memory footprint small.
-</Decision>
-
-<Tradeoffs>
-- State shared between them has to cross a process boundary rather than a prop
-- Two windows to keep visually consistent, and two to test
-</Tradeoffs>
-
-<Entry title="Deferring translation without deferring the schema" date="2026-08-05" />
-
-Translated lyrics were wanted and were not going to be built yet.
-
-<Decision>
-Reserve the field in the cache schema now, fill it later. The feature is
-deferred; the migration is avoided.
-</Decision>
-
-<Tradeoffs>
-- A column that holds nothing, which reads as an oversight to anyone who does not know why
-- If the eventual shape differs from the reserved one, the migration comes back anyway
+- Learning GTK4 is a real cost at the start, especially in the first few weeks.
+- The interface is built in Rust and Pango instead of CSS, so getting to a good
+  visual finish takes longer.
+- Choosing `wlr-layer-shell` also limits the desktops. Mutter, used by GNOME,
+  does not implement layer-shell and does not intend to. On GNOME, then, another
+  path has to be worked out.
+- libadwaita would make the settings window a lot easier to build, but its
+  background conflicts with the transparency the overlay needs. So it ends up
+  making sense in one window, but not in the other.
+- The crates need to stay aligned on versions. When there is a mismatch, the
+  error that shows up can be a fairly confusing type error, instead of simply
+  saying the versions do not match.
 </Tradeoffs>

@@ -1,114 +1,61 @@
 export const meta = {
   name: "LyricsLens",
   summary:
-    "Overlay de letras sincronizadas para Linux, que flutua sobre qualquer janela lendo do MPRIS o que está tocando.",
+    "Overlay de letras sincronizadas para Linux, que fica por cima de qualquer janela lendo do MPRIS o que está tocando.",
   role: "Autor único",
   period: "2026",
-  updatedAt: "2026-08-06",
+  updatedAt: "2026-08-18",
   references: [
     { label: "Repositório", url: "https://github.com/Julio0Cesar/lyricslens" },
-    {
-      label: "Notas de arquitetura",
-      url: "https://github.com/Julio0Cesar/lyricslens/blob/main/docs/ARCHITECTURE.md",
-    },
   ],
 };
 
-Letra acompanhando a música, numa janela que fica acima do que estiver na tela —
-num desktop onde o gerenciador de janelas tem o direito de dizer não.
+Letra acompanhando a música, numa janela que fica por cima do que estiver na tela —
+num desktop onde o gerenciador de janelas é quem decide se isso pode ou não.
 
-Doze releases em cinco dias, que é o que acontece quando as partes difíceis são
-descobertas medindo em vez de supondo.
+Linux primeiro, por um motivo simples: aqui a parte difícil é a janela, não os
+dados. Descobrir o que está tocando é só ler uma propriedade. Conseguir ficar por
+cima de uma aplicação em tela cheia é o que realmente decide se a ideia funciona.
 
-<Entry title="O Rust é dono do relógio" date="2026-08-02" />
+<Entry title="O protocolo escolhe o toolkit" date="2026-08-18" />
 
-Todo overlay de letras que consome CPU comete o mesmo erro: um `setInterval` no
-frontend perguntando ao backend onde a música está, várias vezes por segundo.
-Não há nada de errado nisso até você ouvir a ventoinha.
+No Wayland, um cliente não pode simplesmente escolher onde colocar sua janela ou
+mandar ela ficar acima de outra. Isso faz parte do protocolo, e quem toma essa
+decisão é o compositor. Para um overlay que precisa continuar visível sobre uma
+janela em tela cheia, existe então um caminho específico: `wlr-layer-shell`, um
+protocolo que permite que uma superfície seja tratada como uma camada da tela, em
+vez de uma janela comum.
+
+E aí a escolha do toolkit fica bem mais específica: quais toolkits conseguem
+usar esse protocolo a partir de Rust hoje?
+
+Dois acabaram ficando de fora por motivos que não eram questão de preferência. O
+Slint é Rust puro e tem uma API bem agradável, mas usa o `winit` para desenhar, e
+o `winit` não implementa layer-shell. Existe uma solução de terceiro, mas o
+próprio crate diz que ainda não está pronto para produção.
+
+Qt com Kirigami também não encaixou. Não existe uma API Rust oficial para esse
+caminho: a opção suportada usa `cxx-qt` junto com CMake, enquanto a interface é
+feita em QML. Isso colocaria uma segunda linguagem e um segundo sistema de build
+no projeto.
 
 <Decision>
-O backend emite evento só quando algo muda, mais um tick leve de sincronização
-por segundo. O frontend interpola entre os ticks com `requestAnimationFrame`.
-Karaokê a 60fps com CPU perto de zero.
+gtk4-rs, com `gtk4-layer-shell` desde o primeiro commit, em vez de deixar isso
+como uma opção para depois. Assim o projeto continua com uma linguagem só, sem
+`node_modules`, e com um binário que fica na casa de poucos megabytes.
 </Decision>
 
 <Tradeoffs>
-- O frontend mantém uma cópia da linha do tempo e pode divergir entre ticks
-- Todo estado que importa precisa viajar como evento, o que é mais encanamento que um poll
-- Depurar passa a ser ler dois relógios em vez de um
-</Tradeoffs>
-
-<Entry title="No Wayland, uma janela não pode se posicionar" date="2026-08-03" />
-
-O Tauri oferece `alwaysOnTop`, e aqui ele não faz nada. Não é bug: no Wayland o
-cliente não tem permissão para se posicionar nem para se colocar acima dos
-outros. Quem decide é o compositor, por desenho do protocolo.
-
-O spike mediu o que de fato acontece no Hyprland:
-
-- `alwaysOnTop: true` — no-op; a janela abriu tiled, ignorando o tamanho pedido
-- `hyprctl setfloating` mais `pin` — funciona, e a geometria exata é aceita
-- `transparent` e `decorations: false` — os dois funcionam
-- Sobreviver a outra janela em tela cheia — não como janela; sim como camada
-
-<Decision>
-Duas estratégias. Por padrão, janela flutuante com regras do compositor, que
-cobre o uso normal. Opcionalmente, uma superfície `wlr-layer-shell`, que
-sobrevive à tela cheia — ela deixa de ser janela, some de `hyprctl clients` e
-aparece em `hyprctl layers` no nível de overlay.
-</Decision>
-
-Três detalhes que a implementação precisa acertar, cada um descoberto no
-tropeço: `init_layer_shell` tem que rodar antes de a janela ser realizada,
-porque o tipo da superfície fica definido no protocolo a partir daí — por isso a
-janela nasce invisível e por isso a opção exige reiniciar. Zona exclusiva `-1`,
-senão o compositor encolhe todas as outras janelas para abrir espaço, como faria
-para uma barra de tarefas. `KeyboardMode::None`, senão a camada rouba o teclado
-de quem estiver em foco.
-
-O modo camada vem desligado porque uma camada não pode ser arrastada. A posição
-passa a vir das preferências em vez do mouse — é uma troca, não uma melhoria.
-
-<Entry title="Ancorar o relógio numa borda" date="2026-08-04" />
-
-A linha da letra trocava com até um segundo de atraso. Um segundo é a diferença
-entre karaokê e legenda.
-
-<Decision>
-Ancorar o relógio na borda do relatório de posição, em vez de no valor dele.
-Medido: o erro caiu de ±1000ms para ±71ms, sem custo que valha mencionar.
-</Decision>
-
-<Tradeoffs>
-- Depende de o player reportar posição em cadência estável, o que nem todos fazem
-- Os ±71ms restantes são o piso do que o MPRIS informa, não algo que o código melhore
-</Tradeoffs>
-
-<Entry title="Duas janelas em vez de uma" date="2026-08-04" />
-
-A tela de configurações e o overlay são a mesma aplicação, e um dos dois fica
-horas na tela.
-
-<Decision>
-Janelas separadas. O overlay nunca carrega o CSS nem o JavaScript da interface
-de configuração, e é isso que mantém o consumo de memória baixo.
-</Decision>
-
-<Tradeoffs>
-- Estado compartilhado entre elas precisa cruzar uma fronteira de processo, não uma prop
-- Duas janelas para manter visualmente coerentes, e duas para testar
-</Tradeoffs>
-
-<Entry title="Adiar a tradução sem adiar o schema" date="2026-08-05" />
-
-Letra traduzida era desejada e não ia ser construída ainda.
-
-<Decision>
-Reservar o campo no schema do cache agora e preencher depois. A funcionalidade
-fica adiada; a migração fica evitada.
-</Decision>
-
-<Tradeoffs>
-- Uma coluna que não guarda nada, e que parece descuido para quem não sabe o motivo
-- Se o formato final divergir do reservado, a migração volta assim mesmo
+- Aprender GTK4 é um custo real no começo, principalmente nas primeiras semanas.
+- A interface é feita em Rust e Pango em vez de CSS, então chegar num acabamento
+  visual bom demora mais.
+- Escolher `wlr-layer-shell` também limita os desktops. O Mutter, usado pelo
+  GNOME, não implementa layer-shell e não pretende implementar. No GNOME,
+  portanto, é preciso pensar em outro caminho.
+- A libadwaita deixaria a janela de preferências bem mais fácil de fazer, mas o
+  fundo dela entra em conflito com a transparência que o overlay precisa. Por
+  isso ela acaba fazendo sentido em uma janela, mas não na outra.
+- Os crates precisam estar alinhados nas versões. Quando há um descasamento, o
+  erro que aparece pode ser um erro de tipo bem confuso em vez de simplesmente
+  dizer que as versões não combinam.
 </Tradeoffs>
