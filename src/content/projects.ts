@@ -10,7 +10,7 @@ export const projects: Project[] = [
     slug: "how-i-build",
     status: "prod",
     visibility: "public",
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Bun"],
+    stack: ["Next.js", "TypeScript", "Bun"],
     markUrl: "/icon.svg",
     liveUrl: "https://how-i-build-delta.vercel.app",
     repoUrl: "https://github.com/Julio0Cesar/how-i-build",
@@ -29,7 +29,7 @@ export const projects: Project[] = [
     slug: "lyricslens",
     status: "prod",
     visibility: "public",
-    stack: ["Rust", "Tauri", "React", "TypeScript"],
+    stack: ["Rust"],
     markUrl: "/brand/lyricslens.svg",
     repoUrl: "https://github.com/Julio0Cesar/lyricslens",
     cases: {
