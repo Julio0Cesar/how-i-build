@@ -28,7 +28,21 @@ export const prose = {
       {children}
     </ol>
   ),
-  code: ({ children }: { children?: ReactNode }) => (
-    <code className="bg-muted px-1 py-0.5 font-mono text-[0.9em]">{children}</code>
+  pre: ({ children }: { children?: ReactNode }) => (
+    <pre className="mt-5 max-w-[68ch] overflow-x-auto border border-rule bg-muted p-4 font-mono text-[0.85em] leading-relaxed">
+      {children}
+    </pre>
   ),
+  /**
+   * A fenced block arrives as `code` inside `pre` and carries a `language-*`
+   * class. Styling it like inline code would stack a second background and a
+   * second padding inside the block, so the fenced case renders bare and lets
+   * the `pre` above own the frame.
+   */
+  code: ({ children, className }: { children?: ReactNode; className?: string }) =>
+    className ? (
+      <code className={className}>{children}</code>
+    ) : (
+      <code className="bg-muted px-1 py-0.5 font-mono text-[0.9em]">{children}</code>
+    ),
 };
