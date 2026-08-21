@@ -1,0 +1,312 @@
+export const meta = {
+  title: "O que acontece quando você instala Rust",
+  summary:
+    "Seguir o comando de instalação até o fim: o script que ele baixa, os atalhos que ele planta no PATH, e onde o compilador de verdade foi parar.",
+  publishedAt: "2026-08-21",
+  coverUrl: "/blog/rust-learn.webp",
+  coverAlt: "Trilho de trem fotografado ao rés do aço, sumindo no horizonte entre postes da rede elétrica",
+  tags: ["Estudo", "Processo"],
+};
+
+Comecei a ler o [Rust Book](https://doc.rust-lang.org/book) para entender as
+raízes da linguagem, e acabei fazendo outra coisa: parando em cada comando
+antes de rodar. O capítulo 1 é curto e o livro claramente espera que você passe
+batido por ele. Eu não passei — e o que estava escondido ali era menos sobre
+Rust e mais sobre como um programa chega até a sua máquina.
+
+## O comando que eu não tinha lido
+
+A instalação é uma linha só:
+
+```bash
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+```
+
+`curl` é um cliente HTTP de terminal. Faz o mesmo que o navegador quando você
+abre uma URL: pede um recurso e recebe bytes. A diferença é que, por padrão,
+ele joga esses bytes na tela em vez de salvar em arquivo.
+
+Isso já responde uma coisa que eu nunca tinha parado pra pensar: um endpoint
+HTTP não sabe nem se importa com quem está do outro lado. Se os bytes que ele
+devolve são HTML, JSON ou um script de shell, isso é convenção — não regra.
+
+As flags são cuidado com o canal: `--proto '=https'` recusa qualquer coisa que
+não seja HTTPS, e `--tlsv1.2` define a versão mínima de criptografia aceita. O
+`-sSf` cala a barra de progresso mas mantém erros visíveis, e faz o comando
+falhar num erro HTTP — sem ele, uma página de erro 404 seria tratada como se
+fosse o script.
+
+O `|` é a parte que importa. Ele é um pipe: liga a saída do `curl` direto na
+entrada do `sh`. Ou seja, o script nunca toca o disco. O shell lê o texto
+conforme ele chega pela rede e vai executando.
+
+É por isso que esse padrão é controverso. Você está executando código que não
+leu, vindo de um servidor, com as suas permissões de usuário.
+
+Então baixei sem executar, só pra ver o que tinha ali:
+
+```bash
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -o /tmp/rustup.sh
+wc -l /tmp/rustup.sh
+```
+
+910 linhas. E a surpresa é que nenhuma delas instala Rust.
+
+O arquivo é um despachante. Shell puro, portátil, sem nada compilado dentro
+dele. A primeira coisa que ele faz é perguntar à máquina quem ela é:
+
+```bash
+uname -s   # sistema operacional
+uname -m   # arquitetura do processador
+```
+
+Ele guarda as duas respostas, e mais adiante junta as duas numa string só:
+
+```bash
+_arch="${_cputype}-${_ostype}"      # linha 576
+_url="${_url}/${_arch}/rustup-init${_ext}"   # linha 104
+```
+
+No meu caso isso dá `x86_64-unknown-linux-gnu`. É essa string que vira a URL do
+binário certo.
+
+O motivo é o que eu já sabia de C mas nunca tinha visto acontecer na minha
+frente: binário compilado é código de máquina, específico de um processador e
+de um formato de executável. Um `.exe` do Windows não roda no Linux, e um
+binário ARM não roda num x86. Como existem dezenas de combinações possíveis, o
+jeito de caber num único comando é mandar primeiro um script leve que descobre
+o alvo e busca só a peça certa.
+
+Um detalhe que me pegou: ele não olha distro. Não existe build "pra Arch" e
+outro "pra Ubuntu". O que importa é sistema, processador e a libc — a
+biblioteca C do sistema, `gnu` ou `musl`. A distro é irrelevante para o
+binário.
+
+## Onde o Rust foi parar
+
+Terminada a instalação, o livro manda rodar `rustc --version` e seguir em
+frente. Fui olhar a pasta antes:
+
+```bash
+ls ~/.cargo/bin
+```
+
+```
+cargo -> rustup          rust-analyzer -> rustup
+cargo-clippy -> rustup   rust-gdb -> rustup
+cargo-fmt -> rustup      rustc -> rustup
+clippy-driver -> rustup  rustdoc -> rustup
+rls -> rustup            rustfmt -> rustup
+```
+
+Todos são symlinks — atalhos que não contêm nada, só apontam pra outro arquivo.
+E todos apontam pro mesmo lugar.
+
+Então o `rustc` que está no meu PATH não é o compilador. É o `rustup`
+fantasiado. Isso tem nome: shim, um intermediário que recebe a chamada e
+repassa.
+
+O compilador de verdade está em outro lugar:
+
+```bash
+ls ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/
+```
+
+Foi aqui que a confusão que eu carregava se desfez. Eu achava que o `rustup`
+fosse o Rust, porque tudo estava dentro da pasta dele. Não é. O `rustup` é o
+almoxarife: ele não compila nada, ele guarda as ferramentas e entrega a certa
+quando você pede. `~/.rustup` é só o armário.
+
+Os três nomes, sem sobreposição:
+
+- `rustc` — o compilador. Transforma `.rs` em binário.
+- `cargo` — build system e gerenciador de pacotes. Chama o `rustc` por você e
+  cuida das dependências.
+- `rustup` — gerenciador de versões. Instala toolchains e decide qual está
+  ativa. É o análogo do `nvm`, não do `npm`.
+
+E aí vem a pergunta óbvia: por que o teatro dos atalhos? Se o compilador está
+numa pasta, por que não colocar essa pasta no PATH e acabou?
+
+Porque várias toolchains podem coexistir — `stable`, `nightly`, `beta`, uma
+versão fixa como 1.75.0 — cada uma com o seu próprio `rustc`. Se a pasta da
+toolchain estivesse direto no PATH, trocar de versão exigiria reescrever o PATH
+toda vez, e não daria pra ter um projeto em stable e outro em nightly ao mesmo
+tempo.
+
+O shim resolve porque ele decide na hora da chamada. Ele olha se existe um
+`rust-toolchain.toml` na pasta, se há um override configurado para aquele
+diretório, se o comando veio com `cargo +nightly`. Só então escolhe qual `rustc`
+executar. É o truque do `nvm`, só que por diretório e sem precisar de um
+`nvm use`.
+
+## Do texto ao binário
+
+O `rustc main.rs` do livro produz um arquivo chamado `main`. O que eu queria
+saber era o que exatamente ele fez.
+
+O ponto de partida é que o processador não entende texto. Ele entende números,
+e cada número é uma instrução: some isso, pule pra lá, escreva ali. É só isso
+que ele sabe ler. O meu `main.rs` são 45 bytes de letras que eu entendo e ele
+não — `fn` e `println!` não significam nada para o silício.
+
+Compilar é traduzir. Dá pra ver os dois lados:
+
+```bash
+cat main.rs        # legível, é o meu código
+head -c 200 main   # ELF, e depois o que parece lixo
+```
+
+Não é lixo. São os números que o processador entende, e o terminal tentando
+mostrar cada byte como se fosse letra. O `ELF` no começo é o rótulo do formato
+de executável do Linux — é por ele que o sistema reconhece o arquivo depois.
+
+A tradução não acontece de uma vez. O `rustc` passa o código por uma esteira:
+
+1. **Ler o texto.** Quebra em pedaços com significado — isso é uma função, isso
+   é uma chamada, isso é uma string — e monta uma árvore na memória. Chave
+   faltando morre aqui.
+2. **Conferir se faz sentido.** Os tipos batem? A variável existe? Quem é o dono
+   de cada valor? É aqui que mora o borrow checker, e é essa etapa que torna
+   Rust, Rust.
+3. **Simplificar e otimizar.** Reescreve o código numa forma interna mais crua e
+   corta desperdício.
+4. **Gerar código de máquina.** Os números.
+5. **Juntar tudo.** O meu código sozinho não roda: ele chama `println!`, que
+   vive na biblioteca padrão. O linker cola as peças num executável único — é
+   por isso que o livro avisa que você precisa de um linker instalado.
+
+Dá pra ver a etapa 2 sozinha declarando um inteiro e enfiando uma string
+dentro: o compilador entende o código perfeitamente e recusa o significado.
+
+Depois da etapa 5 o `rustc` termina e some. Compilar e executar são dois atos
+separados, e o segundo não é dele. Quando eu digito `./main`, quem age é o
+sistema operacional: lê o arquivo, vê o rótulo ELF, carrega os números na
+memória e manda o processador começar pelo ponto de entrada.
+
+Consequência prática: dá pra apagar o `main.rs` e o `./main` continua rodando.
+E dá pra mandar esse binário pra alguém que não tem Rust instalado.
+
+Sobrou uma pergunta boba que me incomodou: por que 45 bytes de texto viraram um
+arquivo de 4,4 MB? São dois motivos, e dá pra medir a separação passando um
+`strip` no binário, que remove informação de depuração.
+
+O primeiro é que não é só o meu código ali dentro. Na etapa 5 o linker colou a
+biblioteca padrão junto — o `println!` não é meu, é código pronto que agora mora
+dentro do executável. Isso responde por uns 340 KB.
+
+O resto, quase todo o tamanho, é um mapa: um índice que liga cada trecho de
+código de máquina de volta ao arquivo `.rs`, com nome de função e número de
+linha. É ele que faz um programa que quebra dizer "linha 3 do main.rs" em vez de
+cuspir um endereço de memória.
+
+## O cargo e os três arquivos
+
+O `rustc` na mão só serve pra um arquivo sozinho. A partir daí o livro passa pro
+`cargo`, e essa é a parte que eu já reconhecia de outro lugar.
+
+O problema que um gerenciador de pacotes resolve é sempre o mesmo: ninguém
+escreve tudo do zero, e assim que você depende do código de outra pessoa surgem
+quatro dores — onde acho, como baixo, qual versão, e o que fazer quando essa
+biblioteca depende de outras três. No Rust, uma biblioteca publicada se chama
+crate, e elas vivem no crates.io.
+
+O paralelo é direto: `cargo` está para o `npm` assim como crate está para
+package e crates.io para o registry. A diferença é que o `cargo` faz mais — ele
+também é o build system, quem chama o `rustc` por você. No mundo JS seria npm e
+vite na mesma ferramenta.
+
+Um projeto novo nasce com um `Cargo.toml`:
+
+```toml
+[package]
+name = "hello_cargo"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+```
+
+TOML é um formato de configuração, como JSON ou YAML mas feito pra humano ler:
+`[algo]` abre uma seção e dentro dela vêm linhas `chave = valor`. A `edition` é
+a safra do Rust — a linguagem muda de idioma a cada poucos anos sem quebrar
+código antigo.
+
+O ponto central é que esse arquivo é escrito por mim. É declaração de intenção,
+e o `cargo` nunca inventa nada ali sozinho. Rodando `cargo add rand`, a seção
+vazia ganha uma linha:
+
+```toml
+[dependencies]
+rand = "0.10.2"
+```
+
+Parece uma versão exata, mas não é. Isso é uma faixa: 0.10.2 ou qualquer versão
+posterior compatível — aceita 0.10.7, recusa 0.11. O `Cargo.toml` é vago de
+propósito: ele diz o que eu aceito, não o que eu tenho.
+
+E apareceu um arquivo que eu não pedi, o `Cargo.lock`. Contei quantos pacotes
+ele lista:
+
+```bash
+grep -c '^\[\[package\]\]' Cargo.lock
+```
+
+Nove. Eu tinha pedido um. O `rand` depende de outros crates, que dependem de
+mais outros, e o `cargo` seguiu a corrente até o fim e anotou todos — isso é
+dependência transitiva.
+
+A diferença entre os dois arquivos é essa: o `.toml` é o que eu quero, curto e
+vago; o `.lock` é o que eu tenho, longo e exato, com a versão precisa de cada um
+dos nove mais um checksum de cada um. Sem o `.lock`, eu compilaria hoje com
+0.10.2 e outra pessoa compilaria amanhã com 0.10.3 — e se a 0.10.3 tiver um bug,
+o programa quebra na máquina dela e não na minha. Ele só muda quando eu mandar,
+com `cargo update`.
+
+Depois do primeiro `cargo build` nasce a terceira peça, o `target/`. São 27 MB
+para um programa que imprime uma frase, e faz sentido: ali dentro estão os nove
+crates compilados um por um, o meu binário, e cache pra não recompilar tudo na
+próxima vez. O que importa é que é descartável — nada de valor único mora ali, e
+apagar só custa tempo. O `.gitignore` que o `cargo` gera tem uma linha só, e é
+essa pasta.
+
+Fechando os três: o `Cargo.toml` é o que eu quero e eu escrevo; o `Cargo.lock` é
+o que eu tenho e o `cargo` escreve; os dois vão pro Git. O `target/` é resultado
+de compilação e fica de fora, porque dá pra regenerar a partir dos outros dois.
+
+Isso também esclareceu o que "build" significa, que é mais amplo do que
+compilar. Quando eu rodo `cargo build`, ele lê o `.toml` e o `.lock` pra saber o
+que precisa, baixa o que falta pro cache global em `~/.cargo/registry`, chama o
+`rustc` uma vez para cada um dos nove crates, chama de novo para o meu código e
+linka tudo num executável. O `cargo` é o mestre de obra e o `rustc` é o pedreiro:
+aquela esteira de cinco etapas roda dez vezes aqui, uma por crate.
+
+Faltava entender os dois modos de build, e esse eu preferi medir. Escrevi um
+programa que soma 500 milhões de quadrados e cronometrei os dois binários:
+
+```
+debug     3,65 s
+release   1,81 ms
+```
+
+Duas mil vezes de diferença. Mas a conclusão não é "release é mais rápido" —
+500 milhões de iterações em 1,8 ms dariam 275 bilhões de voltas por segundo, o
+que o meu processador não faz. O laço não rodou. O otimizador percebeu que o
+resultado não depende de nada externo, calculou o valor durante a compilação, e
+o binário de release praticamente só imprime um número pronto.
+
+É isso que otimizar significa: o compilador tem liberdade pra reescrever o
+código de qualquer jeito, desde que o resultado observável seja o mesmo. O preço
+é o tempo de compilação, e daí os dois modos existirem — debug compila rápido,
+roda devagar e carrega o mapa que dá mensagens de erro decentes; release compila
+devagar e roda rápido. Por isso `cargo run` usa debug por padrão: no dia a dia
+eu recompilo dezenas de vezes por hora e rodo uma.
+
+---
+
+O capítulo 1 do livro cabe em quinze minutos. Eu levei uma tarde, e o que ficou
+não foi sintaxe de Rust — foi entender que o comando de instalação é um script
+que descobre a minha máquina, que o `rustc` do PATH é um atalho, que o binário
+carrega a biblioteca padrão junto, e que build e compilação não são a mesma
+coisa. Nada disso é específico de Rust. Só estava sempre escondido atrás de um
+comando que eu copiava sem ler.
