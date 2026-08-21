@@ -1,11 +1,7 @@
-import WorkspaceEn, { meta as workspaceEn } from "./posts/placeholder-workspace.en.mdx";
-import WorkspacePt, { meta as workspacePt } from "./posts/placeholder-workspace.pt.mdx";
-import CircuitEn, { meta as circuitEn } from "./posts/placeholder-circuit.en.mdx";
-import CircuitPt, { meta as circuitPt } from "./posts/placeholder-circuit.pt.mdx";
-import RepeatEn, { meta as repeatEn } from "./posts/placeholder-repeat.en.mdx";
-import RepeatPt, { meta as repeatPt } from "./posts/placeholder-repeat.pt.mdx";
 import HelloEn, { meta as helloEn } from "./posts/hello-world.en.mdx";
 import HelloPt, { meta as helloPt } from "./posts/hello-world.pt.mdx";
+import InstallingRustEn, { meta as installingRustEn } from "./posts/installing-rust.en.mdx";
+import InstallingRustPt, { meta as installingRustPt } from "./posts/installing-rust.pt.mdx";
 import type { Post } from "./types";
 import { postMeta, tagAlignment } from "./validate";
 
@@ -30,41 +26,15 @@ export const posts: Post[] = [
     },
   },
   {
-    slug: "placeholder-workspace",
+    slug: "installing-rust",
     locales: {
       en: {
-        meta: postMeta(workspaceEn, "posts/placeholder-workspace.en.mdx"),
-        Body: WorkspaceEn,
+        meta: postMeta(installingRustEn, "posts/installing-rust.en.mdx"),
+        Body: InstallingRustEn,
       },
       pt: {
-        meta: postMeta(workspacePt, "posts/placeholder-workspace.pt.mdx"),
-        Body: WorkspacePt,
-      },
-    },
-  },
-  {
-    slug: "placeholder-circuit",
-    locales: {
-      en: {
-        meta: postMeta(circuitEn, "posts/placeholder-circuit.en.mdx"),
-        Body: CircuitEn,
-      },
-      pt: {
-        meta: postMeta(circuitPt, "posts/placeholder-circuit.pt.mdx"),
-        Body: CircuitPt,
-      },
-    },
-  },
-  {
-    slug: "placeholder-repeat",
-    locales: {
-      en: {
-        meta: postMeta(repeatEn, "posts/placeholder-repeat.en.mdx"),
-        Body: RepeatEn,
-      },
-      pt: {
-        meta: postMeta(repeatPt, "posts/placeholder-repeat.pt.mdx"),
-        Body: RepeatPt,
+        meta: postMeta(installingRustPt, "posts/installing-rust.pt.mdx"),
+        Body: InstallingRustPt,
       },
     },
   },
