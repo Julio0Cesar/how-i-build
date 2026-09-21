@@ -2,6 +2,8 @@ import HelloEn, { meta as helloEn } from "./posts/hello-world.en.mdx";
 import HelloPt, { meta as helloPt } from "./posts/hello-world.pt.mdx";
 import InstallingRustEn, { meta as installingRustEn } from "./posts/installing-rust.en.mdx";
 import InstallingRustPt, { meta as installingRustPt } from "./posts/installing-rust.pt.mdx";
+import OneDomainEn, { meta as oneDomainEn } from "./posts/one-domain-three-subdomains.en.mdx";
+import OneDomainPt, { meta as oneDomainPt } from "./posts/one-domain-three-subdomains.pt.mdx";
 import type { Post } from "./types";
 import { postMeta, tagAlignment } from "./validate";
 
@@ -35,6 +37,19 @@ export const posts: Post[] = [
       pt: {
         meta: postMeta(installingRustPt, "posts/installing-rust.pt.mdx"),
         Body: InstallingRustPt,
+      },
+    },
+  },
+  {
+    slug: "one-domain-three-subdomains",
+    locales: {
+      en: {
+        meta: postMeta(oneDomainEn, "posts/one-domain-three-subdomains.en.mdx"),
+        Body: OneDomainEn,
+      },
+      pt: {
+        meta: postMeta(oneDomainPt, "posts/one-domain-three-subdomains.pt.mdx"),
+        Body: OneDomainPt,
       },
     },
   },

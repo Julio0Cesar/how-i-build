@@ -1,0 +1,119 @@
+export const meta = {
+  title: "Um domínio, três subdomínios e um worker que mantém a luz acesa",
+  summary:
+    "Por que um projeto pessoal acabou precisando de um domínio, como o site, a API e o e-mail dividem ele, e o pedaço pequeno de código que impede a hospedagem gratuita de dormir.",
+  publishedAt: "2026-09-21",
+  coverUrl: "/blog/lighthouse.webp",
+  coverAlt: "Um farol branco sobre uma ponta de rochas sob nuvens pesadas, com o mar à frente e a casa do faroleiro de telhado vermelho ao lado",
+  tags: ["Infraestrutura", "Processo"],
+};
+
+Por dois meses o Orbit rodou sem domínio próprio. O app web respondia num
+endereço da Vercel, a API num endereço do Render, e estava bom assim, porque
+ninguém além de mim usava. O que forçou a pergunta não foi a URL. Foi o
+e-mail.
+
+## O e-mail que só chegava para mim
+
+A API manda quatro e-mails transacionais: confirme seu endereço, bem-vindo,
+redefina sua senha, crie uma senha. Eles saem pelo Resend, e uma conta do
+Resend sem domínio verificado só consegue enviar para o endereço que é dono da
+conta. Qualquer outro destinatário recebe um 422 de volta. Então o e-mail de
+confirmação funcionava perfeitamente na minha caixa e para mais ninguém, e um
+e-mail confirmado é o que libera o plano pago. O produto tinha uma porta que só
+eu conseguia abrir.
+
+Verificar um domínio no Resend significa ter um. O mesmo domínio também me
+daria um endereço de suporte que não é o meu Gmail pessoal, e um nome de
+empresa no checkout do Stripe que diz Orbit em vez do meu primeiro nome.
+
+## Um domínio, não um por projeto
+
+O primeiro instinto foi comprar `orbit.alguma-coisa`. O segundo pensamento foi
+que eu tenho mais de um projeto, e não queria comprar, renovar e configurar um
+domínio para cada um. Então comprei um domínio no meu próprio nome e dei a cada
+projeto um subdomínio debaixo dele. O Orbit mora em `orbit.byjuliocesa.dev`.
+O próximo projeto ganha o próprio nome no mesmo nível, sem compra nova e sem
+conta de DNS nova.
+
+Essa escolha se estende ao e-mail, que era a parte de que eu não tinha certeza.
+O Resend verifica um subdomínio como se fosse um domínio: `orbit.byjuliocesa.dev`
+tem os próprios registros de SPF e DKIM, então a reputação do e-mail de um
+projeto nunca encosta na de outro. E receber funciona do mesmo jeito: o
+roteamento de e-mail da Cloudflare encaminha `suporte@orbit.byjuliocesa.dev`
+para a minha caixa de graça, sem servidor de e-mail para manter.
+
+O custo é que os endereços ficam mais longos que `suporte@orbit.app`, e soam
+como o portfólio de um desenvolvedor, não como uma empresa. Para um portfólio
+de projetos de uma pessoa só, essa é a descrição honesta.
+
+## Três subdomínios, três registros diferentes
+
+O DNS mora na Cloudflare, e três registros que parecem iguais no papel acabaram
+precisando de três formatos diferentes.
+
+A API foi a fácil: `api.orbit.byjuliocesa.dev` é um CNAME para o serviço no
+Render. O Render pede esse registro, verifica, emite um certificado, e o
+endereço antigo continua funcionando ao lado.
+
+O site foi onde eu aprendi alguma coisa. A Vercel também sugere um CNAME, e a
+Cloudflare se recusou a criar: um CNAME não pode dividir um nome com nenhum
+outro registro, e `orbit.byjuliocesa.dev` já carregava os registros MX que
+fazem o endereço de suporte receber e-mail. A Vercel mostrou "configuração
+inválida" até eu trocar o CNAME por um registro A apontando para o endereço
+da Vercel, que convive com os MX sem reclamar.
+
+O e-mail levou mais registros e menos pensamento: o Resend imprime exatamente o
+que quer, um TXT para o DKIM, um MX e um TXT para o caminho de retorno, e um
+CNAME para rastreamento. Criei todos pela API da Cloudflare com um token que
+só consegue editar aquela zona, e o Resend verificou o domínio em menos de um
+minuto. Depois, uma linha no Render, `MAIL_FROM`, e o e-mail de confirmação
+começou a chegar em pessoas que não são eu.
+
+Dois registros eu adicionei sem ninguém pedir: DMARC no domínio e no
+subdomínio, e um registro BIMI apontando para a marca do Orbit. O DMARC diz aos
+servidores que recebem o que fazer com um e-mail que falha nas verificações, e
+tê-lo é o que torna o resto da configuração crível. O BIMI é o registro que
+coloca uma logo ao lado do remetente. Yahoo e Fastmail honram do jeito que
+está. Gmail e Apple Mail querem um certificado que custa mais que o projeto
+inteiro, então lá o remetente continua mostrando uma inicial, e nenhum
+registro de DNS muda isso.
+
+## A parte que dorme
+
+Tudo em que o Orbit roda é plano gratuito. O Render hospeda a API de graça com
+uma regra: depois de quinze minutos sem requisição, o serviço é posto para
+dormir, e a requisição seguinte espera uns vinte segundos enquanto ele acorda.
+O Supabase hospeda o banco de graça com outra regra: um projeto que não recebe
+consulta por sete dias é pausado, e alguém precisa apertar um botão para
+trazê-lo de volta.
+
+Nenhuma das duas é um bug. São os termos de não pagar. Mas um app de finanças
+que leva vinte segundos para abrir, ou um banco que some numa quinzena
+tranquila, não é usável por ninguém além do autor.
+
+Eu não queria mais um serviço para vigiar os serviços. A Cloudflare já tinha o
+DNS, e um Worker da Cloudflare com um cron também é de graça, então o
+keep-alive virou um programa pequeno ali. Ele roda duas agendas. A cada dez
+minutos manda uma requisição para uma rota da API que não faz nada além de
+responder, o que basta para o Render não dormir. Uma vez por noite roda uma
+consulta de verdade em cada projeto do Supabase, porque o Supabase só conta
+consulta como atividade, não um health check na entrada.
+
+O detalhe que eu errei primeiro foi o alerta. Um worker que avisa cada falha
+avisaria a cada dez minutos enquanto o Render estivesse fora, o que é o mesmo
+que não avisar. Então ele guarda o último estado conhecido de cada alvo no KV
+da Cloudflare e me manda uma notificação só quando um alvo passa de ok para
+falha, ou de falha de volta para ok. Duas mensagens por incidente, não
+sessenta.
+
+## O que custa manter uma coisa gratuita acordada
+
+Um serviço que nunca dorme usa umas 720 das 750 horas que o Render dá por mês
+a um workspace gratuito. Esse é o preço de verdade: um serviço, e nenhum
+espaço para um segundo na mesma conta. O cron na Cloudflare levou mais de uma
+hora para disparar pela primeira vez depois do deploy, e eu só sei disso porque
+sentei e fiquei olhando. Desde então ele roda a cada dez minutos sem falhar.
+
+O farol da foto faz um trabalho só. Este worker faz o mesmo trabalho, numa
+escala menor, para um mar menor.

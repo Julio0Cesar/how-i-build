@@ -1,0 +1,115 @@
+export const meta = {
+  title: "One domain, three subdomains and a worker that keeps the lights on",
+  summary:
+    "Why a side project ended up needing a domain, how the site, the API and the e-mail share it, and the small piece of code that stops free hosting from falling asleep.",
+  publishedAt: "2026-09-21",
+  coverUrl: "/blog/lighthouse.webp",
+  coverAlt: "A white lighthouse on a rocky point under heavy clouds, with the sea in front and a red-roofed keeper's house beside it",
+  tags: ["Infrastructure", "Process"],
+};
+
+For two months Orbit ran without a domain of its own. The web app answered at
+a Vercel address, the API at a Render address, and that was fine, because
+nobody but me was using it. What forced the question was not the URL. It was
+e-mail.
+
+## The e-mail that only reached me
+
+The API sends four transactional e-mails: confirm your address, welcome,
+reset your password, create a password. They go out through Resend, and a
+Resend account without a verified domain can only send to the address that owns
+the account. Every other recipient gets a 422 back. So the confirmation e-mail
+worked perfectly in my inbox and for nobody else, and a confirmed e-mail is
+what unlocks the paid plan. The product had a door that only I could open.
+
+Verifying a domain on Resend means owning one. The same domain would also give
+me a support address that is not my personal Gmail, and a business name on the
+Stripe checkout that says Orbit instead of my first name.
+
+## One domain, not one per project
+
+The first instinct was to buy `orbit.something`. The second thought was that I
+have more than one project, and I did not want to buy, renew and configure a
+domain for each. So I bought one domain in my own name and gave each project a
+subdomain under it. Orbit lives at `orbit.byjuliocesa.dev`. The next project
+gets its own name at the same level, with no new purchase and no new DNS
+account.
+
+That choice carries into e-mail, which was the part I was not sure about.
+Resend verifies a subdomain as if it were a domain: `orbit.byjuliocesa.dev`
+has its own SPF and DKIM records, so the reputation of one project's mail
+never touches another's. And receiving works the same way: Cloudflare's e-mail
+routing forwards `suporte@orbit.byjuliocesa.dev` to my inbox for free, with no
+mail server to run.
+
+The cost is that the addresses are longer than `suporte@orbit.app`, and they
+read like a developer's portfolio rather than a company. For a portfolio of
+projects by one person, that is the honest description.
+
+## Three subdomains, three different records
+
+The DNS lives on Cloudflare, and three records that look similar on paper turned
+out to need three different shapes.
+
+The API was the easy one: `api.orbit.byjuliocesa.dev` is a CNAME to the Render
+service. Render asks for that record, verifies it, issues a certificate, and
+the old address keeps working alongside it.
+
+The site was where I learned something. Vercel suggests a CNAME as well, and
+Cloudflare refused to create it: a CNAME cannot share a name with any other
+record, and `orbit.byjuliocesa.dev` already carried the MX records that make
+the support address receive mail. Vercel showed "invalid configuration" until
+I replaced the CNAME with an A record pointing at Vercel's address, which can
+sit next to the MX records without complaint.
+
+Mail took the most records and the least thought: Resend prints exactly what it
+wants, one TXT for DKIM, one MX and one TXT for the return path, and a CNAME
+for tracking. I created them through Cloudflare's API with a token that can
+only edit that one zone, and Resend verified the domain in under a minute. Then
+one line on Render, `MAIL_FROM`, and the confirmation e-mail started reaching
+people who are not me.
+
+Two records I added without being asked: DMARC on both the domain and the
+subdomain, and a BIMI record pointing at the Orbit mark. DMARC tells receiving
+servers what to do with mail that fails the checks, and having it makes the
+rest of the setup credible. BIMI is the record that puts a logo next to the
+sender. Yahoo and Fastmail honour it as is. Gmail and Apple Mail want a
+certificate that costs more than the whole project, so there the sender still
+shows an initial, and no DNS record changes that.
+
+## The part that falls asleep
+
+Everything Orbit runs on is a free tier. Render hosts the API for free with one
+rule: after fifteen minutes without a request, the service is put to sleep, and
+the next request waits about twenty seconds while it wakes up. Supabase hosts
+the database for free with a different rule: a project that receives no query
+for seven days is paused, and someone has to press a button to bring it back.
+
+Neither of those is a bug. They are the terms of not paying. But a personal
+finance app that takes twenty seconds to open, or a database that goes away
+over a quiet fortnight, is not usable by anyone but its author.
+
+I did not want another service to watch the services. Cloudflare already had the
+DNS, and a Cloudflare Worker with a cron trigger is free too, so the keep-alive
+became a small program there. It runs two schedules. Every ten minutes it sends
+a request to a route on the API that does nothing but answer, which is enough to
+keep Render from sleeping. Once a night it runs one real query against each
+Supabase project, because Supabase only counts a query as activity, not a
+health check on the way in.
+
+The detail I got wrong first was the alert. A worker that reports every failure
+would report every ten minutes while Render was down, which is the same as no
+alert. So it keeps the last known state of each target in Cloudflare's KV
+store and sends me a notification only when a target changes from ok to failing,
+or from failing back to ok. Two messages per incident, not sixty.
+
+## What it costs to keep a free thing awake
+
+A service that never sleeps uses about 720 of the 750 hours Render gives a
+free workspace each month. That is the real price: one service, and no room
+for a second one on the same account. The cron on Cloudflare took over an hour
+to fire for the first time after the deploy, and I only know that because I sat
+and watched it. Since then it has run every ten minutes without a miss.
+
+The lighthouse in the picture does one job. This worker does the same job, at
+a smaller scale, for a smaller sea.
