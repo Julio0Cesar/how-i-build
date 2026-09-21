@@ -30,8 +30,11 @@ export function changelogSources(locale: Locale): ChangelogSource[] {
   ];
 
   for (const project of projects) {
-    if (project.visibility !== "public" || !project.repoUrl) continue;
-    const source = parseRepo(project.repoUrl);
+    const url =
+      project.releasesUrl ??
+      (project.visibility === "public" ? project.repoUrl : undefined);
+    if (!url) continue;
+    const source = parseRepo(url);
     if (!source) continue;
 
     const key = repoKey(source);

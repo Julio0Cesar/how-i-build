@@ -29,6 +29,11 @@ export interface Project {
   markUrl?: string;
   liveUrl?: string;
   repoUrl?: string;
+  /**
+   * A public repository holding only the releases of a project whose code is
+   * private. The changelog reads it in place of `repoUrl`.
+   */
+  releasesUrl?: string;
   /** Listed, with no write-up behind it — the body of its case is empty. */
   stub?: boolean;
   /**
