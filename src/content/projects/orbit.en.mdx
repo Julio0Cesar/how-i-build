@@ -52,6 +52,14 @@ links an account.
 
 <Entry title="One repository, three shells" date="2026-07-13" />
 
+<div className="my-6 grid gap-3 sm:grid-cols-[3fr_1fr]">
+  <video src="/projects/orbit/hero.mp4" poster="/projects/orbit/mockup-dashboard.jpg" autoPlay muted loop playsInline className="w-full rounded border border-rule" aria-label="The web dashboard, as rendered by the web and desktop shells" />
+  <video src="/projects/orbit/mobile.mp4" poster="/projects/orbit/mobile-dashboard.jpg" autoPlay muted loop playsInline className="w-full rounded border border-rule" aria-label="The mobile app: dashboard and goals" />
+</div>
+
+Three shells, one product. The web dashboard on the left is what the desktop
+renders too; the phone on the right has its own screens on the same data.
+
 The web app and the desktop app are the same product, and I did not want to
 maintain two sets of screens. The mobile app is the same product too, but it
 cannot render DOM components, so the same trick does not work there.
@@ -125,7 +133,7 @@ have one thing in common: they stop when nobody is looking. Render puts the API
 to sleep after fifteen minutes without traffic and takes about twenty seconds to
 wake it. Supabase pauses a project after seven days without a query.
 
-![How the pieces of Orbit connect: clients, API, data, integrations and the infrastructure around them](/projects/orbit-architecture.svg)
+![The Orbit canvas in VX Work: infrastructure on top, architecture below, and the groups drawn as they run](/projects/orbit/canvas.gif)
 
 <Decision>
 A Cloudflare Worker with two cron triggers: a ping to the API every ten minutes,

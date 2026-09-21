@@ -53,6 +53,14 @@ uma exportação única, oferecida quando a pessoa atrela uma conta.
 
 <Entry title="Um repositório, três cascas" date="2026-07-13" />
 
+<div className="my-6 grid gap-3 sm:grid-cols-[3fr_1fr]">
+  <video src="/projects/orbit/hero.mp4" poster="/projects/orbit/mockup-dashboard.jpg" autoPlay muted loop playsInline className="w-full rounded border border-rule" aria-label="O dashboard web, como as cascas web e desktop renderizam" />
+  <video src="/projects/orbit/mobile.mp4" poster="/projects/orbit/mobile-dashboard.jpg" autoPlay muted loop playsInline className="w-full rounded border border-rule" aria-label="O app mobile: dashboard e metas" />
+</div>
+
+Três cascas, um produto. O dashboard web à esquerda é o que o desktop também
+renderiza; o celular à direita tem telas próprias sobre os mesmos dados.
+
 O app web e o app desktop são o mesmo produto, e eu não queria manter dois
 conjuntos de telas. O app mobile também é o mesmo produto, mas não consegue
 renderizar componentes de DOM, então o mesmo truque não funciona lá.
@@ -126,7 +134,7 @@ têm uma coisa em comum: param quando ninguém está olhando. O Render põe a AP
 para dormir depois de quinze minutos sem tráfego e leva uns vinte segundos para
 acordá-la. O Supabase pausa um projeto depois de sete dias sem consulta.
 
-![Como as peças do Orbit se conectam: clientes, API, dados, integrações e a infraestrutura em volta](/projects/orbit-architecture.svg)
+![O canvas do Orbit no VX Work: infraestrutura em cima, arquitetura embaixo, e os grupos desenhados como rodam](/projects/orbit/canvas.gif)
 
 <Decision>
 Um Worker da Cloudflare com dois crons: um ping na API a cada dez minutos, e
