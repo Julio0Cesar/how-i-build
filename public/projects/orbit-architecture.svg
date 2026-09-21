@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="15">
+  <title>Orbit: how the pieces connect</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8a8a8a"/>
+    </marker>
+    <style>
+      .group { fill: rgba(128,128,128,0.06); stroke: #8a8a8a; stroke-width: 1; stroke-dasharray: 4 4; }
+      .label { fill: #8a8a8a; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .box { fill: rgba(128,128,128,0.12); stroke: #8a8a8a; stroke-width: 1.2; }
+      .box.accent { stroke: #c8963e; fill: rgba(200,150,62,0.14); }
+      .text { fill: #9a9a9a; }
+      .text.strong { fill: #c8963e; }
+      .line { stroke: #8a8a8a; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+      .line.both { marker-start: url(#arrow); }
+      .small { fill: #8a8a8a; font-size: 12px; }
+    </style>
+  </defs>
+
+  <!-- Infrastructure -->
+  <rect class="group" x="20" y="20" width="1160" height="250" rx="10"/>
+  <text class="label" x="36" y="44">Infrastructure</text>
+
+  <rect class="box" x="40" y="70" width="180" height="46" rx="8"/>
+  <text class="text" x="130" y="98" text-anchor="middle">GitHub Actions</text>
+  <text class="small" x="130" y="134" text-anchor="middle">CI · release-please · desktop build</text>
+
+  <rect class="group" x="260" y="60" width="300" height="190" rx="8"/>
+  <text class="label" x="276" y="82">Hosting</text>
+  <rect class="box" x="280" y="96" width="120" height="42" rx="8"/>
+  <text class="text" x="340" y="122" text-anchor="middle">Vercel</text>
+  <text class="small" x="340" y="152" text-anchor="middle">web</text>
+  <rect class="box" x="420" y="96" width="120" height="42" rx="8"/>
+  <text class="text" x="480" y="122" text-anchor="middle">Render</text>
+  <text class="small" x="480" y="152" text-anchor="middle">API, Docker, free</text>
+  <rect class="box" x="280" y="176" width="260" height="42" rx="8"/>
+  <text class="text" x="410" y="202" text-anchor="middle">Supabase · PostgreSQL 17</text>
+  <text class="small" x="410" y="236" text-anchor="middle">dev and prod projects, schema per app</text>
+
+  <rect class="group" x="600" y="60" width="270" height="190" rx="8"/>
+  <text class="label" x="616" y="82">Distribution</text>
+  <rect class="box" x="620" y="96" width="230" height="42" rx="8"/>
+  <text class="text" x="735" y="122" text-anchor="middle">GitHub Releases (public repo)</text>
+  <text class="small" x="735" y="152" text-anchor="middle">Windows setup · AppImage · deb</text>
+  <rect class="box" x="620" y="176" width="230" height="42" rx="8"/>
+  <text class="text" x="735" y="202" text-anchor="middle">Google Play (next)</text>
+
+  <rect class="group" x="910" y="60" width="250" height="190" rx="8"/>
+  <text class="label" x="926" y="82">Operations</text>
+  <rect class="box" x="930" y="96" width="210" height="42" rx="8"/>
+  <text class="text" x="1035" y="122" text-anchor="middle">Cloudflare DNS · Worker</text>
+  <text class="small" x="1035" y="152" text-anchor="middle">byjuliocesa.dev · keep-alive every 10 min</text>
+  <rect class="box" x="930" y="176" width="100" height="42" rx="8"/>
+  <text class="text" x="980" y="202" text-anchor="middle">Bitwarden</text>
+  <rect class="box" x="1040" y="176" width="100" height="42" rx="8"/>
+  <text class="text" x="1090" y="202" text-anchor="middle">Analytics</text>
+  <text class="small" x="1035" y="236" text-anchor="middle">secrets · Vercel Analytics, consent first</text>
+
+  <path class="line" d="M220 93 L280 117"/>
+  <path class="line" d="M130 116 L130 210 L280 210"/>
+  <path class="line" d="M130 70 L130 52 L480 52 L480 96"/>
+  <path class="line" d="M480 52 L735 52 L735 96"/>
+
+  <!-- Architecture -->
+  <rect class="group" x="20" y="300" width="1160" height="440" rx="10"/>
+  <text class="label" x="36" y="324">Architecture</text>
+
+  <rect class="group" x="40" y="340" width="330" height="380" rx="8"/>
+  <text class="label" x="56" y="362">Clients</text>
+  <rect class="box" x="60" y="380" width="290" height="42" rx="8"/>
+  <text class="text" x="205" y="406" text-anchor="middle">Web · Next.js</text>
+  <rect class="box" x="60" y="436" width="290" height="42" rx="8"/>
+  <text class="text" x="205" y="462" text-anchor="middle">Desktop · Tauri (Rust + React)</text>
+  <rect class="box" x="60" y="492" width="290" height="42" rx="8"/>
+  <text class="text" x="205" y="518" text-anchor="middle">Mobile · React Native (Expo)</text>
+  <text class="small" x="205" y="560" text-anchor="middle">shared packages: ui · hooks · lib · types · tokens</text>
+  <rect class="box" x="60" y="586" width="290" height="42" rx="8"/>
+  <text class="text" x="205" y="612" text-anchor="middle">Local mode · SQLite on the device</text>
+  <text class="small" x="205" y="650" text-anchor="middle">desktop and mobile, no account, no network</text>
+  <path class="line" d="M205 534 L205 586"/>
+
+  <rect class="group" x="410" y="340" width="310" height="200" rx="8"/>
+  <text class="label" x="426" y="362">Server</text>
+  <rect class="box accent" x="430" y="380" width="270" height="52" rx="8"/>
+  <text class="text strong" x="565" y="402" text-anchor="middle">Orbit API · Go</text>
+  <text class="small" x="565" y="420" text-anchor="middle">net/http · GORM · JWT + refresh</text>
+  <text class="small" x="565" y="462" text-anchor="middle">HTTP API · sync service (daily cron)</text>
+  <text class="small" x="565" y="482" text-anchor="middle">AI assistant by tool calling, SSE chat</text>
+  <text class="small" x="565" y="502" text-anchor="middle">handler → service → repository, per domain</text>
+
+  <rect class="group" x="760" y="340" width="400" height="200" rx="8"/>
+  <text class="label" x="776" y="362">Data</text>
+  <rect class="box" x="780" y="380" width="360" height="42" rx="8"/>
+  <text class="text" x="960" y="406" text-anchor="middle">PostgreSQL · schema orbit</text>
+  <text class="small" x="960" y="446" text-anchor="middle">migrations applied at boot · soft delete everywhere</text>
+  <text class="small" x="960" y="470" text-anchor="middle">the plan lives here; only the Stripe webhook writes it</text>
+  <text class="small" x="960" y="494" text-anchor="middle">AI keys encrypted with AES-256-GCM</text>
+
+  <rect class="group" x="410" y="570" width="750" height="150" rx="8"/>
+  <text class="label" x="426" y="592">Integrations</text>
+  <rect class="box" x="430" y="610" width="130" height="42" rx="8"/>
+  <text class="text" x="495" y="636" text-anchor="middle">Pluggy</text>
+  <text class="small" x="495" y="672" text-anchor="middle">Open Finance</text>
+  <rect class="box" x="575" y="610" width="130" height="42" rx="8"/>
+  <text class="text" x="640" y="636" text-anchor="middle">Stripe</text>
+  <text class="small" x="640" y="672" text-anchor="middle">checkout + webhook</text>
+  <rect class="box" x="720" y="610" width="140" height="42" rx="8"/>
+  <text class="text" x="790" y="636" text-anchor="middle">Google Sign-In</text>
+  <rect class="box" x="875" y="610" width="130" height="42" rx="8"/>
+  <text class="text" x="940" y="636" text-anchor="middle">Resend</text>
+  <text class="small" x="940" y="672" text-anchor="middle">transactional e-mail</text>
+  <rect class="box" x="1020" y="610" width="120" height="42" rx="8"/>
+  <text class="text" x="1080" y="636" text-anchor="middle">AI provider</text>
+  <text class="small" x="1080" y="672" text-anchor="middle">OpenAI-compatible</text>
+
+  <path class="line both" d="M370 406 L430 406"/>
+  <path class="line both" d="M700 406 L780 406"/>
+  <path class="line both" d="M565 540 L565 570"/>
+  <path class="line" d="M480 138 L480 340"/>
+  <path class="line" d="M340 138 L340 340"/>
+  <path class="line" d="M735 218 L735 260 L205 260 L205 340"/>
+</svg>

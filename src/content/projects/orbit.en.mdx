@@ -1,0 +1,219 @@
+export const meta = {
+  name: "Orbit",
+  summary:
+    "A personal finance app for Brazil: bank sync via Open Finance, goals, bills and an AI assistant, on the web, the desktop and the phone, with a free local mode.",
+  role: "Sole author",
+  period: "2026",
+  updatedAt: "2026-09-18",
+  references: [
+    { label: "Downloads for Windows and Linux", url: "https://github.com/Julio0Cesar/orbit-releases" },
+    { label: "Every desktop release", url: "https://github.com/Julio0Cesar/orbit-releases/releases" },
+  ],
+};
+
+Orbit is the app I wanted for my own money: bank accounts synced through Open
+Finance, transactions organised by category, fixed expenses, bills to pay and
+receive, goals, and an assistant that answers questions about the numbers
+instead of about finance in general.
+
+It runs in three places. On the web, as a Next.js app. On the desktop, as a
+Tauri app for Windows and Linux. On the phone, as a React Native app. All three
+talk to one Go API and one PostgreSQL database, and the code they share lives in
+packages inside the same repository. The product has two doors: a free local
+mode, where the data stays on the device, and a paid cloud plan, which is what
+pays for the sync and the servers.
+
+The repository is private, because the product is the code. What I can show is
+how it is put together and why. Most of the decisions below start from a
+constraint that was there from the beginning: one person, no budget, and three
+platforms that had to feel like the same app.
+
+<Entry title="Local mode is a product, not an offline cache" date="2026-07-20" />
+
+Desktop and mobile apps usually treat "no network" as a temporary state: a queue
+of pending writes, a sync when the connection is back. That was never what I
+wanted. Someone who does not want to pay, or does not want their transactions on
+anyone's server, should still get a working app, forever, without an account.
+
+<Decision>
+Two exclusive entrances. Signing in means the cloud: the API and PostgreSQL.
+"Open locally" means the device: SQLite inside the Tauri app, SQLite inside the
+mobile app, no request to the API at all. The shared hooks do not know which one
+they are talking to — a local router answers the same routes the API would.
+Migrating from local to cloud is a one-time export, offered when the person
+links an account.
+</Decision>
+
+<Tradeoffs>
+- Every domain exists twice: once in Go behind the API, once in TypeScript in the local router. A new field is two changes, and the local one is easier to forget.
+- Bank sync only exists in the cloud. Local mode is manual entry by definition, and the app has to say that without sounding like a limitation.
+- The AI assistant in local mode depends on a model running on the person's own machine. On the desktop that means Ollama; on the phone there is no honest way to offer it, so it is simply absent.
+</Tradeoffs>
+
+<Entry title="One repository, three shells" date="2026-07-13" />
+
+The web app and the desktop app are the same product, and I did not want to
+maintain two sets of screens. The mobile app is the same product too, but it
+cannot render DOM components, so the same trick does not work there.
+
+<Decision>
+The apps are thin shells. `packages/ui` holds the screens, `packages/hooks` the
+data access, `packages/lib` the API client, session and navigation, and
+`packages/types` is generated from the backend's OpenAPI file, so a field
+renamed in Go fails the build in TypeScript. Web and desktop render the same
+components; navigation and links are injected, because Next.js and React Router
+disagree about both. Mobile shares hooks, lib and types, and has its own native
+screens.
+</Decision>
+
+<Tradeoffs>
+- The mobile app is where drift shows first. When I redesigned the visual system in September, web and desktop changed together and mobile needed every screen touched by hand.
+- Vite in the desktop and Turbopack in the web read the same packages with different rules. More than once a change that built in one broke the other, and the fix was in a config file, not in the feature.
+- The desktop build bakes the API address at compile time. The first public build pointed at `localhost`, and nobody noticed until it was installed on a clean machine.
+</Tradeoffs>
+
+<Entry title="The plan lives in the database, and only the webhook writes it" date="2026-07-27" />
+
+Cloud access is paid. The obvious way to gate it is to check the plan on the
+client and hide what is not included. The obvious way is also the one that
+breaks first: the client can be edited, and a plan that lives in the browser is
+a plan that anyone can grant themselves.
+
+<Decision>
+The plan is a column on the user, and the only code that writes it is the
+Stripe webhook. Checkout is Stripe's hosted page; after paying, the app does not
+trust the redirect — it polls its own API until the webhook has flipped the
+column. On the phone, checkout opens in the system browser and comes back to the
+app through a return link; the app then does the same polling. An account
+without a confirmed e-mail cannot start a checkout, so receipts and the billing
+portal always have somewhere to go.
+</Decision>
+
+<Tradeoffs>
+- There is a window of a few seconds after paying where the person is on a "confirming" screen. The screen has to explain that, or it looks broken.
+- Local development needs the Stripe CLI forwarding webhooks to the machine. Without it the plan never flips, which is confusing the first time.
+- The whole design assumes the webhook arrives. It has, so far. The day it does not, the person has paid and has nothing, and the fix is manual.
+</Tradeoffs>
+
+<Entry title="Google login on the desktop goes through the browser" date="2026-09-16" />
+
+Google does not allow sign-in inside an embedded webview, and the desktop app is
+exactly that. The web app had Google sign-in for weeks while the desktop
+offered only e-mail and password, which meant an account created with Google
+could not enter the desktop at all.
+
+<Decision>
+The desktop generates a secret, sends its hash to the API to open a pending
+login, and opens the system browser on a page of the web app. That page
+completes the Google step and hands the credential to the API. The desktop
+polls, proves it holds the secret, and receives its tokens once. If the browser
+is already signed in to Orbit, the page skips Google and offers to authorise the
+desktop with that account, or to use another one.
+</Decision>
+
+<Tradeoffs>
+- The polling ran into the API's own rate limit for login routes: five requests a minute, while the desktop asked every two seconds. The first users saw "too many requests" twenty seconds in. The claim route now has its own limit, and the app treats a 429 as "wait longer", not as failure.
+- A pending login is a row in the database with a ten-minute life. It is one more thing to clean up, and one more state the tests have to cover.
+- The same mechanism serves the phone, which is why the design is not called "desktop login" anywhere the user can see it.
+</Tradeoffs>
+
+<Entry title="Infrastructure that costs nothing and falls asleep" date="2026-09-08" />
+
+Everything runs on free tiers: the API on Render, the database on Supabase, the
+web on Vercel, DNS and a worker on Cloudflare, code and CI on GitHub. Free tiers
+have one thing in common: they stop when nobody is looking. Render puts the API
+to sleep after fifteen minutes without traffic and takes about twenty seconds to
+wake it. Supabase pauses a project after seven days without a query.
+
+![How the pieces of Orbit connect: clients, API, data, integrations and the infrastructure around them](/projects/orbit-architecture.svg)
+
+<Decision>
+A Cloudflare Worker with two cron triggers: a ping to the API every ten minutes,
+and one real query on each Supabase project every night. It keeps the last state
+in KV and posts to a webhook only when a target goes from ok to failing, or back.
+The web app also has a waking screen: the logo and a spinner while the API comes
+back, instead of a spinner that looks like a bug. Domains came later, in one
+place: `orbit.byjuliocesa.dev` for the site and `api.orbit.byjuliocesa.dev`
+for the API, both under a domain I own, so each project gets a subdomain and
+the apps never need to be rebuilt when hosting moves.
+</Decision>
+
+<Tradeoffs>
+- The worker is one more repository, one more deploy, and one more thing that can silently stop. The cron took over an hour to start firing after the first deploy, and I only knew because I was watching.
+- Keeping a free service awake around the clock uses most of its monthly hours. Render gives 750; a service that never sleeps uses about 720.
+- The mail domain, the support address and the Stripe business name all depended on owning a domain. Until I bought one, the confirmation e-mail only reached my own inbox.
+</Tradeoffs>
+
+<Entry title="Downloads without a token" date="2026-09-17" />
+
+The desktop binaries were attached to GitHub Releases of the private repository.
+Public links to private release assets return 404, so the site had a proxy
+route that authenticated with a personal token stored on Vercel and redirected
+to the asset. It worked in development and failed in production with a 502 on
+the Windows installer, and it coupled the site to GitHub through a secret that
+had to exist at runtime.
+
+<Decision>
+A second, public repository that holds only releases, with no code:
+[orbit-releases](https://github.com/Julio0Cesar/orbit-releases). The release
+pipeline builds on Windows and Linux, attaches the four files with stable names
+to that repository, and only marks the release as latest once all four exist —
+before that, the "latest" link keeps serving the previous version. The site
+links straight to `releases/latest/download/…`. No proxy, no token. Since
+[v0.19.0](https://github.com/Julio0Cesar/orbit-releases/releases/tag/v0.19.0).
+</Decision>
+
+<Tradeoffs>
+- The version history is public, including the dates. Nothing in it is secret, but it is visible in a way the code is not.
+- A first version of the pipeline marked the release as latest as soon as the Windows build uploaded, while Linux was still compiling. For about twenty minutes the Linux links were 404. That is what the promotion step exists for now.
+- One public repository per app, if there are more apps. The alternative, an object store with a custom domain, needs a card on file and a billing alert; it is the next step if the download link ever needs to be `downloads.something`.
+</Tradeoffs>
+
+<Entry title="An AppImage that opened grey" date="2026-09-18" />
+
+The Linux build installed fine and opened a window with nothing in it. The log
+said `EGL_BAD_PARAMETER` and the app kept running. Every WebKit environment
+variable I knew changed nothing.
+
+The AppImage packager bundles the Wayland client libraries from the Ubuntu
+image it builds on. On a current Mesa, those libraries fail to create a display,
+and WebKit paints nothing. The same tool also forces GDK to X11, so the app was
+running under XWayland, with an X cursor and resize handles the compositor
+never asked for.
+
+<Decision>
+The pipeline unpacks the AppImage after Tauri builds it, removes the bundled
+Wayland libraries, and repacks it with the native backend enabled whenever
+`WAYLAND_DISPLAY` is present. The installer script became a real installer:
+menu entry, icon extracted from the AppImage, an `orbit` command that opens the
+app detached, and `orbit --update` and `orbit --uninstall`. The app checks for a
+new version on start and offers to update from the notification bell. Fixed in
+[v0.19.2](https://github.com/Julio0Cesar/orbit-releases/releases/tag/v0.19.2),
+updater in [v0.20.0](https://github.com/Julio0Cesar/orbit-releases/releases/tag/v0.20.0).
+</Decision>
+
+<Tradeoffs>
+- The fix is a `sed` on a shell hook inside someone else's packaging tool. It will break the day that hook changes, and the failure will be a grey window again.
+- The `.deb` package uses the system libraries and never had the problem. Debian users get the cleaner path; everyone else gets the AppImage.
+- The updater on Linux runs the installer script again and restarts. On Windows it downloads the setup and hands over. Neither is signed, so both show the warnings unsigned software shows.
+</Tradeoffs>
+
+<Entry title="Mobile leaves Expo's cloud" date="2026-09-16" />
+
+The mobile app started on Expo with EAS for builds and over-the-air updates. It
+is the fastest way to a phone. It also assumes Apple: an iOS build needs a Mac
+and a developer account, and I have neither. The only realistic target was
+Android.
+
+<Decision>
+Expo stays as the framework; EAS goes. No cloud builds, no OTA channel, no Expo
+account tied to the project. Android builds will come from GitHub Actions with
+Gradle and a signing key in the repository secrets, like the desktop does today,
+with the first Play Store upload by hand.
+</Decision>
+
+<Tradeoffs>
+- An update to the phone now means a new APK, not a silent push. That is slower, and it is also how every other app on the phone works.
+- Until the Android pipeline exists, the mobile app lives in the repository and in Expo Go on my own phone. It is the one platform without a public build, which is why this case has no mobile download.
+- Some infrastructure is drawn and not built: Google Play, and a second app store the design keeps a place for. The diagram above shows what runs.
+</Tradeoffs>

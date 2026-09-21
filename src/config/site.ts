@@ -27,9 +27,13 @@ export const site = {
       Rust: "/brand/rust.svg",
       Tauri: "/brand/tauri.svg",
       React: "/brand/react.svg",
+      "React Native": "/brand/react.svg",
+      Expo: "/brand/expo.svg",
+      Go: "/brand/go.svg",
+      PostgreSQL: "/brand/postgresql.svg",
     },
     /** Flat black, so they invert instead of being lost on the dark theme. */
-    monochrome: ["Next.js", "Rust", "github"],
+    monochrome: ["Next.js", "Rust", "Expo", "Go", "PostgreSQL", "github"],
     social: {
       github: "/brand/github.svg",
       linkedin: "/brand/linkedin.svg",
