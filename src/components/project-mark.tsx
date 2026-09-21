@@ -3,7 +3,16 @@
  * asset, so the template and any project added later have something to show
  * without anyone drawing anything.
  */
-export function ProjectMark({ name, src }: { name: string; src?: string }) {
+export function ProjectMark({
+  name,
+  src,
+  className = "size-10",
+}: {
+  name: string;
+  src?: string;
+  /** Size utilities; the card keeps the default, the case header goes larger. */
+  className?: string;
+}) {
   if (src) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- a local SVG needs no optimisation pipeline
@@ -11,7 +20,7 @@ export function ProjectMark({ name, src }: { name: string; src?: string }) {
         src={src}
         alt=""
         aria-hidden="true"
-        className="size-10 shrink-0 object-contain"
+        className={`${className} shrink-0 object-contain`}
       />
     );
   }
@@ -26,7 +35,7 @@ export function ProjectMark({ name, src }: { name: string; src?: string }) {
   return (
     <span
       aria-hidden="true"
-      className="flex size-10 shrink-0 items-center justify-center border border-rule font-mono text-xs tracking-widest text-muted-foreground transition-colors group-hover:border-accent group-hover:text-accent"
+      className={`flex ${className} shrink-0 items-center justify-center border border-rule font-mono text-xs tracking-widest text-muted-foreground transition-colors group-hover:border-accent group-hover:text-accent`}
     >
       {initials}
     </span>

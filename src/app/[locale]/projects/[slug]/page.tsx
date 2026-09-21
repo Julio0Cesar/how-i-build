@@ -70,7 +70,11 @@ export default async function ProjectPage({
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
       <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
         <div className="flex items-center gap-3 md:flex-col md:items-start md:gap-4 md:pt-1">
-          <ProjectMark name={meta.name} src={project.markUrl} />
+          <ProjectMark
+            name={meta.name}
+            src={project.markUrl}
+            className="size-16 md:size-20"
+          />
           <p className={label}>{meta.period}</p>
         </div>
         <div>
