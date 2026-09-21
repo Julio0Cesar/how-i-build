@@ -69,13 +69,13 @@ export default async function ProjectPage({
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
       <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
-        <div className="flex items-center gap-3 md:flex-col md:items-start md:gap-4 md:pt-1">
+        <div className="flex items-center gap-4 md:flex-col md:items-start md:gap-4 md:pt-3">
+          <p className={label}>{meta.period}</p>
           <ProjectMark
             name={meta.name}
             src={project.markUrl}
-            className="size-16 md:size-20"
+            className="size-20 md:size-28"
           />
-          <p className={label}>{meta.period}</p>
         </div>
         <div>
           <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
