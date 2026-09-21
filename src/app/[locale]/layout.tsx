@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { site } from "@/config/site";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { isLocale, locales } from "@/i18n/config";
@@ -46,6 +48,8 @@ export default async function RootLayout({
         {/* Offsets the fixed header. */}
         <main className="flex-1 pt-14 sm:pt-16">{children}</main>
         <SiteFooter />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
