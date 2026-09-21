@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { CaseToc } from "@/components/case-toc";
+import { ProjectMark } from "@/components/project-mark";
 import { StackList } from "@/components/stack-list";
 import { socialIcons } from "@/config/icons";
 import { projects } from "@/content/projects";
@@ -68,7 +69,10 @@ export default async function ProjectPage({
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6">
       <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
-        <p className={`${label} md:pt-3`}>{meta.period}</p>
+        <div className="flex items-center gap-3 md:flex-col md:items-start md:gap-4 md:pt-1">
+          <ProjectMark name={meta.name} src={project.markUrl} />
+          <p className={label}>{meta.period}</p>
+        </div>
         <div>
           <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
             {meta.name}
@@ -86,8 +90,8 @@ export default async function ProjectPage({
             <span>{meta.role}</span>
             <StackList stack={project.stack} />
           </div>
-          {/* A private project links nowhere: there is nothing public to reach. */}
-          {project.visibility === "public" ? (
+          {/* A private project hides its repository; a live address is still public. */}
+          {project.liveUrl || (project.visibility === "public" && project.repoUrl) ? (
             <div className={`mt-4 flex flex-wrap gap-4 ${label}`}>
               {project.liveUrl ? (
                 <a
@@ -106,7 +110,7 @@ export default async function ProjectPage({
                   <ExternalLink className="size-3" aria-hidden="true" />
                 </a>
               ) : null}
-              {project.repoUrl ? (
+              {project.visibility === "public" && project.repoUrl ? (
                 <a
                   href={project.repoUrl}
                   target="_blank"
