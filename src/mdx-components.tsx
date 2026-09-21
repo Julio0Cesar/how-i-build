@@ -15,6 +15,10 @@ const components: MDXComponents = {
   a: Anchor,
   img: Img,
   video: Video,
+  /* A `<video>` written as JSX in a file is not routed through the `video`
+     entry above; the named form is. */
+  Img,
+  Video,
   Entry,
   Decision,
   Tradeoffs,
