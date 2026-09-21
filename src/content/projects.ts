@@ -15,6 +15,7 @@ export const projects: Project[] = [
     stack: ["Go", "Next.js", "Tauri", "React Native", "PostgreSQL", "TypeScript"],
     markUrl: "/brand/orbit.svg",
     liveUrl: "https://orbit.byjuliocesa.dev",
+    releasesUrl: "https://github.com/Julio0Cesar/orbit-releases",
     cases: {
       en: {
         meta: caseMeta(orbitEn, "projects/orbit.en.mdx"),
