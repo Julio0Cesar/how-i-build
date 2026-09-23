@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CaseToc } from "@/components/case-toc";
 import { ReadingProgress } from "@/components/reading-progress";
 import { RecentPosts } from "@/components/recent-posts";
 import { TagChips } from "@/components/tag-chips";
@@ -9,6 +10,7 @@ import type { Post } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { byDate, neighbours } from "@/lib/posts";
+import { postToc } from "@/lib/toc";
 
 const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
 
@@ -60,6 +62,7 @@ export default async function PostPage({
   const { meta, Body } = post.locales[locale];
   const dict = getDictionary(locale);
   const { previous, next } = neighbours(posts, locale, post.slug);
+  const toc = postToc(slug, locale);
   const recent = byDate(posts, locale).filter((entry) => entry.slug !== post.slug);
 
   return (
@@ -132,9 +135,13 @@ export default async function PostPage({
         </div>
 
         {/* No box when there is nothing to put in it. */}
-        {recent.length > 0 ? (
-          <aside className="mt-16 border-t border-rule pt-8 lg:sticky lg:top-24 lg:mt-0 lg:self-start lg:border-t-0 lg:pt-2">
-            <RecentPosts posts={recent} locale={locale} label={dict.blog.recent} />
+        {toc.length > 1 || recent.length > 0 ? (
+          <aside className="mt-16 space-y-10 border-t border-rule pt-8 lg:sticky lg:top-24 lg:mt-0 lg:self-start lg:border-t-0 lg:pt-2">
+            {/* Um índice de uma entrada só não orienta ninguém. */}
+            {toc.length > 1 ? <CaseToc items={toc} label={dict.case.toc} /> : null}
+            {recent.length > 0 ? (
+              <RecentPosts posts={recent} locale={locale} label={dict.blog.recent} />
+            ) : null}
           </aside>
         ) : null}
       </div>

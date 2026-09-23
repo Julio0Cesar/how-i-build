@@ -19,11 +19,16 @@ function withoutFences(source: string): string {
  * agree without a custom plugin, which Turbopack could not run anyway.
  */
 export function caseToc(slugName: string, locale: Locale): TocItem[] {
-  const file = path.join(
-    process.cwd(),
-    "src/content/projects",
-    `${slugName}.${locale}.mdx`,
-  );
+  return tocFrom("src/content/projects", slugName, locale);
+}
+
+/** O mesmo índice para um post: o trilho da direita existe nas duas páginas. */
+export function postToc(slugName: string, locale: Locale): TocItem[] {
+  return tocFrom("src/content/posts", slugName, locale);
+}
+
+function tocFrom(dir: string, slugName: string, locale: Locale): TocItem[] {
+  const file = path.join(process.cwd(), dir, `${slugName}.${locale}.mdx`);
   const source = withoutFences(readFileSync(file, "utf8"));
   const pattern = /^##\s+(.+)$|<Entry[^>]*\btitle="([^"]+)"/gm;
 

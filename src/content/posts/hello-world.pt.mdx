@@ -6,6 +6,8 @@ export const meta = {
   tags: ["Escrita", "Processo"],
 };
 
+## Por que um post, e não um estudo de caso
+
 Um estudo de caso se escreve depois. A essa altura as alternativas já
 desbotaram, e o que sobra é a versão que deu certo — que é a parte menos
 interessante.
@@ -25,6 +27,8 @@ e conclusão óbvia não ensina ninguém.
 <Observation>
 As anotações que valem são as escritas antes de o resultado ser conhecido.
 </Observation>
+
+## Para que serve esta seção
 
 É essa a razão de esta seção existir: alguns pensamentos não merecem um estudo
 de caso e merecem ser escritos.
@@ -52,6 +56,16 @@ $ which rustc
 | `rustup` | gerenciador de versões | `~/.cargo/bin` |
 | shim | um substituto que encaminha a chamada | `~/.cargo/bin` |
 | `rustc` | o compilador de verdade | dentro do toolchain |
+
+E o encadeamento que os dois realmente formam:
+
+<Chain>
+  <Step name="rustup">o gerenciador de versões que você instala</Step>
+  <Step name="shim">um substituto no PATH que encaminha a chamada</Step>
+  <Step name="toolchain">a versão para a qual o shim resolve</Step>
+  <Step name="rustc">o compilador que enfim roda</Step>
+</Chain>
+
 
 > A interface desaparece enquanto você lê, e sabe aparecer quando a parte
 > técnica chega.
