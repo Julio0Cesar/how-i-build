@@ -23,6 +23,18 @@ colors:
   ember-soft-dark: "oklch(0.27 0.035 45)"
   positive-dark: "oklch(0.72 0.16 150)"
 typography:
+  page-title:
+    fontFamily: "IBM Plex Serif, ui-serif, Georgia, serif"
+    fontSize: "1.65rem"
+    fontWeight: 400
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
+  page-title-lg:
+    fontFamily: "IBM Plex Serif, ui-serif, Georgia, serif"
+    fontSize: "2.4rem"
+    fontWeight: 400
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
   display:
     fontFamily: "IBM Plex Serif, ui-serif, Georgia, serif"
     fontSize: "1.25rem"
@@ -49,6 +61,17 @@ typography:
     fontFamily: "IBM Plex Mono, ui-monospace, SFMono-Regular, monospace"
     fontSize: "0.9em"
     fontWeight: 400
+  secondary:
+    fontFamily: "IBM Plex Sans, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.95rem"
+    fontWeight: 400
+    lineHeight: 1.625
+  micro:
+    fontFamily: "IBM Plex Mono, ui-monospace, SFMono-Regular, monospace"
+    fontSize: "0.65rem"
+    fontWeight: 400
+    lineHeight: 1.25
+    letterSpacing: "0.1em"
 rounded:
   all: "0px"
 components:
@@ -143,6 +166,8 @@ personalidade contida; a sem serifa é neutra sem ser anônima; a monoespaçada
 não parece fantasia de terminal.
 
 ### Hierarchy
+- **Page title** (serifada, 400, 1.65rem no celular e 2.4rem no desktop, 1.25):
+  o título da página. É o único degrau responsivo da escala.
 - **Display** (serifada, 400, 1.25rem, 1.625, -0.015em): abertura de texto e
   chamada. É a voz de quem está contando algo.
 - **Headline** (sem serifa, 600, 1.125rem, 1.4): título de seção e de cartão.
@@ -150,6 +175,11 @@ não parece fantasia de terminal.
   caracteres por linha.
 - **Label** (sem serifa, 400, 0.875rem): controle, data, metadado.
 - **Code** (monoespaçada, 0.9em): trecho de código, caminho de arquivo e dado.
+- **Secondary** (sem serifa, 0.95rem): resumo e texto de apoio em cartão, um
+  degrau abaixo do corpo.
+- **Micro** (monoespaçada, 0.65rem, caixa alta, 0.1em): rótulo de data, etiqueta
+  e metadado de cartão. É o menor tamanho do site, e por isso é sempre
+  monoespaçada em caixa alta, onde o corpo pequeno ainda se distingue.
 
 ### Named Rules
 
