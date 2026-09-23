@@ -12,5 +12,45 @@ what is left is the version that worked — which is the least interesting part.
 A post is cheaper. It can be written while a decision is still uncomfortable,
 before anyone knows whether it was right.
 
+<Hypothesis>
+Writing the reasoning down later would be roughly as accurate, because the
+important parts are memorable.
+</Hypothesis>
+
+They are not. What survives a week is the conclusion; what disappears is the
+option you rejected and the reason you rejected it. The conclusion alone reads
+like it was obvious, and obvious conclusions teach nobody anything.
+
+<Observation>
+The notes worth keeping are the ones written before the outcome was known.
+</Observation>
+
 That is the whole reason this section exists: some thoughts are not worth a case
 study and are worth writing down.
+
+## What a technical section looks like
+
+The measure of the text is 68 characters, which is where reading is comfortable.
+A block of commands or a table gets more room, because a chain of steps that
+wraps is a chain you have to reassemble in your head:
+
+<Experiment>
+Remove the active toolchain and see which of the two tools complains first.
+</Experiment>
+
+```bash
+$ which rustc
+~/.cargo/bin/rustc
+$ rustup toolchain uninstall stable
+$ which rustc
+~/.cargo/bin/rustc      # still there — it is a shim, not the compiler
+```
+
+| Piece | What it is | Where it lives |
+|---|---|---|
+| `rustup` | version manager | `~/.cargo/bin` |
+| shim | a stand-in that forwards the call | `~/.cargo/bin` |
+| `rustc` | the actual compiler | inside the toolchain |
+
+> The interface disappears while you read, and knows how to show up when the
+> technical part arrives.
