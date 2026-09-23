@@ -74,15 +74,27 @@ Two things live in GitHub rather than in a file, and the release workflow does n
 
 ## Branches
 
-- `main` — the template. No personal content.
-- `site` — your content, and the production branch on Vercel.
+`main` is the template, and the only branch. It carries no personal content.
 
-Merges go **`main → site`**, never the other way. A template bug found while writing content is committed on `main` and comes down through the sync.
+A site built from this template lives in its **own repository**, with this one
+added as a remote:
 
-`main` owns shape: `src/app/`, `src/components/`, `src/lib/`, `src/i18n/`, `src/config/types.ts`.
-`site` owns data: `src/content/`, the values in `src/config/site.ts`, `public/brand/`.
+```bash
+git remote add template git@github.com:Julio0Cesar/how-i-build.git
+git fetch template
+git merge template/main
+```
 
-The `Sync site` workflow merges `main` into `site` on every push to `main`. It does nothing if there is no `site` branch, so the second branch is optional.
+Updates flow template → site, never the other way. A template bug found while
+writing content is committed here and comes down through the merge.
+
+`main` owns shape: `src/app/`, `src/components/`, `src/lib/`, `src/i18n/`,
+`src/config/types.ts`. Your repository owns data: `src/content/`, the values in
+`src/config/site.ts`, `public/brand/`.
+
+A content branch inside the template was the earlier arrangement. It is gone
+because a pull request opened from a content branch defaults to targeting the
+template, which is how personal writing ends up in a template by accident.
 
 ## Documentation
 
