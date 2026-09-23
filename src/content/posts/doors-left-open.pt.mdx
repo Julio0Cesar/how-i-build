@@ -1,0 +1,171 @@
+export const meta = {
+  title: "As portas que eu tinha deixado abertas",
+  summary:
+    "Um deploy que subia com o teste vermelho, uma API que atendia qualquer um, um erro que morria no log e um monitor que dizia que estava tudo bem. O que descobri fechando cada uma.",
+  publishedAt: "2026-09-23",
+  coverUrl: "/blog/circuit-board.webp",
+  coverAlt: "Uma placa de circuito verde vista de perto, com trilhas de cobre e componentes soldados",
+  tags: ["Infraestrutura", "Processo"],
+};
+
+Passei uma tarde fechando as portas que o Orbit tinha deixado abertas em
+produção. Nenhuma delas era um bug. Eram todas coisas que eu nunca tinha
+decidido, e que por isso ficaram no padrão — e o padrão de quase tudo é
+"aberto".
+
+Cinco portas, cinco descobertas. As descobertas são mais interessantes que as
+portas.
+
+## Exigir o teste não é exigir os jobs
+
+O primeiro item parecia trivial: não deixar um commit com o teste vermelho
+chegar em produção. O GitHub tem proteção de branch, é só marcar quais checks
+são obrigatórios.
+
+Só que meu fluxo de CI pula o que não mudou. Se o PR só mexe no frontend, o job
+do backend nem roda. E aqui está a parte que eu não sabia: **um job pulado não
+reporta status nenhum**. Ele não fica verde nem vermelho — ele simplesmente não
+existe para quem está esperando. Marcar "backend" como obrigatório travaria para
+sempre todo PR que não toca no backend, esperando um resultado que nunca chega.
+
+A saída é um job final que sempre roda, depende de todos os outros e falha se
+algum falhou:
+
+```yaml
+ci-ok:
+  needs: [changes, backend, web, docker]
+  if: always()
+  steps:
+    - run: |
+        for r in "${{ needs.backend.result }}" "${{ needs.web.result }}"; do
+          case "$r" in
+            success|skipped) ;;
+            *) exit 1 ;;
+          esac
+        done
+```
+
+`skipped` conta como sucesso. É o único jeito de um check condicional poder ser
+obrigatório.
+
+Descobri depois que proteção de branch em repositório privado é recurso pago no
+GitHub. Tudo bem: o cadeado que importa não é o do merge, é o do deploy. A
+hospedagem da API tem uma opção de só publicar depois que os checks passam, e
+ela é gratuita. Um commit ruim ainda pode entrar na branch, mas não chega em
+produção — que era o problema de verdade.
+
+## O rollback devolve o código, não o banco
+
+O segundo item era uma regra, não código. O painel da hospedagem tem um botão de
+rollback que volta para a imagem anterior em um minuto. Eu confiava nele.
+
+O que o botão não faz é voltar o banco. As migrations rodam na subida, então
+depois do rollback a **versão antiga do código roda contra o schema novo**. Se a
+migration só criou coluna, tudo bem: o código antigo ignora o que não conhece.
+Se ela apagou ou renomeou, o código antigo quebra na primeira consulta, e aí não
+existe botão que resolva.
+
+Daí a regra que escrevi e coloquei no checklist de PR: **um release só
+adiciona**. Remover e renomear ficam para um release seguinte, depois que
+nenhuma versão no ar usa mais aquilo. Mudar o tipo de uma coluna virou cinco
+passos em vez de um. É mais chato e é o que mantém o botão de rollback sendo um
+botão de verdade.
+
+## A porta dos fundos que a CDN nunca viu
+
+A API tem domínio próprio, mas a hospedagem também dá um endereço público
+direto. Quem descobrisse esse endereço falava com a API sem passar por nada.
+
+O plano era o padrão: a CDN carimba um header secreto em toda requisição que
+passa por ela, e a API recusa quem não trouxer o carimbo. Escrevi o middleware,
+testei, e só então fui ver como o DNS estava configurado.
+
+O registro da API apontava para a hospedagem **sem proxy**. A CDN só resolvia o
+nome — o tráfego ia direto, ela nunca via a requisição. Não havia onde carimbar
+nada. O `server: cloudflare` que eu via na resposta era da CDN da própria
+hospedagem, não da minha.
+
+O passo zero, que não estava em plano nenhum, era ligar o proxy no registro.
+Trinta segundos de clique, depois de três horas escrevendo a parte difícil.
+
+A segunda lição foi de ordem. Ligados fora de ordem, os dois lados se
+derrubam: API exigindo um carimbo que ninguém aplica é uma API que recusa todo
+mundo. Então o middleware nasceu **desligado**:
+
+```go
+func OriginSecret(secret string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		if secret == "" {
+			return next
+		}
+		...
+```
+
+Segredo vazio, middleware transparente. Dá para publicar a API primeiro, criar a
+regra na CDN depois, e só então preencher o segredo. E para desligar em
+emergência, basta esvaziar o valor — sem deploy.
+
+As rotas de saúde ficaram de fora da checagem, porque o health check da própria
+hospedagem bate direto no serviço, sem passar pela CDN. Se eu tivesse esquecido
+disso, a plataforma concluiria que a API está morta e ficaria reiniciando ela
+para sempre.
+
+## Um erro que ninguém vê
+
+A terceira porta era a mais silenciosa: um erro 500 morria no log da
+hospedagem. Eu só descobriria se fosse olhar, e eu não ia olhar.
+
+Ligar um rastreador de erros foi o item mais simples de todos, e o que mais
+mudou a sensação de estar no ar. Agora um panic chega com a pilha, a rota e o
+identificador da requisição, em vez de virar uma linha que ninguém lê.
+
+A única decisão real foi o que **não** ligar. O plano gratuito dá cinco mil
+eventos por mês, e rastreamento de performance e gravação de sessão comem essa
+cota depressa para responder perguntas que o log já responde. Deixei os dois em
+zero. Um monitor que estoura a cota no dia 12 é pior que não ter monitor.
+
+## O monitor que dizia 200
+
+A última porta foi a que mais me ensinou.
+
+Eu já tinha um vigia próprio: um worker que pinga meus serviços e me avisa
+quando algum cai. O problema é que ele não pode avisar sobre si mesmo. Se ele
+parar, o silêncio é idêntico a "está tudo bem".
+
+Então coloquei um monitor de fora, num serviço que não divide nada com a minha
+infra, apontado para a página de status do worker. Ela responde 200, o monitor
+fica feliz, e eu fiquei tranquilo.
+
+Errado. A página é servida de um cache de estado: ela responde 200 **mesmo que
+nenhum ping tenha acontecido nas últimas seis horas**. Ela mostraria dado velho,
+com aparência perfeita, e o monitor de fora não veria diferença nenhuma. Eu
+tinha construído um vigia para o vigia que olhava para o lado errado.
+
+A correção tem vinte linhas: uma rota de saúde que devolve 500 quando o último
+ciclo passou do prazo.
+
+```json
+{
+  "ok": true,
+  "crons": {
+    "fast":  { "ageMinutes": 3,   "limitMinutes": 30 },
+    "daily": { "ageMinutes": 862, "limitMinutes": 1560 }
+  }
+}
+```
+
+O monitor externo passou a apontar para essa rota. Agora ele não pergunta "o
+servidor responde?", pergunta "o trabalho está acontecendo?". São perguntas
+diferentes, e só a segunda importa.
+
+## O que ficou
+
+A regra que eu tiro dessas cinco portas é uma só: **o padrão nunca é seguro,
+porque o padrão não foi escolhido por ninguém**. O deploy sobe sem perguntar, a
+porta dos fundos fica aberta, o erro vai para um log que ninguém lê, e o monitor
+responde a pergunta mais fácil em vez da certa.
+
+E tem a segunda, que aprendi apanhando: **verifique o degrau antes do degrau**.
+Três horas de middleware antes de descobrir que o tráfego nem passava por onde
+eu achava. Meia hora olhando a configuração teria mudado a ordem do trabalho
+inteiro.
