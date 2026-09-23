@@ -1,0 +1,175 @@
+export const meta = {
+  title: "The doors I had left open",
+  summary:
+    "A deploy that shipped on a red test, an API that answered anyone, an error that died in a log, and a monitor that said everything was fine. What I found closing each one.",
+  publishedAt: "2026-09-23",
+  coverUrl: "/blog/ants.webp",
+  coverAlt: "Red ants in single file over green leaves, several of them gripping the edges of a folded leaf",
+  tags: ["Infrastructure", "Process"],
+};
+
+I spent an afternoon closing the doors Orbit had left open in production. None
+of them was a bug. They were all things I had never decided, and so they sat at
+the default — and the default of almost everything is "open".
+
+Five doors, five findings. The findings are more interesting than the doors.
+
+## Requiring the tests is not requiring the jobs
+
+The first item looked trivial: stop a commit with a red test from reaching
+production. GitHub has branch protection; you just tick which checks are
+required.
+
+Except my CI skips what did not change. If a pull request only touches the
+frontend, the backend job never runs. And here is the part I did not know: **a
+skipped job reports no status at all**. It is neither green nor red — it simply
+does not exist to whoever is waiting. Marking "backend" as required would
+forever block every pull request that does not touch the backend, waiting on a
+result that never arrives.
+
+The way out is a final job that always runs, depends on all the others, and
+fails if any of them failed:
+
+```yaml
+ci-ok:
+  needs: [changes, backend, web, docker]
+  if: always()
+  steps:
+    - run: |
+        for r in "${{ needs.backend.result }}" "${{ needs.web.result }}"; do
+          case "$r" in
+            success|skipped) ;;
+            *) exit 1 ;;
+          esac
+        done
+```
+
+`skipped` counts as success. It is the only way a conditional check can be
+required at all.
+
+I found out afterwards that branch protection on a private repository is a paid
+feature on GitHub. Fine: the lock that matters is not the one on the merge, it
+is the one on the deploy. The API host has an option to publish only after the
+checks pass, and that one is free. A bad commit can still land on the branch,
+but it does not reach production — which was the real problem.
+
+## Rollback gives back the code, not the database
+
+The second item was a rule, not code. The host's dashboard has a rollback
+button that returns to the previous image in about a minute. I trusted it.
+
+What the button does not do is roll back the database. Migrations run on
+startup, so after a rollback the **old code runs against the new schema**. If
+the migration only added a column, fine: the old code ignores what it does not
+know. If it dropped or renamed one, the old code breaks on the first query, and
+no button fixes that.
+
+Hence the rule I wrote down and put in the pull request checklist: **a release
+only adds**. Dropping and renaming wait for a later release, once no running
+version uses them any more. Changing a column's type became five steps instead
+of one. It is more tedious, and it is what keeps the rollback button an actual
+button.
+
+## The back door the CDN never saw
+
+The API has its own domain, but the host also hands out a public address that
+points straight at it. Anyone who found that address talked to the API with
+nothing in between.
+
+The plan was the standard one: the CDN stamps a secret header on every request
+that passes through it, and the API refuses anyone without the stamp. I wrote
+the middleware, tested it, and only then went to look at the DNS.
+
+The API record pointed at the host **unproxied**. The CDN only resolved the
+name — traffic went straight through, and it never saw the request. There was
+nothing to stamp anything on. The `server: cloudflare` I kept seeing in the
+response was the host's own CDN, not mine.
+
+Step zero, which appeared in no plan, was turning the proxy on for that record.
+Thirty seconds of clicking, after three hours writing the hard part.
+
+The second lesson was about order. Turned on in the wrong order, the two sides
+take each other down: an API demanding a stamp nobody applies is an API that
+refuses everyone. So the middleware was born **off**:
+
+```go
+func OriginSecret(secret string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		if secret == "" {
+			return next
+		}
+		...
+```
+
+Empty secret, transparent middleware. You can ship the API first, create the CDN
+rule second, and fill in the secret last. And to turn it off in an emergency you
+just blank the value — no deploy.
+
+The health routes stay outside the check, because the host's own health probe
+hits the service directly, without passing through the CDN. Had I forgotten
+that, the platform would have concluded the API was dead and restarted it
+forever.
+
+## An error nobody sees
+
+The third door was the quietest: a 500 died in the host's log. I would only find
+out if I went looking, and I was not going to look.
+
+Wiring up an error tracker was the simplest item of all, and the one that most
+changed how being in production feels. A panic now arrives with the stack, the
+route and the request id, instead of becoming a line nobody reads.
+
+The only real decision was what **not** to turn on. The free plan gives five
+thousand events a month, and performance tracing and session replay eat that
+quota fast to answer questions the log already answers. I left both at zero. A
+monitor that blows its quota on the 12th is worse than no monitor.
+
+## The monitor that said 200
+
+The last door taught me the most.
+
+I already had a watchdog of my own: a worker that pings my services and tells me
+when one goes down. The trouble is it cannot report on itself. If it stops, the
+silence is identical to "everything is fine".
+
+So I put an outside monitor on it, on a service that shares nothing with my
+infrastructure, pointed at the worker's status page. It answers 200, the monitor
+is happy, and I felt covered.
+
+Wrong. The page is served from cached state: it answers 200 **even if no ping
+has happened in the last six hours**. It would show stale data, looking perfect,
+and the outside monitor would not notice a thing. I had built a watchdog for the
+watchdog that was looking the wrong way.
+
+The fix is twenty lines: a health route that returns 500 when the last cycle is
+past its deadline.
+
+```json
+{
+  "ok": true,
+  "crons": {
+    "fast":  { "ageMinutes": 3,   "limitMinutes": 30 },
+    "daily": { "ageMinutes": 862, "limitMinutes": 1560 }
+  }
+}
+```
+
+The external monitor now points at that route. It stopped asking "does the
+server answer?" and started asking "is the work happening?". Those are different
+questions, and only the second one matters.
+
+## What stayed
+
+The rule I take from those five doors is one: **the default is never safe,
+because the default was chosen by nobody**. The deploy ships without asking, the
+back door stays open, the error goes to a log nobody reads, and the monitor
+answers the easiest question instead of the right one.
+
+And a second one, learned the hard way: **check the step before the step**.
+Three hours of middleware before finding out the traffic did not even go where I
+thought. Half an hour reading the configuration would have changed the order of
+the whole job.
+
+The ants in the photo spend the day holding the edge of a leaf to close the
+nest. None of them holds it alone, and none of them picked the leaf: they close
+what is open, one at a time.

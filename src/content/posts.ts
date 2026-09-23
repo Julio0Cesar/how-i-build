@@ -1,3 +1,5 @@
+import DoorsEn, { meta as doorsEn } from "./posts/doors-left-open.en.mdx";
+import DoorsPt, { meta as doorsPt } from "./posts/doors-left-open.pt.mdx";
 import HelloEn, { meta as helloEn } from "./posts/hello-world.en.mdx";
 import HelloPt, { meta as helloPt } from "./posts/hello-world.pt.mdx";
 import InstallingRustEn, { meta as installingRustEn } from "./posts/installing-rust.en.mdx";
@@ -50,6 +52,19 @@ export const posts: Post[] = [
       pt: {
         meta: postMeta(oneDomainPt, "posts/one-domain-three-subdomains.pt.mdx"),
         Body: OneDomainPt,
+      },
+    },
+  },
+  {
+    slug: "doors-left-open",
+    locales: {
+      en: {
+        meta: postMeta(doorsEn, "posts/doors-left-open.en.mdx"),
+        Body: DoorsEn,
+      },
+      pt: {
+        meta: postMeta(doorsPt, "posts/doors-left-open.pt.mdx"),
+        Body: DoorsPt,
       },
     },
   },
