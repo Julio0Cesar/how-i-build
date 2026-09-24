@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
  */
 const withMDX = createMDX({
   options: {
+    /* Sem o gfm, uma tabela em markdown sai como texto com barras verticais. */
+    remarkPlugins: [["remark-gfm"]],
     rehypePlugins: [["rehype-slug"]],
   },
 });

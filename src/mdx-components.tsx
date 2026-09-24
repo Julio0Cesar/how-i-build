@@ -1,7 +1,9 @@
 import type { MDXComponents } from "mdx/types";
 import { Anchor } from "@/components/mdx/anchor";
 import { Decision, Tradeoffs } from "@/components/mdx/callout";
+import { Chain, Step } from "@/components/mdx/chain";
 import { Entry } from "@/components/mdx/entry";
+import { Experiment, Hypothesis, Observation } from "@/components/mdx/investigation";
 import { Img, Video } from "@/components/mdx/media";
 import { prose } from "@/components/mdx/prose";
 import { Release } from "@/components/mdx/release";
@@ -22,6 +24,11 @@ const components: MDXComponents = {
   Entry,
   Decision,
   Tradeoffs,
+  Observation,
+  Hypothesis,
+  Experiment,
+  Chain,
+  Step,
   Release,
 };
 

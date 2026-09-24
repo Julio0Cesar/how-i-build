@@ -67,6 +67,13 @@ in the table of contents, in the order they appear in the file.
 | `<Entry title date />` | starts an entry; `date` is optional |
 | `<Decision>` | the call, set apart from the narration |
 | `<Tradeoffs>` | what it cost — a list reads best |
+| `<Hypothesis>` | what you believed before you knew, including when it was wrong |
+| `<Observation>` | what surprised you |
+| `<Experiment>` | what you did to find out |
+
+The last three are for showing the process rather than the result. None of them
+uses an alert colour: a wrong hypothesis belongs in the text, and painting it
+amber would say otherwise.
 
 They are optional. Where the structure does not help, write paragraphs.
 

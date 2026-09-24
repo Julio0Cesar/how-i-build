@@ -1,17 +1,71 @@
 export const meta = {
   title: "Por que este site mantém um changelog",
   summary:
-    "Uma nota curta sobre registrar decisões enquanto estão frescas, em vez de reconstruí-las depois.",
+    "Uma nota curta sobre anotar decisões enquanto elas ainda estão frescas, em vez de reconstruí-las depois.",
   publishedAt: "2026-08-14",
   tags: ["Escrita", "Processo"],
 };
 
-Um case study é escrito depois que tudo passou. A essa altura as alternativas já
+## Por que um post, e não um estudo de caso
+
+Um estudo de caso se escreve depois. A essa altura as alternativas já
 desbotaram, e o que sobra é a versão que deu certo — que é a parte menos
 interessante.
 
 Um post é mais barato. Dá para escrever enquanto a decisão ainda incomoda, antes
 de alguém saber se ela estava certa.
 
-É essa a razão de esta seção existir: alguns pensamentos não valem um case study
-e valem ser registrados.
+<Hypothesis>
+Anotar o raciocínio depois daria quase na mesma, porque o que importa a gente
+lembra.
+</Hypothesis>
+
+Não lembra. O que sobrevive a uma semana é a conclusão; o que some é a opção
+descartada e o motivo de ter sido descartada. A conclusão sozinha parece óbvia,
+e conclusão óbvia não ensina ninguém.
+
+<Observation>
+As anotações que valem são as escritas antes de o resultado ser conhecido.
+</Observation>
+
+## Para que serve esta seção
+
+É essa a razão de esta seção existir: alguns pensamentos não merecem um estudo
+de caso e merecem ser escritos.
+
+## Como fica uma parte técnica
+
+A medida do texto é 68 caracteres, que é onde ler é confortável. Um bloco de
+comandos ou uma tabela ganha mais espaço, porque um encadeamento que quebra de
+linha é um encadeamento que você tem de remontar de cabeça:
+
+<Experiment>
+Remover o toolchain ativo e ver qual das duas ferramentas reclama primeiro.
+</Experiment>
+
+```bash
+$ which rustc
+~/.cargo/bin/rustc
+$ rustup toolchain uninstall stable
+$ which rustc
+~/.cargo/bin/rustc      # continua ali — é um shim, não o compilador
+```
+
+| Peça | O que é | Onde mora |
+|---|---|---|
+| `rustup` | gerenciador de versões | `~/.cargo/bin` |
+| shim | um substituto que encaminha a chamada | `~/.cargo/bin` |
+| `rustc` | o compilador de verdade | dentro do toolchain |
+
+E o encadeamento que os dois realmente formam:
+
+<Chain>
+  <Step name="rustup">o gerenciador de versões que você instala</Step>
+  <Step name="shim">um substituto no PATH que encaminha a chamada</Step>
+  <Step name="toolchain">a versão para a qual o shim resolve</Step>
+  <Step name="rustc">o compilador que enfim roda</Step>
+</Chain>
+
+
+> A interface desaparece enquanto você lê, e sabe aparecer quando a parte
+> técnica chega.

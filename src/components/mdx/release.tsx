@@ -68,7 +68,7 @@ export async function Release({
       {sections.map((section) => (
         <div key={section.title} className="mt-3">
           {section.title ? (
-            <p className={`${label} text-[0.6rem]`}>{section.title}</p>
+            <p className={label}>{section.title}</p>
           ) : null}
           <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-relaxed">
             {section.items.map((item, index) => (
