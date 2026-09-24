@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# registros da skill de design, locais
+.impeccable/
+PRODUCT.md
+DESIGN.md
