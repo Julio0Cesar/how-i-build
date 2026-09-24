@@ -44,3 +44,7 @@ next-env.d.ts
 .impeccable/
 PRODUCT.md
 DESIGN.md
+
+# gerados pelo Next para agentes
+AGENTS.md
+CLAUDE.md
