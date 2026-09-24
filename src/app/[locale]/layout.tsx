@@ -19,7 +19,7 @@ export const metadata: Metadata = {
       { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
-    /* iOS ignora SVG aqui: sem o PNG, a tela de início mostra um recorte da página. */
+    /* iOS ignores SVG here: without the PNG, the home screen shows a screenshot. */
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",

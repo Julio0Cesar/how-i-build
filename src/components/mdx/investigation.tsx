@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import { currentDictionary } from "./locale";
 
 /**
- * Os três blocos que marcam o processo, não o resultado: o que surpreendeu, o
- * que se achava antes — inclusive errado — e o que se fez para descobrir.
+ * The three blocks that mark the process rather than the result: what
+ * surprised you, what you believed before — including when it was wrong — and
+ * what you did to find out.
  *
- * Nenhum usa cor de alerta. Uma hipótese errada é parte do texto, não um aviso
- * a esconder, e pintá-la de amarelo diria o contrário.
+ * None of them uses an alert colour. A wrong hypothesis belongs in the text,
+ * not in a warning to be hidden away, and painting it amber would say the
+ * opposite.
  */
 const frame = "my-8 border-y border-rule py-4";
 const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";

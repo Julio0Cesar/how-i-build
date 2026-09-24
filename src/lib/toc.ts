@@ -22,7 +22,7 @@ export function caseToc(slugName: string, locale: Locale): TocItem[] {
   return tocFrom("src/content/projects", slugName, locale);
 }
 
-/** O mesmo índice para um post: o trilho da direita existe nas duas páginas. */
+/** The same index for a post: the right-hand rail exists on both pages. */
 export function postToc(slugName: string, locale: Locale): TocItem[] {
   return tocFrom("src/content/posts", slugName, locale);
 }

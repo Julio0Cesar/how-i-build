@@ -2,11 +2,11 @@ import type { MetadataRoute } from "next";
 import { site } from "@/config/site";
 
 /**
- * Servido em `/manifest.webmanifest`. É o que permite instalar o site como app
- * e o que dá nome e ícone à janela quando alguém faz isso.
+ * Served at `/manifest.webmanifest`. It is what lets the site be installed as
+ * an app, and what gives that window its name and icon.
  *
- * O `maskable` é um arquivo separado de propósito: o sistema recorta até 20% de
- * cada lado, e o ícone normal, com cantos arredondados, perderia a moldura.
+ * The maskable icon is a separate file on purpose: the system crops up to 20%
+ * of each side, and the rounded-corner icon would lose its frame.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
