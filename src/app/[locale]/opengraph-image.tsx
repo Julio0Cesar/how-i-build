@@ -2,11 +2,11 @@ import { ImageResponse } from "next/og";
 import { site } from "@/config/site";
 
 /**
- * A imagem que aparece quando alguém compartilha um link do site.
+ * The image that shows up when someone shares a link to the site.
  *
- * Gerada, e não um arquivo: um PNG estático guardado no repositório envelhece
- * junto com o nome e a frase, e cada fork teria de redesenhar o seu. Páginas
- * com capa própria, como um post, sobrescrevem esta.
+ * Generated rather than a file: a static PNG committed to the repository ages
+ * alongside the name and the tagline, and every fork would have to redraw its
+ * own. A page with its own cover, such as a post, overrides this one.
  */
 export const alt = site.tagline;
 export const size = { width: 1200, height: 630 };

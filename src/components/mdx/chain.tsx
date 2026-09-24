@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 
 /**
- * Um encadeamento técnico como sequência numerada, e não como parágrafo.
+ * A technical chain as a numbered sequence rather than a paragraph.
  *
- * Cada elo traz o número, o nome em monoespaçada e o que ele faz. A régua entre
- * os elos carrega a ordem; seta desenhada seria enfeite, porque a ordem já está
- * no número. O contador é do CSS, então inserir um elo no meio não obriga a
- * renumerar o texto.
+ * Each link carries its number, its name in mono, and what it does. The rule
+ * between links carries the order; a drawn arrow would be ornament, because the
+ * number already says it. The counter is CSS, so inserting a link in the middle
+ * does not force the text to be renumbered.
  */
 export function Chain({ children }: { children?: ReactNode }) {
   return (

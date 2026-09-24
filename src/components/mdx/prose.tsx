@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 /**
  * Elementos de markdown na tipografia do site.
  *
- * O texto vive em 68 caracteres, que é a medida de leitura. Bloco técnico —
- * código, tabela — respira até 84: é ele que precisa caber sem quebrar quando o
- * assunto é um encadeamento de comandos.
+ * Text lives at 68 characters, which is the reading measure. A technical block
+ * — code, a table — breathes up to 84: it is the one that has to fit without
+ * wrapping when the subject is a chain of commands.
  */
 const read = "max-w-[68ch]";
 const wide = "max-w-[84ch]";
@@ -37,10 +37,10 @@ export const prose = {
     </ol>
   ),
   /**
-   * Um bloco cercado chega como `code` dentro de `pre` e traz uma classe
-   * `language-*`. Estilizá-lo como código embutido empilharia um segundo fundo
-   * e um segundo recuo dentro do bloco, então o caso cercado renderiza nu e
-   * deixa o `pre` acima ser dono da moldura.
+   * A fenced block arrives as `code` inside `pre` and carries a `language-*`
+   * class. Styling it like inline code would stack a second background and a
+   * second padding inside the block, so the fenced case renders bare and lets
+   * the `pre` above own the frame.
    */
   code: ({ children, className }: { children?: ReactNode; className?: string }) =>
     className ? (
@@ -60,7 +60,7 @@ export const prose = {
   ),
   hr: () => <hr className={`mt-10 ${wide} border-t border-rule`} />,
   table: ({ children }: { children?: ReactNode }) => (
-    /* O wrapper rola no celular; a tabela sozinha empurraria a página inteira. */
+    /* The wrapper scrolls on mobile; the table alone would push the whole page. */
     <div className={`mt-6 ${wide} overflow-x-auto`}>
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>

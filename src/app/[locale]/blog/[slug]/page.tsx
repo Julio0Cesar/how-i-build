@@ -137,7 +137,7 @@ export default async function PostPage({
         {/* No box when there is nothing to put in it. */}
         {toc.length > 1 || recent.length > 0 ? (
           <aside className="mt-16 space-y-10 border-t border-rule pt-8 lg:sticky lg:top-24 lg:mt-0 lg:self-start lg:border-t-0 lg:pt-2">
-            {/* Um índice de uma entrada só não orienta ninguém. */}
+            {/* An index with a single entry orients nobody. */}
             {toc.length > 1 ? <CaseToc items={toc} label={dict.case.toc} /> : null}
             {recent.length > 0 ? (
               <RecentPosts posts={recent} locale={locale} label={dict.blog.recent} />
