@@ -36,9 +36,18 @@ export const prose = {
       {children}
     </ol>
   ),
-  code: ({ children }: { children?: ReactNode }) => (
-    <code className="bg-muted px-1 py-0.5 font-mono text-[0.9em]">{children}</code>
-  ),
+  /**
+   * Um bloco cercado chega como `code` dentro de `pre` e traz uma classe
+   * `language-*`. Estilizá-lo como código embutido empilharia um segundo fundo
+   * e um segundo recuo dentro do bloco, então o caso cercado renderiza nu e
+   * deixa o `pre` acima ser dono da moldura.
+   */
+  code: ({ children, className }: { children?: ReactNode; className?: string }) =>
+    className ? (
+      <code className={className}>{children}</code>
+    ) : (
+      <code className="bg-muted px-1 py-0.5 font-mono text-[0.9em]">{children}</code>
+    ),
   pre: ({ children }: { children?: ReactNode }) => (
     <pre className={`mt-6 ${wide} overflow-x-auto border border-rule bg-muted p-4 font-mono text-sm leading-relaxed`}>
       {children}

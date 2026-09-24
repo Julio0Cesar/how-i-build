@@ -111,14 +111,6 @@
     cursor: default;
   }
 
-  /* Dentro de um bloco, o `code` já está na caixa do `pre`: repetir fundo e
-     recuo desenharia uma caixa dentro da outra. */
-  pre code {
-    background-color: transparent;
-    padding: 0;
-    font-size: inherit;
-  }
-
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-accent-foreground);
