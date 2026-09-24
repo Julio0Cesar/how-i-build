@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <title>how-i-build</title>
+  <rect width="200" height="200" fill="#121214"/>
+  <!-- Monograma em contornos de IBM Plex Sans: um ícone que depende de fonte
+       instalada some em qualquer renderizador que não a tenha. -->
+  <g fill="#F3F2EE" transform="translate(62.6 122) scale(0.06219)"><path d="M69 0V-740H217V-436H223Q237 -477 272 -507Q307 -537 369 -537Q449 -537 491 -482.5Q533 -428 533 -329V0H385V-317Q385 -367 369 -392Q353 -417 312 -417Q288 -417 266.5 -408.5Q245 -400 231 -383Q217 -366 217 -340V0Z M665 0V-740H813V-437H818Q829 -481 868.5 -509Q908 -537 959 -537Q1026 -537 1070.5 -505.5Q1115 -474 1138 -413Q1161 -352 1161 -263Q1161 -174 1138 -112.5Q1115 -51 1070.5 -19.5Q1026 12 959 12Q908 12 868.5 -16.5Q829 -45 818 -88H813V0ZM910 -108Q952 -108 979.5 -138Q1007 -168 1007 -217V-308Q1007 -358 979.5 -387.5Q952 -417 910 -417Q882 -417 860 -408Q838 -399 825.5 -381.5Q813 -364 813 -340V-185Q813 -161 825.5 -143.5Q838 -126 860 -117Q882 -108 910 -108Z"/></g>
+  <!-- O losango cita os hifens de "how-i-build". -->
+  <rect x="95.5" y="114" width="9" height="9" transform="rotate(45 100 118.5)" fill="#7C6FF0"/>
+</svg>

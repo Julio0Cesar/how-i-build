@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { site } from "@/config/site";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
@@ -15,9 +15,29 @@ export const metadata: Metadata = {
    * owns, so replacing the mark never touches a file `main` maintains.
    */
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    /* iOS ignora SVG aqui: sem o PNG, a tela de início mostra um recorte da página. */
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    title: site.name,
+    description: site.tagline,
+    url: site.liveUrl,
+  },
+  twitter: { card: "summary_large_image" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAFAF9" },
+    { media: "(prefers-color-scheme: dark)", color: "#121214" },
+  ],
 };
 
 export function generateStaticParams() {

@@ -48,6 +48,22 @@ Three places, in the order you will need them:
 | Your writing | `src/content/` — see [`docs/CONTENT.md`](docs/CONTENT.md) |
 | Interface strings | `src/i18n/dictionaries.ts` |
 | Colours and type | `src/app/globals.css` |
+| The mark | `public/icon.svg`, plus the PNGs beside it |
+
+The mark ships as `public/icon.svg` with its letters already converted to
+outlines: an icon that depends on an installed font disappears in any renderer
+that lacks it. Replacing it means replacing the SVG **and** regenerating the
+PNGs beside it, which the manifest and iOS need:
+
+```bash
+for s in 192 512; do resvg --width $s --height $s public/icon.svg public/icon-$s.png; done
+resvg --width 512 --height 512 public/icon-maskable.svg public/icon-maskable-512.png
+resvg --width 180 --height 180 public/icon.svg public/apple-icon.png
+```
+
+Sharing a link uses a generated image, not a file: `src/app/[locale]/opengraph-image.tsx`
+draws it from the name and the tagline, so a fork gets its own without designing
+one. A post with a cover overrides it.
 
 Nothing in the template names *you*. The placeholders are in `src/config/site.ts` and in the sample project's repository URL, and `grep -ri "your-username" src/` finds both.
 
