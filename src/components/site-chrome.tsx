@@ -32,13 +32,14 @@ export async function SiteHeader() {
   const dict = getDictionary(locale);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-foreground bg-background">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
         <Link
           href={localeHref(locale, "/")}
-          className="flex min-w-0 max-w-[70%] items-center gap-2 font-mono text-sm font-medium tracking-tight"
+          className="flex min-w-0 max-w-[70%] items-center gap-2.5 text-lg font-bold tracking-tight [font-stretch:85%]"
         >
-          <span className="h-3 w-1 shrink-0 bg-accent" aria-hidden="true" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- the site mark is a local SVG */}
+          <img src="/icon.svg" alt="" aria-hidden="true" className="size-7 shrink-0" />
           <span className="truncate">{site.name}</span>
         </Link>
         <SiteHeaderNav locale={locale} dict={dict} searchIndex={searchIndex(locale)} />
@@ -56,9 +57,9 @@ export async function SiteFooter() {
   const month = releaseMonth(release?.publishedAt ?? null, locale);
 
   return (
-    <footer className="mt-16 border-t border-rule md:mt-24">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4 py-8 text-center sm:px-6 md:flex-row md:items-baseline md:justify-between md:py-10 md:text-left">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+    <footer className="border-t border-foreground bg-background">
+      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <p className="data text-xs text-muted-foreground">
           {site.name}
           <span className="mx-2 text-rule" aria-hidden="true">
             ·
@@ -67,7 +68,7 @@ export async function SiteFooter() {
             href={release?.url ?? `${repoUrl()}/releases`}
             target="_blank"
             rel="noreferrer noopener"
-            className="transition-colors hover:text-accent"
+            className="link"
           >
             {dict.footer.template} v{version}
           </a>

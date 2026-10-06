@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CaseToc } from "@/components/case-toc";
+import { PostMeta, PostTeaser } from "@/components/post-teaser";
 import { ReadingProgress } from "@/components/reading-progress";
-import { RecentPosts } from "@/components/recent-posts";
 import { TagChips } from "@/components/tag-chips";
 import { posts } from "@/content/posts";
 import type { Post } from "@/content/types";
 import { isLocale, locales, localeHref } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { byDate, neighbours } from "@/lib/posts";
-import { postToc } from "@/lib/toc";
-
-const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
+import { byDate } from "@/lib/posts";
+import { slug as slugOf } from "github-slugger";
 
 function find(slug: string): Post | undefined {
   return posts.find((post) => post.slug === slug);
@@ -61,90 +58,76 @@ export default async function PostPage({
 
   const { meta, Body } = post.locales[locale];
   const dict = getDictionary(locale);
-  const { previous, next } = neighbours(posts, locale, post.slug);
-  const toc = postToc(slug, locale);
-  const recent = byDate(posts, locale).filter((entry) => entry.slug !== post.slug);
+  const tag = meta.tags?.[0];
+  const more = byDate(posts, locale)
+    .filter((entry) => entry.slug !== post.slug)
+    .slice(0, 3);
 
   return (
-    <div>
+    <div className="pb-24">
       <ReadingProgress />
 
-      {/*
-        Pinned while the article scrolls over it. The content below is opaque
-        and comes later in the DOM, so it occludes the image without a negative
-        z-index — which would put it behind the page's own background and out
-        of sight entirely.
-      */}
-      {meta.coverUrl ? (
-        <div className="sticky top-14 h-[34vh] w-full overflow-hidden sm:top-16 sm:h-[42vh]">
-          {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
-          <img
-            src={meta.coverUrl}
-            alt={meta.coverAlt ?? ""}
-            className="size-full object-cover"
-          />
-        </div>
-      ) : null}
-
-      <div
-        className={`relative mx-auto max-w-5xl bg-background px-4 sm:px-6 lg:grid lg:grid-cols-[minmax(0,42rem)_14rem] lg:justify-center lg:gap-12 ${
-          meta.coverUrl ? "-mt-[9vh] pb-16 pt-10 sm:pt-12" : "pb-16 pt-12 md:pt-20"
-        }`}
-      >
-        <div>
-        <header>
-          <time dateTime={meta.publishedAt} className={label}>
-            {meta.publishedAt}
-          </time>
-          <h1 className="mt-3 font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
+      <article>
+        {/* Nothing beside the text: the header, the cover and the column are
+            all the page is while it is being read. */}
+        <header className="mx-auto max-w-[46rem] px-5 pt-14 text-center sm:pt-20">
+          {tag ? (
+            <Link
+              href={localeHref(locale, `/blog/tags/${slugOf(tag)}`)}
+              className="text-sm font-semibold text-accent transition-opacity hover:opacity-75"
+            >
+              {tag}
+            </Link>
+          ) : null}
+          <h1 className="mt-4 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
             {meta.title}
           </h1>
+          <p className="mx-auto mt-6 max-w-[34em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
+            {meta.summary}
+          </p>
+          <PostMeta post={post} locale={locale} dict={dict} className="mt-6 justify-center" />
         </header>
 
-        <article className="pt-6">
+        {meta.coverUrl ? (
+          <figure className="mx-auto mt-12 max-w-[72rem] px-0 sm:px-5 md:mt-16">
+            {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
+            <img
+              src={meta.coverUrl}
+              alt={meta.coverAlt ?? ""}
+              className="aspect-[16/9] max-h-[78vh] w-full object-cover"
+            />
+          </figure>
+        ) : (
+          <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
+        )}
+
+        <div className="post-body mx-auto mt-12 max-w-[42rem] px-5 text-[1.1875rem] md:mt-16">
           <Body />
-        </article>
 
-        {meta.tags?.length ? (
-          <div className="mt-10">
-            <TagChips tags={meta.tags} locale={locale} />
-          </div>
-        ) : null}
-
-        {previous || next ? (
-          <nav aria-label={dict.blog.title} className="mt-16 border-t border-rule">
-            {[
-              { post: next, caption: dict.blog.next },
-              { post: previous, caption: dict.blog.previous },
-            ].map(({ post: sibling, caption }) =>
-              sibling ? (
-                <Link
-                  key={sibling.slug}
-                  href={localeHref(locale, `/blog/${sibling.slug}`)}
-                  className="group block border-b border-rule py-5 transition-transform hover:translate-x-2"
-                >
-                  <span className={`block ${label}`}>{caption}</span>
-                  <span className="mt-1 block font-serif text-lg tracking-tight transition-colors group-hover:text-accent">
-                    {sibling.locales[locale].meta.title}
-                  </span>
-                </Link>
-              ) : null,
-            )}
-          </nav>
-        ) : null}
+          {meta.tags?.length ? (
+            <div className="mt-14 border-t border-rule pt-6">
+              <TagChips tags={meta.tags} locale={locale} />
+            </div>
+          ) : null}
         </div>
+      </article>
 
-        {/* No box when there is nothing to put in it. */}
-        {toc.length > 1 || recent.length > 0 ? (
-          <aside className="mt-16 space-y-10 border-t border-rule pt-8 lg:sticky lg:top-24 lg:mt-0 lg:self-start lg:border-t-0 lg:pt-2">
-            {/* An index with a single entry orients nobody. */}
-            {toc.length > 1 ? <CaseToc items={toc} label={dict.case.toc} /> : null}
-            {recent.length > 0 ? (
-              <RecentPosts posts={recent} locale={locale} label={dict.blog.recent} />
-            ) : null}
-          </aside>
-        ) : null}
-      </div>
+      {more.length > 0 ? (
+        <section className="mt-24 border-t border-rule bg-sheet py-16 md:mt-32" aria-labelledby="read-next">
+          <div className="mx-auto max-w-[72rem] px-5">
+            <h2 id="read-next" className="text-2xl font-bold tracking-tight">
+              {dict.blog.readNext}
+            </h2>
+            <ul className="mt-8 grid gap-12 md:grid-cols-3 md:gap-10">
+              {more.map((entry) => (
+                <li key={entry.slug}>
+                  <PostTeaser post={entry} locale={locale} dict={dict} variant="card" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

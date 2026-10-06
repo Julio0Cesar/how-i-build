@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
  */
 export function Chain({ children }: { children?: ReactNode }) {
   return (
-    <ol className="mt-6 max-w-[84ch] list-none border-y border-rule [counter-reset:chain]">
+    <ol className="mt-6 max-w-full list-none border-y border-rule [counter-reset:chain]">
       {children}
     </ol>
   );

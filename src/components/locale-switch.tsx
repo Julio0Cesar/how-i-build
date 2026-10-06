@@ -47,8 +47,8 @@ export function LocaleSwitch({
             }}
             className={
               active
-                ? "bg-accent-soft px-2 py-0.5 font-mono text-xs uppercase tracking-widest text-accent"
-                : "px-2 py-0.5 font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
+                ? "bg-foreground px-2 py-0.5 data text-xs text-background"
+                : "px-2 py-0.5 data text-xs text-muted-foreground transition-colors hover:text-accent"
             }
           >
             {labels[code]}

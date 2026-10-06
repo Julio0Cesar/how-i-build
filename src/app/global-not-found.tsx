@@ -40,22 +40,22 @@ export default function GlobalNotFound() {
       <body className="flex min-h-full flex-col">
         <SiteHeader />
         <main className="flex-1 pt-14 sm:pt-16">
-          <div className="mx-auto max-w-5xl px-4 py-24 sm:px-6 md:py-32">
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              404
-            </p>
-            <h1 className="mt-3 font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
-              {dict.notFound.title}
-            </h1>
-            <p className="mt-4 max-w-[68ch] leading-relaxed text-muted-foreground">
-              {dict.notFound.body}
-            </p>
-            <Link
-              href={localeHref(defaultLocale, "/")}
-              className="mt-8 inline-block cursor-pointer border-b border-rule pb-0.5 font-mono text-xs uppercase tracking-widest transition-colors hover:border-accent hover:text-accent"
-            >
-              {dict.notFound.home}
-            </Link>
+          <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-24">
+            <div className="text-center">
+              <span className="stamp text-accent">404</span>
+              <h1 className="mt-4 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem]">
+                {dict.notFound.title}
+              </h1>
+              <p className="mx-auto mt-5 max-w-[34em] text-lg leading-relaxed text-muted-foreground">
+                {dict.notFound.body}
+              </p>
+              <Link
+                href={localeHref(defaultLocale, "/")}
+                className="link mt-8 inline-block font-medium"
+              >
+                {dict.notFound.home}
+              </Link>
+            </div>
           </div>
         </main>
         <SiteFooter />

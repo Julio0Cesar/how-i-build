@@ -11,7 +11,7 @@ export function Button({ className = "", ...props }: ComponentProps<"button">) {
     <button
       type="button"
       {...props}
-      className={`border border-rule px-2 py-1 text-sm transition-colors hover:border-accent hover:text-accent ${className}`.trim()}
+      className={`border border-rule px-2 py-1 text-sm transition-colors hover:border-foreground hover:text-foreground ${className}`.trim()}
     />
   );
 }

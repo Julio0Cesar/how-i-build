@@ -1,7 +1,7 @@
 import { slug } from "github-slugger";
 
 const rowClass =
-  "mt-14 flex scroll-mt-24 flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-rule pt-10 first:mt-0 first:border-t-0 first:pt-0";
+  "mt-16 flex scroll-mt-28 flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-t border-foreground pt-5 first:mt-0";
 
 /**
  * An entry heading with its date on the opposite edge.
@@ -14,11 +14,11 @@ const rowClass =
 export function Entry({ title, date }: { title: string; date?: string }) {
   return (
     <h2 id={slug(title)} className={rowClass}>
-      <span className="font-serif text-xl tracking-tight">{title}</span>
+      <span className="text-[1.9rem] font-bold leading-[1.05] tracking-[-0.025em] [font-stretch:88%]">{title}</span>
       {date ? (
         <time
           dateTime={date}
-          className="font-mono text-[0.65rem] tracking-widest text-muted-foreground"
+          className="stamp text-accent"
         >
           {date}
         </time>

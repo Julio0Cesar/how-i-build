@@ -9,7 +9,7 @@ import type { Locale } from "./config";
  */
 const en = {
   nav: {
-    home: "Index",
+    home: "Log",
     changelog: "Changelog",
     blog: "Blog",
     about: "About",
@@ -71,10 +71,11 @@ const en = {
     next: "Next post",
     empty: "Nothing published yet.",
     recent: "Recent posts",
-    calendar: "Archive",
     tag: "Tag",
     tags: "Tags",
     all: "All posts",
+    minutes: "min read",
+    readNext: "Read next",
   },
   changelog: {
     title: "Changelog",
@@ -83,6 +84,20 @@ const en = {
     empty: "No releases yet. The first one appears here once a feature or fix reaches the main branch.",
     release: "Release notes",
     latest: "Latest release",
+  },
+  log: {
+    title: "Log",
+    filter: "Show",
+    all: "Everything",
+    post: "Posts",
+    decision: "Decisions",
+    release: "Releases",
+    kind: { post: "Post", decision: "Decision", release: "Release" },
+    series: "Series",
+    entries: "entries",
+    empty: "Nothing of this kind yet.",
+    emptyReleases: "No releases to show. They are read from GitHub when the site is built, and none are published or reachable yet.",
+    back: "Back to the log",
   },
   status: {
     "in-dev": "In development",
@@ -119,7 +134,7 @@ export type Dictionary = typeof en;
 
 const pt: Dictionary = {
   nav: {
-    home: "Início",
+    home: "Diário",
     changelog: "Changelog",
     blog: "Blog",
     about: "Sobre",
@@ -179,10 +194,11 @@ const pt: Dictionary = {
     next: "Próximo post",
     empty: "Nada publicado ainda.",
     recent: "Posts recentes",
-    calendar: "Arquivo",
     tag: "Tag",
     tags: "Tags",
     all: "Todos os posts",
+    minutes: "min de leitura",
+    readNext: "Leia também",
   },
   changelog: {
     title: "Changelog",
@@ -190,6 +206,20 @@ const pt: Dictionary = {
     empty: "Nenhuma release ainda. A primeira aparece aqui quando uma feature ou correção chegar na branch principal.",
     release: "Notas da release",
     latest: "Última release",
+  },
+  log: {
+    title: "Diário",
+    filter: "Mostrar",
+    all: "Tudo",
+    post: "Posts",
+    decision: "Decisões",
+    release: "Releases",
+    kind: { post: "Post", decision: "Decisão", release: "Release" },
+    series: "Séries",
+    entries: "entradas",
+    empty: "Nada deste tipo ainda.",
+    emptyReleases: "Nenhuma release para mostrar. Elas são lidas do GitHub quando o site é gerado, e ainda não há nenhuma publicada ou acessível.",
+    back: "Voltar ao diário",
   },
   status: {
     "in-dev": "Em desenvolvimento",

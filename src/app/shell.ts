@@ -1,21 +1,17 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
+import { Bricolage_Grotesque, Martian_Mono } from "next/font/google";
 
-const sans = IBM_Plex_Sans({
+/** Variable, with an optical-size axis: the same family reads at 14px and 90px. */
+const sans = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-ibm-plex-sans",
+  axes: ["opsz", "wdth"],
+  variable: "--font-bricolage",
 });
 
-const serif = IBM_Plex_Serif({
+/** Dates, kinds, versions and code. Narrowed so a log row stays on one line. */
+const mono = Martian_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-ibm-plex-serif",
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-ibm-plex-mono",
+  axes: ["wdth"],
+  variable: "--font-martian",
 });
 
 /**
@@ -23,7 +19,7 @@ const mono = IBM_Plex_Mono({
  * the layout by design, so anything the layout puts on `<html>` has to be
  * repeated there or the 404 arrives unstyled and in the wrong theme.
  */
-export const htmlClass = `${sans.variable} ${serif.variable} ${mono.variable} h-full antialiased`;
+export const htmlClass = `${sans.variable} ${mono.variable} h-full antialiased`;
 
 /**
  * Runs before first paint, so the page never renders in the wrong theme.

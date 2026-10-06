@@ -14,7 +14,6 @@ import { parseReleaseBody } from "@/lib/changelog";
 import { changelogSources } from "@/lib/changelog-sources";
 import { getReleases, releaseDate } from "@/lib/integrations";
 
-const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
 
 function find(locale: Locale, repo: string) {
   return changelogSources(locale).find((entry) => entry.key === repo);
@@ -70,12 +69,13 @@ export default async function ProjectChangelogPage({
   const releases = await getReleases(30, entry.source);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6">
-      <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
-        <div className="md:pt-3">
+    <div className="mx-auto max-w-5xl px-5 pb-24 pt-10 sm:px-6 lg:pt-14">
+      <div>
+      <header className="border-b border-foreground pb-10">
+        <div>
           <Link
             href={localeHref(locale, "/changelog")}
-            className={`group inline-flex cursor-pointer items-center gap-2 transition-colors hover:text-accent ${label}`}
+            className="group inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft
               className="size-3.5 transition-transform group-hover:-translate-x-1"
@@ -85,7 +85,7 @@ export default async function ProjectChangelogPage({
           </Link>
         </div>
         <div>
-          <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
+          <h1 className="mt-6 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] sm:text-[3.4rem]">
             {entry.name}
           </h1>
           <p className="mt-4 max-w-[68ch] leading-relaxed text-muted-foreground">
@@ -95,7 +95,7 @@ export default async function ProjectChangelogPage({
       </header>
 
       {releases.length === 0 ? (
-        <p className="max-w-[68ch] border-t border-rule py-12 leading-relaxed text-muted-foreground">
+        <p className="max-w-[68ch] py-10 leading-relaxed text-muted-foreground">
           {dict.changelog.empty}
         </p>
       ) : (
@@ -109,10 +109,10 @@ export default async function ProjectChangelogPage({
                 key={release.tag}
                 id={release.tag}
                 // Clears the fixed header when the page opens on an anchor.
-                className="grid scroll-mt-24 gap-5 border-t border-rule py-10 md:grid-cols-[8rem_1fr] md:gap-10 md:py-12"
+                className="grid scroll-mt-24 gap-5 border-t border-rule py-8 first:border-t-0 md:grid-cols-[9rem_1fr] md:gap-10"
               >
-                <div className="md:pt-1">
-                  <h2 className="font-mono text-sm tracking-tight">
+                <div>
+                  <h2 className="data text-lg font-medium">
                     <a
                       href={release.url}
                       target="_blank"
@@ -125,7 +125,7 @@ export default async function ProjectChangelogPage({
                   {date ? (
                     <time
                       dateTime={release.publishedAt ?? undefined}
-                      className={`mt-2 block ${label}`}
+                      className="data mt-1 block text-xs text-muted-foreground"
                     >
                       {date}
                     </time>
@@ -138,7 +138,7 @@ export default async function ProjectChangelogPage({
                       href={release.url}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="cursor-pointer border-b border-rule text-sm transition-colors hover:border-accent hover:text-accent"
+                      className="cursor-pointer border-b border-rule text-sm transition-colors hover:border-foreground hover:text-foreground"
                     >
                       {dict.changelog.release}
                     </a>
@@ -146,7 +146,7 @@ export default async function ProjectChangelogPage({
                     sections.map((section) => (
                       <div key={section.title} className="mt-6 first:mt-0">
                         {section.title ? (
-                          <p className={label}>{section.title}</p>
+                          <h3 className="text-sm font-semibold">{section.title}</h3>
                         ) : null}
                         <ul className="mt-2 max-w-[68ch] list-disc space-y-2 pl-5 leading-relaxed">
                           {section.items.map((item, index) => (
@@ -178,6 +178,7 @@ export default async function ProjectChangelogPage({
           })}
         </ol>
       )}
+      </div>
     </div>
   );
 }

@@ -3,8 +3,7 @@ import type { ReactNode } from "react";
 import { localeHref } from "@/i18n/config";
 import { currentLocale } from "./locale";
 
-const linkClass =
-  "cursor-pointer border-b border-rule transition-colors hover:border-accent hover:text-accent";
+const linkClass = "link cursor-pointer";
 
 /**
  * Content writes `/projects/foo` and never `/pt/projects/foo`; the locale is

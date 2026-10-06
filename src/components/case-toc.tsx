@@ -74,10 +74,10 @@ export function CaseToc({
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center justify-between gap-3 border-b border-rule bg-background/95 py-3 backdrop-blur-sm lg:hidden"
+        className="flex w-full items-center justify-between gap-3 border-b border-rule bg-background py-3 lg:hidden"
       >
         <span className="truncate text-sm">
-          <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          <span className="data text-xs text-muted-foreground">
             {label}
           </span>
           <span className="ml-2 text-accent">{current}</span>
@@ -88,7 +88,7 @@ export function CaseToc({
         />
       </button>
 
-      <p className="hidden font-mono text-xs uppercase tracking-widest text-muted-foreground lg:block">
+      <p className="hidden data text-xs text-muted-foreground lg:block">
         {label}
       </p>
       <ul

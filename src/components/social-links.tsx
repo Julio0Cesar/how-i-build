@@ -39,7 +39,7 @@ export function SocialLinks({ dict }: { dict: Dictionary }) {
               rel={external ? "noreferrer noopener" : undefined}
               aria-label={socialIcons[item.key] ? item.label : undefined}
               title={socialIcons[item.key] ? item.label : undefined}
-              className="group flex items-center font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
+              className="group flex items-center data text-xs text-muted-foreground transition-colors hover:text-accent"
             >
               {socialIcons[item.key] ? (
                 // eslint-disable-next-line @next/next/no-img-element -- a local SVG needs no optimisation pipeline

@@ -7,7 +7,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { SearchEntry } from "@/lib/search";
 import { IconButton } from "./ui/icon-button";
 
-const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
+const label = "data text-xs text-muted-foreground";
 
 function matches(entry: SearchEntry, query: string) {
   const haystack = `${entry.title} ${entry.summary}`.toLowerCase();

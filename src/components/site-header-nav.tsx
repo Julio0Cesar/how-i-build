@@ -2,8 +2,9 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
-import { localeHref, type Locale } from "@/i18n/config";
+import { localeHref, stripLocale, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { SearchEntry } from "@/lib/search";
 import { IconButton } from "./ui/icon-button";
@@ -30,6 +31,7 @@ export function SiteHeaderNav({
 }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const path = stripLocale(usePathname() ?? "/");
 
   useEffect(() => {
     if (!open) return;
@@ -50,8 +52,13 @@ export function SiteHeaderNav({
     <Link
       key={route.key}
       href={localeHref(locale, route.path)}
+      aria-current={
+        (route.path === "/" ? path === "/" : path === route.path || path.startsWith(`${route.path}/`))
+          ? "page"
+          : undefined
+      }
       onClick={() => setOpen(false)}
-      className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-accent"
+      className="text-[0.95rem] font-medium text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[6px]"
     >
       {dict.nav[route.key]}
     </Link>
@@ -83,10 +90,10 @@ export function SiteHeaderNav({
       {open ? (
         <div
           id={panelId}
-          className="absolute inset-x-0 top-full z-40 border-b border-rule bg-background md:hidden"
+          className="absolute inset-x-0 top-full z-40 border-b border-foreground bg-background md:hidden"
         >
           <nav
-            className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-5 sm:px-6"
+            className="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-5 sm:px-6"
             aria-label={dict.nav.menu}
           >
             {links}

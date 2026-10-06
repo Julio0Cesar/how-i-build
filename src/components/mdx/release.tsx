@@ -9,7 +9,7 @@ import {
 } from "@/lib/integrations";
 import { currentDictionary, currentLocale } from "./locale";
 
-const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
+const label = "data text-xs text-muted-foreground";
 
 /**
  * The release that shipped a decision, rendered where the decision is argued.

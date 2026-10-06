@@ -17,7 +17,7 @@ export function RecentPosts({
 
   return (
     <section aria-label={label}>
-      <p className="font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+      <p className="data text-xs text-muted-foreground">
         {label}
       </p>
       <ul className="mt-4 space-y-4">

@@ -62,41 +62,37 @@ export default async function ProjectPage({
   const dict = getDictionary(locale);
   const items = caseToc(project.slug, locale);
 
-  const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
-  const external =
-    "cursor-pointer border-b border-rule transition-colors hover:border-accent hover:text-accent";
+  const external = "link cursor-pointer";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6">
-      <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
-        <div className="flex items-center gap-4 md:flex-col md:items-start md:gap-4 md:pt-3">
-          <p className={label}>{meta.period}</p>
-          <ProjectMark
-            name={meta.name}
-            src={project.markUrl}
-            className="size-20 md:size-28"
-          />
+    <div className="pb-24">
+      <header className="mx-auto max-w-[46rem] px-5 pt-14 text-center sm:pt-20">
+        <ProjectMark
+          name={meta.name}
+          src={project.markUrl}
+          className="mx-auto size-16 sm:size-20"
+        />
+        <h1 className="mt-6 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
+          {meta.name}
+        </h1>
+        <p className="mx-auto mt-6 max-w-[34em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
+          {meta.summary}
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+          <span>{meta.period}</span>
+          <span aria-hidden="true">·</span>
+          <span>{dict.status[project.status]}</span>
+          <span aria-hidden="true">·</span>
+          <span>{dict.visibility[project.visibility]}</span>
+          <span aria-hidden="true">·</span>
+          <span>{meta.role}</span>
         </div>
-        <div>
-          <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
-            {meta.name}
-          </h1>
-          <p className="mt-4 max-w-[68ch] leading-relaxed text-muted-foreground">
-            {meta.summary}
-          </p>
-          <div className={`mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 ${label}`}>
-            <span className="bg-accent-soft px-2 py-0.5 text-accent">
-              {dict.status[project.status]}
-            </span>
-            <span className="border border-rule px-2 py-0.5">
-              {dict.visibility[project.visibility]}
-            </span>
-            <span>{meta.role}</span>
-            <StackList stack={project.stack} />
-          </div>
+        <div className="mt-3 flex justify-center text-sm text-muted-foreground">
+          <StackList stack={project.stack} />
+        </div>
           {/* A private project hides its repository; a live address is still public. */}
           {project.liveUrl || (project.visibility === "public" && project.repoUrl) ? (
-            <div className={`mt-4 flex flex-wrap gap-4 ${label}`}>
+            <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-medium">
               {project.liveUrl ? (
                 <a
                   href={project.liveUrl}
@@ -136,28 +132,25 @@ export default async function ProjectPage({
               ) : null}
             </div>
           ) : null}
-        </div>
       </header>
 
-      <div className="border-t border-rule pt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-12">
-        {/* Second on wide screens, first on narrow ones, so a phone gets the
-            table of contents instead of nothing. */}
-        {items.length > 0 ? (
-          <div className="lg:order-2">
-            <CaseToc
-              items={items}
-              label={dict.case.toc}
-              className="sticky top-14 z-30 mb-6 sm:top-16 lg:top-24 lg:mb-0"
-            />
-          </div>
+      <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
+
+      <div className="mx-auto mt-12 max-w-[42rem] px-5 text-[1.1875rem] md:mt-16">
+        {items.length > 1 ? (
+          <CaseToc
+            items={items}
+            label={dict.case.toc}
+            className="sticky top-14 z-30 mb-10 bg-background sm:top-16 lg:static lg:border-y lg:border-rule lg:py-5"
+          />
         ) : null}
 
-        <article className="lg:order-1">
+        <article>
           <Body />
 
           {meta.references?.length ? (
-            <section className="mt-14 border-t border-rule pt-10">
-              <h2 className={label}>{dict.case.references}</h2>
+            <section className="mt-14 border-t border-foreground pt-6">
+              <h2 className="data text-xs text-muted-foreground">{dict.case.references}</h2>
               <ul className="mt-4 space-y-2">
                 {meta.references.map((reference) => (
                   <li key={reference.url}>

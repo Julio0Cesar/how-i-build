@@ -35,7 +35,7 @@ export function ProjectMark({
   return (
     <span
       aria-hidden="true"
-      className={`flex ${className} shrink-0 items-center justify-center border border-rule font-mono text-xs tracking-widest text-muted-foreground transition-colors group-hover:border-accent group-hover:text-accent`}
+      className={`flex ${className} shrink-0 items-center justify-center border border-rule data text-xs text-muted-foreground`}
     >
       {initials}
     </span>

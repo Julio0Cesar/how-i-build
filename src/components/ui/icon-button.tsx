@@ -42,7 +42,7 @@ export function IconButton({
       type="button"
       aria-label={label}
       {...props}
-      className={`inline-flex ${sizes[size]} items-center justify-center border border-rule transition-colors hover:border-accent hover:text-accent ${className}`.trim()}
+      className={`inline-flex ${sizes[size]} items-center justify-center border border-rule transition-colors hover:border-foreground hover:text-foreground ${className}`.trim()}
     >
       {children}
     </button>

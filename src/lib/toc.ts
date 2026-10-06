@@ -40,3 +40,37 @@ function tocFrom(dir: string, slugName: string, locale: Locale): TocItem[] {
 
   return items;
 }
+
+export type CaseEntry = { id: string; label: string; date: string };
+
+/**
+ * The dated entries of a case: only `<Entry>` carries a date, so a plain `##`
+ * section never reaches the log.
+ */
+export function caseEntries(slugName: string, locale: Locale): CaseEntry[] {
+  const file = path.join(process.cwd(), "src/content/projects", `${slugName}.${locale}.mdx`);
+  const source = withoutFences(readFileSync(file, "utf8"));
+  const pattern = /<Entry\b[^>]*>/g;
+
+  const entries: CaseEntry[] = [];
+  for (const [tag] of source.matchAll(pattern)) {
+    const label = /\btitle="([^"]+)"/.exec(tag)?.[1]?.trim();
+    const date = /\bdate="(\d{4}-\d{2}-\d{2})"/.exec(tag)?.[1];
+    if (label && date) entries.push({ id: slug(label), label, date });
+  }
+
+  return entries;
+}
+
+/**
+ * Minutes to read a post, from its source: prose words at 230 a minute, code
+ * and markup left out. Rounded up, never below one.
+ */
+export function readingMinutes(slugName: string, locale: Locale): number {
+  const file = path.join(process.cwd(), "src/content/posts", `${slugName}.${locale}.mdx`);
+  const prose = withoutFences(readFileSync(file, "utf8"))
+    .replace(/^export const meta[\s\S]*?^};/m, "")
+    .replace(/<[^>]+>/g, " ");
+  const words = prose.split(/\s+/).filter((word) => /\p{L}/u.test(word)).length;
+  return Math.max(1, Math.ceil(words / 230));
+}

@@ -40,17 +40,14 @@ export default async function PrivacyPage({
   const Body = privacy[locale];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6">
-      <header className="grid gap-5 py-12 md:grid-cols-[8rem_1fr] md:gap-10 md:py-20">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground md:pt-3">
-          {dict.privacy.title}
-        </p>
-        <h1 className="font-serif text-[1.65rem] leading-tight tracking-tight sm:text-3xl md:text-[2.4rem]">
+    <div className="pb-24">
+      <header className="mx-auto max-w-[46rem] px-5 pt-14 text-center sm:pt-20">
+        <h1 className="text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
           {dict.privacy.title}
         </h1>
       </header>
-
-      <article className="border-t border-rule py-10 md:py-12">
+      <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
+      <article className="mx-auto mt-12 max-w-[42rem] px-5 text-[1.1875rem] md:mt-16">
         <Body />
       </article>
     </div>

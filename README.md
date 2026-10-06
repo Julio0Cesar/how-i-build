@@ -8,7 +8,7 @@ A template for an engineering notes site: short write-ups on what you build and 
 |---|---|
 | Framework | Next.js 16 (App Router) |
 | Runtime and package manager | Bun |
-| UI | React 19, Tailwind CSS 4, IBM Plex |
+| UI | React 19, Tailwind CSS 4, Bricolage Grotesque and Martian Mono |
 | i18n | `/[locale]` routing, default locale unprefixed |
 | Releases | release-please, GitHub Releases as the only changelog |
 | Hosting | Vercel |
@@ -82,7 +82,7 @@ Two things live in GitHub rather than in a file, and the release workflow does n
 
 **Do not force the Bun runtime.** Neither `bun --bun next build` nor `[run] bun = true` in `bunfig.toml` — they are the same thing, and both segfault on teardown *after* the build has already succeeded, which looks like a build failure and is not. Bun is the package manager and task runner; Node runs the build.
 
-**The build needs network access.** `next/font/google` downloads IBM Plex during `next build`, so a connectivity hiccup fails the build with module-not-found errors about generated CSS — which does not look like a network problem at all.
+**The build needs network access.** `next/font/google` downloads the fonts during `next build`, so a connectivity hiccup fails the build with module-not-found errors about generated CSS — which does not look like a network problem at all.
 
 **`typecheck` does three things**: generates Next's route types, runs `tsc`, then checks that every piece of content exists in every locale. Running `tsc` alone will fail on a clean clone, because the route type globals do not exist yet.
 

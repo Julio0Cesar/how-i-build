@@ -10,13 +10,12 @@ import { currentDictionary } from "./locale";
  * not in a warning to be hidden away, and painting it amber would say the
  * opposite.
  */
-const frame = "my-8 border-y border-rule py-4";
-const label = "font-mono text-xs uppercase tracking-widest text-muted-foreground";
+const frame = "my-8 border-l border-foreground pl-5";
 
 function Block({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <section className={frame}>
-      <p className={label}>{title}</p>
+      <p className="stamp text-muted-foreground">{title}</p>
       <div className="mt-3">{children}</div>
     </section>
   );
