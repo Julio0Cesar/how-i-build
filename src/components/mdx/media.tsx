@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * An image or video in the body opens, on click, in a dialog holding nothing
  * but the media at the size the screen allows. Escape and a click outside
  * close it — both are the native `<dialog>` behaviour, so there is no state
  * to keep in sync beyond "open or not".
+ *
+ * It exists only while open, and lives in <body>: an image in MDX sits inside
+ * a paragraph, and a <dialog> inside a <p> is invalid HTML that breaks
+ * hydration. Never rendered on the server, it cannot mismatch either.
  */
 function Lightbox({
   open,
@@ -26,7 +31,9 @@ function Lightbox({
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
-  return (
+  if (!open) return null;
+
+  return createPortal(
     <dialog
       ref={ref}
       onClose={onClose}
@@ -36,8 +43,9 @@ function Lightbox({
       }}
       className="m-auto max-h-[92vh] max-w-[95vw] bg-transparent p-0 backdrop:bg-black/85 backdrop:backdrop-blur-sm"
     >
-      {open ? children : null}
-    </dialog>
+      {children}
+    </dialog>,
+    document.body,
   );
 }
 
