@@ -34,7 +34,12 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   return (
     <LogLayout sidebar={<LogSidebar locale={locale} dict={dict} intro />}>
-      <Log entries={entries} locale={locale} labels={dict.log} />
+      <Log
+        entries={entries}
+        locale={locale}
+        labels={{ ...dict.log, minutes: dict.blog.minutes }}
+        show={["post", "decision"]}
+      />
     </LogLayout>
   );
 }

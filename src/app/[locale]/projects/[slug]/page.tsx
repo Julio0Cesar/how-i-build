@@ -136,16 +136,20 @@ export default async function ProjectPage({
 
       <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
 
-      <div className="mx-auto mt-12 max-w-[42rem] px-5 text-[1.1875rem] md:mt-16">
+      {/* On wide screens the index rides beside the text and marks the
+          section being read; on narrow ones it is the bar under the header. */}
+      <div className="mx-auto mt-12 grid max-w-[72rem] gap-x-12 px-5 text-[1.125rem] md:mt-14 lg:grid-cols-[14rem_minmax(0,48rem)] lg:justify-center">
         {items.length > 1 ? (
-          <CaseToc
-            items={items}
-            label={dict.case.toc}
-            className="sticky top-14 z-30 mb-10 bg-background sm:top-16 lg:static lg:border-y lg:border-rule lg:py-5"
-          />
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <CaseToc
+              items={items}
+              label={dict.case.toc}
+              className="sticky top-14 z-30 mb-10 bg-background text-base sm:top-16 lg:static lg:mb-0"
+            />
+          </aside>
         ) : null}
 
-        <article>
+        <article className="min-w-0 lg:col-start-2">
           <Body />
 
           {meta.references?.length ? (

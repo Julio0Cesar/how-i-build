@@ -43,7 +43,7 @@ export function ReadingProgress() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 top-14 z-40 h-0.5 sm:top-16"
+      className="pointer-events-none fixed inset-x-0 top-14 z-[60] h-0.5 sm:top-16"
     >
       {/* A transform rather than a width: it never touches layout. */}
       <div

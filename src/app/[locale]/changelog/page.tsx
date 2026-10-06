@@ -51,7 +51,12 @@ export default async function ChangelogPage({
       <p className="mb-4 max-w-[60ch] text-sm leading-relaxed text-muted-foreground">
         {dict.changelog.note}
       </p>
-      <Log entries={entries} locale={locale} labels={dict.log} initial="release" />
+      <Log
+        entries={entries}
+        locale={locale}
+        labels={{ ...dict.log, minutes: dict.blog.minutes }}
+        show={["release"]}
+      />
     </LogLayout>
   );
 }

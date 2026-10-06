@@ -3,7 +3,7 @@ import { projects } from "@/content/projects";
 import { localeHref, type Locale } from "@/i18n/config";
 import { changelogSources } from "@/lib/changelog-sources";
 import { getReleases } from "@/lib/integrations";
-import { caseEntries } from "@/lib/toc";
+import { caseEntries, readingMinutes } from "@/lib/toc";
 
 export type LogKind = "post" | "decision" | "release";
 
@@ -19,6 +19,9 @@ export type LogEntry = {
   mark?: string;
   summary?: string;
   tags?: string[];
+  cover?: string;
+  coverAlt?: string;
+  minutes?: number;
 };
 
 /**
@@ -38,6 +41,9 @@ export async function logEntries(locale: Locale): Promise<LogEntry[]> {
       href: localeHref(locale, `/blog/${post.slug}`),
       summary: meta.summary,
       tags: meta.tags,
+      cover: meta.coverUrl,
+      coverAlt: meta.coverAlt,
+      minutes: readingMinutes(post.slug, locale),
     });
   }
 

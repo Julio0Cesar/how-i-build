@@ -32,7 +32,7 @@ export async function SiteHeader() {
   const dict = getDictionary(locale);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-foreground bg-background">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-background">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
         <Link
           href={localeHref(locale, "/")}

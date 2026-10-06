@@ -64,13 +64,21 @@ export default async function PostPage({
     .slice(0, 3);
 
   return (
-    <div className="pb-24">
+    <div className="bg-background pb-24">
       <ReadingProgress />
 
-      <article>
-        {/* Nothing beside the text: the header, the cover and the column are
-            all the page is while it is being read. */}
-        <header className="mx-auto max-w-[46rem] px-5 pt-14 text-center sm:pt-20">
+      {/* The cover holds still under the header while the article slides up
+          over it: the article is opaque and later in the DOM, so it covers
+          the image without any z-index. */}
+      {meta.coverUrl ? (
+        <div className="sticky top-14 h-[40vh] w-full overflow-hidden sm:top-16 sm:h-[62vh]">
+          {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
+          <img src={meta.coverUrl} alt={meta.coverAlt ?? ""} className="size-full object-cover" />
+        </div>
+      ) : null}
+
+      <article className="relative bg-background">
+        <header className="mx-auto max-w-[52rem] px-5 pt-12 text-center sm:pt-16">
           {tag ? (
             <Link
               href={localeHref(locale, `/blog/tags/${slugOf(tag)}`)}
@@ -82,26 +90,15 @@ export default async function PostPage({
           <h1 className="mt-4 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
             {meta.title}
           </h1>
-          <p className="mx-auto mt-6 max-w-[34em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
+          <p className="mx-auto mt-6 max-w-[38em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
             {meta.summary}
           </p>
           <PostMeta post={post} locale={locale} dict={dict} className="mt-6 justify-center" />
         </header>
 
-        {meta.coverUrl ? (
-          <figure className="mx-auto mt-12 max-w-[72rem] px-0 sm:px-5 md:mt-16">
-            {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
-            <img
-              src={meta.coverUrl}
-              alt={meta.coverAlt ?? ""}
-              className="aspect-[16/9] max-h-[78vh] w-full object-cover"
-            />
-          </figure>
-        ) : (
-          <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
-        )}
+        <hr className="mx-auto mt-12 w-16 border-t border-foreground" />
 
-        <div className="post-body mx-auto mt-12 max-w-[42rem] px-5 text-[1.1875rem] md:mt-16">
+        <div className="mx-auto mt-12 max-w-[48rem] px-5 text-[1.125rem] md:mt-14">
           <Body />
 
           {meta.tags?.length ? (

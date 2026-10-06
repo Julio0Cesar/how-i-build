@@ -88,6 +88,7 @@ const en = {
   log: {
     title: "Log",
     filter: "Show",
+    more: "Loading more entries",
     all: "Everything",
     post: "Posts",
     decision: "Decisions",
@@ -210,6 +211,7 @@ const pt: Dictionary = {
   log: {
     title: "Diário",
     filter: "Mostrar",
+    more: "Carregando mais entradas",
     all: "Tudo",
     post: "Posts",
     decision: "Decisões",
