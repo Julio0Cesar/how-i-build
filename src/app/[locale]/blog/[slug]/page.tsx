@@ -73,7 +73,7 @@ export default async function PostPage({
           never shows again behind what follows. */}
       <div>
         {meta.coverUrl ? (
-          <div className="sticky top-14 h-[40vh] w-full overflow-hidden sm:top-16 sm:h-[62vh]">
+          <div className="sticky top-14 h-[25vh] min-h-40 w-full overflow-hidden sm:top-16">
             {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
             <img src={meta.coverUrl} alt={meta.coverAlt ?? ""} className="size-full object-cover" />
           </div>
@@ -81,7 +81,7 @@ export default async function PostPage({
 
         <article
           className={`relative mx-auto max-w-[58rem] bg-background pb-16 md:pb-20 ${
-            meta.coverUrl ? "-mt-[12vh] sm:-mt-[16vh]" : ""
+            meta.coverUrl ? "-mt-[6vh]" : ""
           }`}
         >
           <header className="mx-auto max-w-[52rem] px-5 pt-12 text-center sm:pt-16">
