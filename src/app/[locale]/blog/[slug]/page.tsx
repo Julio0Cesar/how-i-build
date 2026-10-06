@@ -64,53 +64,60 @@ export default async function PostPage({
     .slice(0, 3);
 
   return (
-    <div className="bg-background pb-24">
+    <div className="pb-24">
       <ReadingProgress />
 
-      {/* The cover holds still under the header while the article slides up
-          over it: the article is opaque and later in the DOM, so it covers
-          the image without any z-index. */}
-      {meta.coverUrl ? (
-        <div className="sticky top-14 h-[40vh] w-full overflow-hidden sm:top-16 sm:h-[62vh]">
-          {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
-          <img src={meta.coverUrl} alt={meta.coverAlt ?? ""} className="size-full object-cover" />
-        </div>
-      ) : null}
+      {/* The cover holds still under the header while the article column
+          slides up over it, leaving the image visible on either side. The
+          wrapper bounds the sticky cover, so it ends with the article and
+          never shows again behind what follows. */}
+      <div>
+        {meta.coverUrl ? (
+          <div className="sticky top-14 h-[40vh] w-full overflow-hidden sm:top-16 sm:h-[62vh]">
+            {/* eslint-disable-next-line @next/next/no-img-element -- content image, sized by the layout rather than by a pipeline */}
+            <img src={meta.coverUrl} alt={meta.coverAlt ?? ""} className="size-full object-cover" />
+          </div>
+        ) : null}
 
-      <article className="relative bg-background">
-        <header className="mx-auto max-w-[52rem] px-5 pt-12 text-center sm:pt-16">
-          {tag ? (
-            <Link
-              href={localeHref(locale, `/blog/tags/${slugOf(tag)}`)}
-              className="text-sm font-semibold text-accent transition-opacity hover:opacity-75"
-            >
-              {tag}
-            </Link>
-          ) : null}
-          <h1 className="mt-4 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
-            {meta.title}
-          </h1>
-          <p className="mx-auto mt-6 max-w-[38em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
-            {meta.summary}
-          </p>
-          <PostMeta post={post} locale={locale} dict={dict} className="mt-6 justify-center" />
-        </header>
+        <article
+          className={`relative mx-auto max-w-[58rem] bg-background pb-16 md:pb-20 ${
+            meta.coverUrl ? "-mt-[12vh] sm:-mt-[16vh]" : ""
+          }`}
+        >
+          <header className="mx-auto max-w-[52rem] px-5 pt-12 text-center sm:pt-16">
+            {tag ? (
+              <Link
+                href={localeHref(locale, `/blog/tags/${slugOf(tag)}`)}
+                className="text-sm font-semibold text-accent transition-opacity hover:opacity-75"
+              >
+                {tag}
+              </Link>
+            ) : null}
+            <h1 className="mt-4 text-[2.4rem] font-bold leading-[1.06] tracking-[-0.03em] text-balance sm:text-[3.4rem] md:text-[3.9rem]">
+              {meta.title}
+            </h1>
+            <p className="mx-auto mt-6 max-w-[38em] text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
+              {meta.summary}
+            </p>
+            <PostMeta post={post} locale={locale} dict={dict} className="mt-6 justify-center" />
+          </header>
 
-        <hr className="mx-auto mt-12 w-16 border-t border-foreground" />
+          <hr className="mx-auto mt-12 w-16 border-t border-foreground" />
 
-        <div className="mx-auto mt-12 max-w-[48rem] px-5 text-[1.125rem] md:mt-14">
-          <Body />
+          <div className="mx-auto mt-12 max-w-[48rem] px-5 text-[1.125rem] md:mt-14">
+            <Body />
 
-          {meta.tags?.length ? (
-            <div className="mt-14 border-t border-rule pt-6">
-              <TagChips tags={meta.tags} locale={locale} />
-            </div>
-          ) : null}
-        </div>
-      </article>
+            {meta.tags?.length ? (
+              <div className="mt-14 border-t border-rule pt-6">
+                <TagChips tags={meta.tags} locale={locale} />
+              </div>
+            ) : null}
+          </div>
+        </article>
+      </div>
 
       {more.length > 0 ? (
-        <section className="mt-24 border-t border-rule bg-sheet py-16 md:mt-32" aria-labelledby="read-next">
+        <section className="relative border-t border-rule bg-sheet py-16" aria-labelledby="read-next">
           <div className="mx-auto max-w-[72rem] px-5">
             <h2 id="read-next" className="text-2xl font-bold tracking-tight">
               {dict.blog.readNext}
