@@ -36,7 +36,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
         <Link
           href={localeHref(locale, "/")}
-          className="flex min-w-0 max-w-[70%] items-center gap-2.5 text-lg font-bold tracking-tight [font-stretch:85%]"
+          className="flex min-w-0 max-w-[70%] items-center gap-2.5 text-lg font-bold tracking-tight"
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- the site mark is a local SVG */}
           <img src="/icon.svg" alt="" aria-hidden="true" className="size-7 shrink-0" />

@@ -47,7 +47,7 @@ export default async function PrivacyPage({
         </h1>
       </header>
       <hr className="mx-auto mt-14 w-16 border-t border-foreground" />
-      <article className="mx-auto mt-12 max-w-[48rem] px-5 text-[1.125rem] md:mt-16">
+      <article className="mx-auto mt-12 max-w-[48rem] px-5 font-serif text-[1.1875rem] md:mt-16">
         <Body />
       </article>
     </div>

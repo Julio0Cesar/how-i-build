@@ -1,13 +1,15 @@
-import { Bricolage_Grotesque, Martian_Mono } from "next/font/google";
+import { Inter, Martian_Mono } from "next/font/google";
 
-/** Variable, with an optical-size axis: the same family reads at 14px and 90px. */
-const sans = Bricolage_Grotesque({
+/**
+ * Interface, titles and cards. The reading text is Georgia, which every
+ * system already has, so the body costs no download at all.
+ */
+const sans = Inter({
   subsets: ["latin"],
-  axes: ["opsz", "wdth"],
-  variable: "--font-bricolage",
+  variable: "--font-inter",
 });
 
-/** Dates, kinds, versions and code. Narrowed so a log row stays on one line. */
+/** Code only. Narrowed so a long line fits the column. */
 const mono = Martian_Mono({
   subsets: ["latin"],
   axes: ["wdth"],

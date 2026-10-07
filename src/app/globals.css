@@ -6,10 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-  /* An alias, so content that still asks for `font-serif` lands on the same
-     family rather than on a browser default. */
-  --font-serif: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
   --font-mono: var(--font-martian), ui-monospace, SFMono-Regular, monospace;
 }
 

@@ -14,7 +14,7 @@ const rowClass =
 export function Entry({ title, date }: { title: string; date?: string }) {
   return (
     <h2 id={slug(title)} className={rowClass}>
-      <span className="text-[1.9rem] font-bold leading-[1.05] tracking-[-0.025em] [font-stretch:88%]">{title}</span>
+      <span className="font-sans text-[1.75rem] font-bold leading-[1.15] tracking-[-0.022em]">{title}</span>
       {date ? (
         <time
           dateTime={date}

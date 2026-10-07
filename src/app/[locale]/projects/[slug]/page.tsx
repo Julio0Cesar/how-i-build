@@ -149,7 +149,7 @@ export default async function ProjectPage({
           </aside>
         ) : null}
 
-        <article className="min-w-0 lg:col-start-2">
+        <article className="min-w-0 font-serif text-[1.1875rem] lg:col-start-2">
           <Body />
 
           {meta.references?.length ? (

@@ -13,13 +13,13 @@ export const prose = {
   h2: ({ children, ...props }: { children?: ReactNode; id?: string }) => (
     <h2
       {...props}
-      className="mt-16 scroll-mt-28 text-[1.9rem] font-bold leading-[1.05] tracking-[-0.025em] [font-stretch:88%] first:mt-0"
+      className="mt-16 scroll-mt-28 font-sans text-[1.75rem] font-bold leading-[1.15] tracking-[-0.022em] first:mt-0"
     >
       {children}
     </h2>
   ),
   h3: ({ children, ...props }: { children?: ReactNode; id?: string }) => (
-    <h3 {...props} className="mt-10 scroll-mt-28 text-xl font-semibold tracking-tight">
+    <h3 {...props} className="mt-10 scroll-mt-28 font-sans text-xl font-semibold tracking-tight">
       {children}
     </h3>
   ),
@@ -54,7 +54,7 @@ export const prose = {
     </pre>
   ),
   blockquote: ({ children }: { children?: ReactNode }) => (
-    <blockquote className={`mt-10 ${read} text-2xl font-semibold leading-snug tracking-tight [font-stretch:90%] border-l border-foreground pl-5 [&_p]:mt-0`}>
+    <blockquote className={`mt-10 ${read} text-2xl italic leading-snug border-l border-foreground pl-5 [&_p]:mt-0`}>
       {children}
     </blockquote>
   ),
@@ -65,7 +65,7 @@ export const prose = {
   table: ({ children }: { children?: ReactNode }) => (
     /* The wrapper scrolls on mobile; the table alone would push the whole page. */
     <div className={`mt-6 ${wide} overflow-x-auto`}>
-      <table className="w-full border-collapse text-sm">{children}</table>
+      <table className="w-full border-collapse font-sans text-sm">{children}</table>
     </div>
   ),
   th: ({ children }: { children?: ReactNode }) => (
